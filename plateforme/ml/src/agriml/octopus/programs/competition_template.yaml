@@ -1,0 +1,29 @@
+# Gabarit compétition : copier en competition_<slug>.yaml APRÈS lecture du règlement.
+# Confidentiel - réservé aux partenaires de travail.
+# AVANT TOUT TÉLÉVERSEMENT : vérifier que le règlement autorise le partage des données avec un tiers
+# (OctOpus et ses fournisseurs de LLM). Sinon : agriml seul, en local. Espace dédié, jamais mélangé.
+name: competition_template
+dataset: competition_slug
+workspace: agri92-comp-slug
+task: regression            # selon le règlement : regression | binary | multiclass | image_classification
+target: target
+metric: rmse                # métrique OFFICIELLE du règlement
+objective: >-
+  Maximiser le score privé de la compétition <slug> ; la CV locale doit suivre le classement public
+  (corrélation CV/LB vérifiée sur >= 3 soumissions).
+groups: null
+time_column: null
+cv: {scheme: group, n_splits: 5}
+time_budget_min: 240
+hints:
+  - "Reproduire EXACTEMENT le schéma de validation de agriml (même plis, même graine) pour comparer les OOF."
+  - "Pas de pseudo-étiquetage ni de données externes si le règlement l'interdit."
+  - "Rapporter les prédictions OOF complètes pour le stacking côté agriml."
+guardrails:
+  drop: []
+  pseudonymize: []
+  round_coords: []
+acceptance:
+  min_relative_gain: 0.0      # en compétition : tout gain OOF compte, la porte décide sur l'OOF + LB public
+  max_cv_holdout_gap: 0.05
+  require_proof_verified: true

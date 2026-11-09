@@ -1,0 +1,30 @@
+# Recette : synchronisation automatique de la branche main (suppression et auto-réparation actives).
+# À appliquer dans le cluster de recette uniquement.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: smartagri92-dev
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: smartagri92
+  source:
+    repoURL: https://github.com/organisation/smartagri92.git
+    targetRevision: main
+    path: infra/k8s/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m

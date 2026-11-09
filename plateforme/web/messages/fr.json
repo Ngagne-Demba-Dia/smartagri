@@ -1,0 +1,1102 @@
+{
+  "alerts": {
+    "ack": "Acquitter",
+    "acking": "Acquittement…",
+    "acknowledgedAt": "Acquittée le {date}",
+    "criticalBanner": "{count, plural, one {# alerte critique ouverte} other {# alertes critiques ouvertes}}",
+    "empty": "Aucune alerte.",
+    "filter": "Afficher",
+    "filters": {
+      "open": "Ouvertes",
+      "acknowledged": "Acquittées",
+      "resolved": "Résolues",
+      "all": "Toutes"
+    },
+    "rule": "Règle {rule}",
+    "severity": {
+      "info": "Information",
+      "warning": "Avertissement",
+      "critical": "Critique"
+    },
+    "status": {
+      "open": "Ouverte",
+      "acknowledged": "Acquittée",
+      "resolved": "Résolue"
+    },
+    "description": "Ce que les kits et les règles de surveillance ont signalé, de la plus récente à la plus ancienne."
+  },
+  "assistant": {
+    "bot": "Assistant",
+    "citations": "Sources",
+    "counter": "{count} / {max} caractères",
+    "disclaimer": "Les réponses de l’assistant sont indicatives : vérifiez-les avec votre agronome avant d’agir. Ne saisissez pas d’informations personnelles.",
+    "empty": "Posez une question sur vos parcelles, l’irrigation ou la météo.",
+    "fallback": "Réponse de secours : le modèle principal n’était pas disponible.",
+    "intro": "L’assistant répond à partir des données de vos parcelles et de fiches agronomiques, et cite ses sources.",
+    "limitReached": "Limite de la conversation atteinte : commencez une nouvelle conversation.",
+    "logLabel": "Conversation avec l’assistant",
+    "question": "Votre question",
+    "refusal": "L’assistant ne répond pas à cette question. Adressez-vous à votre agronome ou à votre coopérative.",
+    "restart": "Nouvelle conversation",
+    "send": "Envoyer",
+    "sending": "Envoi…",
+    "thinking": "L’assistant rédige sa réponse…",
+    "truncated": "Réponse coupée : elle dépassait la longueur maximale.",
+    "voiceCheck": "Texte ajouté à votre question : relisez-le avant de l’envoyer.",
+    "voiceDenied": "Le micro n’est pas accessible. Autorisez-le dans le navigateur ou écrivez votre question.",
+    "voiceListening": "Enregistrement en cours (60 secondes au plus).",
+    "voiceNothing": "Aucune parole reconnue. Réessayez ou écrivez votre question.",
+    "voiceSending": "Transcription en cours…",
+    "voiceStart": "Dicter ma question",
+    "voiceStop": "Arrêter l’enregistrement",
+    "voiceUnsupported": "La dictée n’est pas disponible sur cet appareil.",
+    "you": "Vous"
+  },
+  "chart": {
+    "bandHigh": "Haut (p90)",
+    "bandLow": "Bas (p10)",
+    "category": "Date",
+    "hideTable": "Masquer le tableau",
+    "keyboardHint": "Flèches gauche et droite pour parcourir les valeurs, Début et Fin pour aller aux extrémités.",
+    "showTable": "Afficher le tableau des valeurs"
+  },
+  "common": {
+    "ago": {
+      "now": "à l’instant",
+      "minutes": "il y a {count} min",
+      "hours": "il y a {count} h",
+      "days": "il y a {count, plural, one {# jour} other {# jours}}"
+    },
+    "appName": "SmartAgri92",
+    "closeMenu": "Fermer le menu",
+    "connectedAs": "Rôle : {role}",
+    "empty": "Aucune donnée.",
+    "errorTitle": "Impossible de charger les données",
+    "fieldPicker": "Parcelle",
+    "loading": "Chargement…",
+    "logout": "Se déconnecter",
+    "logoutFailed": "La déconnexion a échoué : réessayez.",
+    "menu": "Menu",
+    "retry": "Réessayer",
+    "roles": {
+      "farmer": "Agriculteur",
+      "coop_manager": "Gestionnaire de coopérative",
+      "agronomist": "Agronome",
+      "admin": "Administrateur"
+    },
+    "skipToContent": "Aller au contenu",
+    "themeToDark": "Passer au thème sombre",
+    "themeToLight": "Passer au thème clair",
+    "farmPicker": "Exploitation"
+  },
+  "dashboard": {
+    "alerts": "Alertes",
+    "criticalBanner": "{count, plural, one {# alerte critique ouverte} other {# alertes critiques ouvertes}}",
+    "details": "Voir la parcelle",
+    "empty": "Aucune parcelle à suivre.",
+    "fieldsHeading": "Parcelles",
+    "freshness": {
+      "fresh": "À jour",
+      "late": "En retard",
+      "silent": "Silencieux"
+    },
+    "kit": "Kit",
+    "kpi": {
+      "dry": "Parcelles sèches",
+      "fields": "Parcelles suivies",
+      "openAlerts": "Alertes ouvertes",
+      "silentKits": "Kits silencieux"
+    },
+    "lastSeen": "Dernier contact",
+    "moisture": "Humidité du sol",
+    "noCrop": "Aucune culture en cours",
+    "noKit": "Aucun kit",
+    "openAlerts": "{count, plural, =0 {Aucune alerte ouverte} one {# alerte ouverte} other {# alertes ouvertes}}",
+    "pendingSync": "envoi au kit en attente",
+    "seeAlerts": "Voir les alertes",
+    "sourceFarm": "Exploitation {farm}",
+    "sources": "Sources des données",
+    "thresholds": "Seuils",
+    "thresholdsValue": "Démarrage {start} % · arrêt {stop} %",
+    "verdict": {
+      "dry": "Sec, à irriguer",
+      "ok": "Humidité correcte",
+      "wet": "Humide",
+      "unknown": "Inconnu"
+    },
+    "adviceLink": "Conseil IA",
+    "eyebrow": "Mon exploitation, pilotée par l’IA",
+    "summary": {
+      "calm": "Tout est sous contrôle : aucune parcelle ne demande d’eau pour l’instant.",
+      "dry": "{count, plural, one {# parcelle demande de l’eau} other {# parcelles demandent de l’eau}}. La plus urgente : {field}.",
+      "silent": "{count, plural, one {# kit ne répond plus : à vérifier sur le terrain.} other {# kits ne répondent plus : à vérifier sur le terrain.}}",
+      "auto": "Synthèse automatique calculée à partir des mesures et des modèles : à confirmer sur le terrain.",
+      "label": "Synthèse de l’IA"
+    },
+    "weather": {
+      "title": "Météo de {field}",
+      "today": "Aujourd’hui",
+      "rain": "{mm} mm de pluie",
+      "et0": "Évapotranspiration {mm} mm",
+      "range": "{max} ° / {min} °"
+    },
+    "description": "Le verdict de chaque parcelle d’abord, puis les chiffres clés et les sources des données.",
+    "moistureMeter": "Humidité du sol de {field}",
+    "markStart": "Seuil de démarrage : {value} %",
+    "markStop": "Seuil d’arrêt : {value} %"
+  },
+  "devMock": {
+    "applying": "Application du scénario…",
+    "banner": "Mode simulé : toutes les données affichées sont fictives.",
+    "columns": {
+      "latency": "Latence simulée",
+      "number": "N°",
+      "scenario": "Scénario",
+      "service": "Service"
+    },
+    "global": "Scénario global",
+    "hide": "Masquer le panneau",
+    "show": "Régler la simulation",
+    "inherit": "Scénario global ({scenario})",
+    "latencyNote": "Facteur de latence : × {factor} (variable AGRI_MOCK_LATENCY).",
+    "latencyValue": "{value} ms",
+    "panelIntro": "Choisissez un scénario pour les 18 services simulés ou pour un seul service, afin de vérifier l’affichage des états périmé, de secours, d’abstention, d’erreur et vide.",
+    "panelTitle": "Simulation des services",
+    "reset": "Réinitialiser",
+    "resetNote": "La réinitialisation remet tous les services sur le scénario de départ et recharge les données de démonstration. Ces réglages sont perdus au redémarrage du serveur.",
+    "scenario": {
+      "nominal": "Nominal",
+      "stale": "Données périmées",
+      "fallback": "Valeur de secours",
+      "abstention": "Abstention du modèle",
+      "error_503": "Erreur 503",
+      "empty": "Réponse vide"
+    },
+    "serviceSelect": "Scénario du service {service}",
+    "servicesTitle": "Services simulés"
+  },
+  "errorPage": {
+    "body": "La page n’a pas pu s’afficher. Réessayez ; si le problème continue, contactez votre administrateur.",
+    "reference": "Référence : {digest}",
+    "retry": "Réessayer",
+    "title": "Une erreur est survenue"
+  },
+  "errors": {
+    "generic": "Une erreur inattendue est survenue. Réessayez.",
+    "UNAUTHENTICATED": "Votre session a expiré : reconnectez-vous.",
+    "FORBIDDEN": "Votre rôle ne donne pas accès à cette action.",
+    "NOT_FOUND": "Élément introuvable.",
+    "VALIDATION_ERROR": "Données invalides : vérifiez la saisie.",
+    "THRESHOLDS_INVALID": "Seuils refusés : vérifiez les valeurs.",
+    "MESSAGE_INVALID": "Message refusé : il est vide ou trop long.",
+    "RATE_LIMITED": "Trop de requêtes : patientez un instant puis réessayez.",
+    "NETWORK_ERROR": "Pas de connexion au serveur : vérifiez votre réseau.",
+    "BAD_RESPONSE": "Réponse inattendue du serveur.",
+    "LOCATION_REQUIRED": "La parcelle n’a pas de position connue.",
+    "INVALID_CREDENTIALS": "Identifiant ou mot de passe incorrect.",
+    "UPSTREAM_UNAVAILABLE": "Service momentanément indisponible. Réessayez plus tard.",
+    "WEATHER_UNAVAILABLE": "Météo indisponible pour le moment.",
+    "NO_ACTIVE_CYCLE": "Aucun cycle de culture en cours sur cette parcelle.",
+    "MODEL_UNAVAILABLE": "Modèle indisponible : aucun résultat pour le moment.",
+    "DEVICE_INACTIVE": "Ce kit est inactif.",
+    "CSRF_REJECTED": "Requête refusée par sécurité : rechargez la page puis réessayez.",
+    "PAYLOAD_TOO_LARGE": "Données trop volumineuses.",
+    "ASSISTANT_UNAVAILABLE": "L’assistant est indisponible pour le moment.",
+    "INVALID_BUCKET": "Période d’agrégation invalide."
+  },
+  "farms": {
+    "columns": {
+      "area": "Surface (ha)",
+      "commune": "Commune",
+      "fields": "Parcelles",
+      "link": "Accès",
+      "name": "Exploitation",
+      "region": "Région"
+    },
+    "empty": "Aucune exploitation.",
+    "seeFields": "Voir les parcelles",
+    "description": "Vos exploitations, leur surface et le nombre de parcelles suivies.",
+    "kpiFarms": "Exploitations",
+    "kpiFields": "Parcelles",
+    "kpiArea": "Surface totale"
+  },
+  "field": {
+    "airHumidity": "Humidité de l’air",
+    "airTemp": "Température de l’air",
+    "area": "Surface",
+    "back": "Retour aux parcelles",
+    "chooseKit": "Kit",
+    "crop": "Culture",
+    "irrigation": "Irrigation",
+    "latest": "Dernière mesure",
+    "measuredAt": "Mesurée",
+    "moisture": "Humidité du sol",
+    "noCrop": "Aucune culture en cours",
+    "noKit": "Aucun kit sur cette parcelle.",
+    "noMeasurement": "Ce kit n’a encore envoyé aucune mesure.",
+    "planted": "semé le {date}",
+    "recommendationsLink": "Recommandations",
+    "related": "Pages liées à la parcelle",
+    "soil": "Sol",
+    "soilSensorFault": "Capteur d’humidité du sol en défaut : la valeur n’est pas fiable.",
+    "weatherLink": "Météo"
+  },
+  "fields": {
+    "allFarms": "Toutes les exploitations",
+    "columns": {
+      "area": "Surface (ha)",
+      "farm": "Exploitation",
+      "irrigation": "Irrigation",
+      "name": "Parcelle",
+      "soil": "Sol"
+    },
+    "empty": "Aucune parcelle.",
+    "filter": "Exploitation",
+    "irrigation": {
+      "drip": "Goutte-à-goutte",
+      "sprinkler": "Aspersion",
+      "furrow": "Gravitaire (sillons)",
+      "manual": "Manuelle"
+    },
+    "description": "Toutes les parcelles visibles, à filtrer par exploitation.",
+    "count": "{count, plural, =0 {Aucune parcelle} one {# parcelle} other {# parcelles}}",
+    "tableView": "Voir en tableau"
+  },
+  "locale": {
+    "label": "Langue",
+    "fr": "Français",
+    "wo": "Wolof",
+    "ff": "Pulaar"
+  },
+  "login": {
+    "demo": {
+      "intro": "Mode simulé : un compte par rôle, mot de passe « {password} ».",
+      "title": "Comptes de démonstration"
+    },
+    "heroSubtitle": "Humidité du sol, météo et recommandations, parcelle par parcelle.",
+    "heroTitle": "Pilotez l’irrigation de vos parcelles",
+    "intro": "Connectez-vous avec votre identifiant SmartAgri92.",
+    "missing": "Saisissez votre identifiant et votre mot de passe.",
+    "pageTitle": "Connexion",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion…",
+    "title": "Connexion",
+    "username": "Identifiant"
+  },
+  "map": {
+    "canvas": {
+      "cropDetected": "Culture détectée : {label}",
+      "cropPending": "Culture : détection en attente",
+      "cropUncertain": "Culture : détection incertaine",
+      "kitEstimated": "Position estimée",
+      "kitField": "Parcelle : {field}",
+      "moisture": "Humidité du sol : {value}",
+      "ndvi": "NDVI : {value}",
+      "salinity": "Salinité : {value}",
+      "salinityClass": {
+        "none": "Non salin",
+        "low": "Faible",
+        "moderate": "Modérée",
+        "high": "Forte"
+      }
+    },
+    "canvasLabel": "Carte des parcelles de l’exploitation {farm}",
+    "canvasLoading": "Chargement de la carte…",
+    "columns": {
+      "alerts": "Alertes ouvertes",
+      "area": "Surface (ha)",
+      "crop": "Culture",
+      "farm": "Exploitation",
+      "field": "Parcelle",
+      "kit": "Kit",
+      "lastSeen": "Dernier contact",
+      "moisture": "Humidité du sol",
+      "ndvi": "NDVI",
+      "position": "Position"
+    },
+    "controls": {
+      "boundaries": "Contours des parcelles",
+      "farm": "Exploitation",
+      "kits": "Kits",
+      "mode": "Coloration",
+      "modes": {
+        "moisture": "Humidité du sol",
+        "ndvi": "NDVI (vigueur)",
+        "crop": "Culture",
+        "salinity": "Salinité"
+      },
+      "show": "Afficher"
+    },
+    "empty": "Aucune parcelle à afficher sur la carte.",
+    "estimated": "Estimée",
+    "fieldSelect": "Parcelle",
+    "fieldsCaption": "Parcelles de la carte",
+    "intro": "Carte locale, sans fond de carte externe : choisissez une exploitation et une coloration. Les mêmes données sont reprises en tableaux sous la carte.",
+    "kitsCaption": "Kits de la carte",
+    "layerLoading": "Chargement de la couche…",
+    "legend": {
+      "above": "{from} et plus",
+      "below": "Moins de {to}",
+      "range": "{from} à {to}",
+      "cropNote": "Mode culture : l’étiquette de chaque parcelle indique la culture détectée ; une détection incertaine est signalée comme telle.",
+      "kitsNote": "Un point par kit. Une position estimée est signalée dans la bulle du kit et dans le tableau des kits.",
+      "noData": "Pas de donnée",
+      "salinity": {
+        "none": "Non salin",
+        "low": "Faible",
+        "moderate": "Modérée",
+        "high": "Forte"
+      },
+      "title": {
+        "moisture": "Humidité du sol",
+        "ndvi": "NDVI (vigueur)",
+        "crop": "Culture détectée",
+        "salinity": "Salinité"
+      }
+    },
+    "measured": "Mesurée",
+    "panel": {
+      "alerts": "Alertes ouvertes",
+      "area": "Surface",
+      "areaValue": "{value} ha",
+      "bareSoil": "Aucune culture déclarée",
+      "crop": "Culture déclarée",
+      "detail": "Fiche de la parcelle",
+      "detected": "Culture détectée",
+      "links": "Liens de la parcelle",
+      "locationRequired": "Position de la parcelle inconnue : pas de prévision météo.",
+      "moisture": "Humidité du sol",
+      "ndvi": "NDVI",
+      "rain": "{value} mm",
+      "recommendations": "Recommandations",
+      "salinity": "Salinité",
+      "temp": "{min} à {max} °C",
+      "uncertain": "Incertaine",
+      "weather": "Météo",
+      "weatherEmpty": "Pas de prévision disponible.",
+      "weatherTitle": "Météo, {days, plural, one {# jour} other {# jours}}"
+    },
+    "sources": {
+      "base": "Carte de base : contours, kits et dernières mesures.",
+      "layer": {
+        "crop_type": "Couche culture détectée",
+        "salinity": "Couche salinité",
+        "field_boundary": "Couche contours de parcelles"
+      },
+      "title": "Sources et provenance"
+    },
+    "tablesTitle": "Données de la carte en tableaux",
+    "description": "Vos parcelles et vos kits sur la carte, colorés selon l’humidité du sol, avec les mêmes données en tableau."
+  },
+  "modules": {
+    "dashboard": "Tableau de bord",
+    "reports": "Rapports",
+    "farms": "Exploitations",
+    "fields": "Parcelles",
+    "map": "Carte",
+    "weather": "Météo",
+    "crops": "Cultures",
+    "campaigns": "Campagnes",
+    "yield": "Rendement",
+    "recommendations": "Recommandations",
+    "diseases": "Maladies",
+    "assistant": "Assistant IA",
+    "equipment": "Équipements",
+    "alerts": "Alertes",
+    "irrigation": "Irrigation",
+    "kit": "Paramètres du kit",
+    "fertilization": "Fertilisation",
+    "pestRisk": "Risques phytosanitaires",
+    "soilForecast": "Humidité prévue",
+    "irrigationPlan": "Planning d’arrosage",
+    "traps": "Pièges à insectes",
+    "vegetation": "Végétation",
+    "markets": "Prix du marché"
+  },
+  "moisture": {
+    "chartTitle": "Humidité du sol, {range}",
+    "empty": "Aucune mesure sur cette période.",
+    "range": {
+      "day": "24 dernières heures",
+      "week": "7 derniers jours",
+      "month": "30 derniers jours",
+      "year": "12 derniers mois"
+    },
+    "rangeLabel": "Période",
+    "rangeShort": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "year": "Année"
+    },
+    "series": "Humidité du sol",
+    "start": "Démarrage {value} %",
+    "stop": "Arrêt {value} %",
+    "summary": "Sur les {range}, l’humidité du sol est restée entre {min} et {max}.",
+    "summaryEmpty": "Aucune mesure d’humidité sur les {range}.",
+    "title": "Humidité du sol"
+  },
+  "nav": {
+    "alerts": "Alertes",
+    "groups": {
+      "pilotage": "Pilotage",
+      "terrain": "Terrain",
+      "cultures": "Cultures",
+      "ia": "IA",
+      "materiel": "Matériel"
+    },
+    "main": "Navigation principale",
+    "quick": "Accès rapide",
+    "tabs": {
+      "home": "Accueil",
+      "map": "Carte",
+      "alerts": "Alertes",
+      "assistant": "Assistant"
+    }
+  },
+  "notFound": {
+    "body": "Cette page n’existe pas ou a été déplacée.",
+    "home": "Retour au tableau de bord",
+    "title": "Page introuvable"
+  },
+  "provenance": {
+    "computedAt": "Calculé",
+    "confidence": {
+      "interval": "Entre {p10} et {p90} (8 cas sur 10)",
+      "intervalUncalibrated": "Entre {p10} et {p90} (intervalle non calibré)",
+      "none": "Non communiquée",
+      "percent": "{value} (calibrée)",
+      "uncalibrated": "Non calibrée : aucun pourcentage affiché"
+    },
+    "confidenceLabel": "Confiance",
+    "dataAsOf": "Données",
+    "fallback": {
+      "step1": "Étape 1 : résultat du lot OctOpus",
+      "step2": "Étape 2 : règles agronomiques"
+    },
+    "fallbackLabel": "Repli",
+    "missing": "Provenance non communiquée par l’API.",
+    "model": "{name} v{version}",
+    "source": {
+      "agriml": "Modèle AgriML",
+      "octopus": "Lot OctOpus",
+      "rules": "Règles agronomiques"
+    },
+    "state": {
+      "fresh": "À jour",
+      "stale": "Périmé",
+      "fallback": "Valeur de secours"
+    },
+    "title": "Provenance"
+  },
+  "pump": {
+    "fault": "Défaut pompe",
+    "faultHelp": "Le kit signale un défaut de la pompe : vérifiez l’alimentation et le circuit d’eau.",
+    "mobileOnly": "La pompe se commande depuis l’application mobile ou la page locale du kit, pas depuis ce site.",
+    "off": "À l’arrêt",
+    "on": "En marche",
+    "rules": "Sécurité du kit : la pompe s’arrête après {maxRun} min de marche, puis reste bloquée {lock} min.",
+    "title": "Pompe",
+    "unknown": "État inconnu"
+  },
+  "recommendations": {
+    "actions": {
+      "verifier_capteur": "Vérifier le capteur",
+      "irriguer": "Irriguer",
+      "surveiller": "Surveiller",
+      "ne_pas_irriguer": "Ne pas irriguer"
+    },
+    "columns": {
+      "level": "Niveau",
+      "message": "Conseil",
+      "nutrient": "Élément",
+      "value": "Valeur"
+    },
+    "empty": "Aucune recommandation pour cette parcelle.",
+    "engine": "Moteur v{version}",
+    "et0": "ET0 (évapotranspiration)",
+    "feedback": {
+      "followed": "Suivie",
+      "partially_followed": "Suivie en partie",
+      "ignored": "Pas suivie",
+      "not_applicable": "Non applicable"
+    },
+    "feedbackQuestion": "Avez-vous suivi cette recommandation ?",
+    "feedbackSaved": "Merci, votre retour est enregistré.",
+    "grossMm": "Dose brute",
+    "intro": "Conseils calculés pour la parcelle choisie, avec leur provenance et leur niveau de confiance.",
+    "kind": {
+      "irrigation": "Irrigation",
+      "fertilization": "Fertilisation"
+    },
+    "levels": {
+      "bas": "Bas",
+      "moyen": "Moyen",
+      "eleve": "Élevé"
+    },
+    "measuredAt": "Mesure",
+    "netMm": "Dose nette",
+    "noFields": "Aucune parcelle accessible.",
+    "npkFault": "Capteur NPK en défaut",
+    "nutrientsCaption": "Éléments nutritifs du sol",
+    "thresholds": "Seuils",
+    "thresholdsValue": "Démarrage {start} % · arrêt {stop} %",
+    "volume": "Volume",
+    "description": "Les conseils de culture et d’irrigation pour vos parcelles, avec leur justification.",
+    "advisor": {
+      "eyebrow": "Conseiller agronomique",
+      "decision": "Mon conseil",
+      "finding": "Constat",
+      "dose": "Dose recommandée",
+      "caution": "À savoir",
+      "soil": "Analyse du sol",
+      "disclaimer": "Conseil calculé par l’IA à partir des mesures de la parcelle : à confirmer sur le terrain."
+    }
+  },
+  "reports": {
+    "alertsCaption": "Alertes par règle",
+    "columns": {
+      "count": "Nombre",
+      "feedback": "Retour",
+      "rule": "Règle"
+    },
+    "export": "Exporter",
+    "feedbackCaption": "Retours sur les recommandations",
+    "from": "Du",
+    "invalidRange": "La date de début doit précéder la date de fin.",
+    "kpi": {
+      "devices": "Kits",
+      "fields": "Parcelles",
+      "followed": "Recommandations suivies",
+      "irrigationEvents": "Arrosages",
+      "measurements": "Mesures reçues",
+      "pumpHours": "Heures de pompe",
+      "uptime": "Disponibilité des kits",
+      "water": "Eau consommée"
+    },
+    "noFlow": "{count, plural, one {# kit n’a pas de débitmètre : son eau consommée n’est pas comptée.} other {# kits n’ont pas de débitmètre : leur eau consommée n’est pas comptée.}}",
+    "noneFor": "{caption} : aucune donnée sur la période.",
+    "to": "Au"
+  },
+  "sync": {
+    "offline": "Hors ligne · données de {clock}",
+    "offlineNoData": "Hors ligne · aucune donnée en cache",
+    "online": "En ligne · données reçues {age}",
+    "waiting": "En ligne · en attente des premières données"
+  },
+  "thresholds": {
+    "desired": "Demandés",
+    "errors": {
+      "not_integer": "Saisissez un nombre entier.",
+      "start_negative": "Le seuil de démarrage ne peut pas être négatif.",
+      "gap_too_small": "L’arrêt doit dépasser le démarrage d’au moins {gap} points.",
+      "stop_above_max": "Le seuil d’arrêt ne peut pas dépasser {max} %."
+    },
+    "none": "Aucun seuil enregistré pour ce kit.",
+    "notReported": "Pas encore remontés par le kit",
+    "pair": "Démarrage {start} % · arrêt {stop} %",
+    "readOnly": "Votre rôle permet de consulter les seuils, pas de les modifier.",
+    "relayNote": "Le kit appliquera les nouveaux seuils quand l’application mobile les lui aura transmis.",
+    "reported": "Appliqués par le kit",
+    "rule": "Nombres entiers de {min} à {max} %, l’arrêt au moins {gap} points au-dessus du démarrage.",
+    "save": "Enregistrer",
+    "saved": "Seuils enregistrés.",
+    "saving": "Enregistrement…",
+    "start": "Démarrage (%)",
+    "stop": "Arrêt (%)",
+    "sync": {
+      "pending": "En attente",
+      "sent": "Envoyé",
+      "applied": "Appliqué par le kit",
+      "failed": "Échec"
+    },
+    "syncLabel": "Synchronisation",
+    "title": "Seuils d’irrigation",
+    "updated": "Mis à jour"
+  },
+  "translation": {
+    "notice": "Cette langue n’est pas encore traduite : l’interface reste en français."
+  },
+  "versions": {
+    "MVP": "MVP",
+    "MVP_V2": "MVP puis V2",
+    "V1_1": "V1.1",
+    "V2": "V2",
+    "V3": "V3"
+  },
+  "weather": {
+    "empty": "Aucune prévision.",
+    "et0": "ET0 (mm)",
+    "et0Summary": "ET0 cumulée sur {days, plural, one {# jour} other {# jours}} : {total}.",
+    "et0Title": "Évapotranspiration (ET0), {days, plural, one {# jour} other {# jours}}",
+    "locationRequired": "La parcelle n’a pas de position : impossible d’obtenir la météo.",
+    "noFields": "Aucune parcelle accessible.",
+    "provider": "Fournisseur : {provider}",
+    "rain": "Pluie (mm)",
+    "rainSummary": "Pluie cumulée prévue sur {days, plural, one {# jour} other {# jours}} : {total}.",
+    "rainTitle": "Pluie prévue, {days, plural, one {# jour} other {# jours}}",
+    "source": {
+      "provider": "Prévision à jour",
+      "cache": "En cache",
+      "stale_cache": "Cache périmé"
+    },
+    "staleNote": "Le fournisseur météo n’a pas répondu : la prévision affichée vient d’un cache périmé.",
+    "tMax": "Température max.",
+    "tMin": "Température min.",
+    "tempSummary": "Températures minimales et maximales prévues sur {days, plural, one {# jour} other {# jours}}.",
+    "tempTitle": "Températures, {days, plural, one {# jour} other {# jours}}",
+    "description": "Prévisions à 7 jours pour la parcelle choisie : températures, pluie et besoin en eau des plantes.",
+    "kpiTMax": "Température max. de la semaine",
+    "kpiTMin": "Température min. de la semaine",
+    "kpiRain": "Pluie cumulée",
+    "kpiEt0": "Évapotranspiration cumulée",
+    "hero": {
+      "today": "Aujourd’hui",
+      "dry": "Journée sèche",
+      "light": "Pluie faible",
+      "rain": "Pluie attendue",
+      "range": "{max} ° / {min} °",
+      "rainMm": "{mm} mm de pluie",
+      "et0Mm": "Besoin en eau des plantes : {mm} mm",
+      "week": "Les prochains jours"
+    }
+  },
+  "irrigation": {
+    "noFields": "Aucune parcelle accessible.",
+    "todayTitle": "Besoin aujourd’hui",
+    "todayValue": "{mm} mm sur les 24 prochaines heures",
+    "volumeLabel": "Volume recommandé",
+    "volumeValue": "{m3} m³",
+    "volumeNone": "Non calculé",
+    "deferTitle": "Arrosage reporté",
+    "deferRain": "Pluie attendue : {mm} mm",
+    "deferRainUnknown": "Pluie attendue : —",
+    "weekTitle": "Demande climatique sur 7 jours",
+    "weekValue": "{mm} mm",
+    "weekDetail": "ET0 {et} mm − pluie {rain} mm, sur {days, plural, one {# jour} other {# jours}}",
+    "weekNote": "Calcul de l’écran, sans coefficient cultural ni réserve du sol : ce n’est pas un besoin calculé par le modèle.",
+    "weekEmpty": "Pas assez de données météo pour ce calcul.",
+    "weekError": "La prévision météo n’a pas pu être chargée.",
+    "readingTitle": "Lecture du résultat",
+    "readingNote": "Phrase composée par l’écran à partir des champs ci-dessus ; ce n’est pas une explication produite par le modèle.",
+    "reading": {
+      "deferred": "Besoin de {mm} mm, mais l’arrosage est reporté : {reason}",
+      "abstained": "Besoin estimé à {mm} mm. {reason}",
+      "none": "Aucun arrosage nécessaire sur les 24 prochaines heures.",
+      "needed": "Arroser environ {mm} mm sur les 24 prochaines heures."
+    },
+    "readingDegraded": "Ce résultat n’est pas à jour ou vient d’une valeur de secours : voir la provenance.",
+    "empty": "Aucun besoin calculé pour cette parcelle.",
+    "description": "Combien d’eau la parcelle demande aujourd’hui, s’il vaut mieux attendre la pluie, et la demande de la semaine.",
+    "needTitle": "Besoin en eau à 24 h"
+  },
+  "kit": {
+    "noDevices": "Aucun kit actif dans votre organisation.",
+    "deviceLabel": "Kit",
+    "deviceOption": "{name} ({serial})",
+    "empty": "Aucun jeu de paramètres publié pour ce kit.",
+    "generation": "Jeu n° {version}, émis le {date}",
+    "expired": "Périmé : plus de {days, plural, one {# jour} other {# jours}} depuis le calcul",
+    "seuilsTitle": "Seuils d’irrigation",
+    "seuilsAdvised": "Seuil conseillé : démarrage {start} %, arrêt {stop} %",
+    "seuilsApplied": "Appliqué : démarrage {start} %, arrêt {stop} %",
+    "seuilsCurrent": "Réglage en vigueur : démarrage {start} %, arrêt {stop} %",
+    "seuilsNoCurrent": "Aucun réglage en vigueur communiqué par le kit.",
+    "seuilsLink": "Régler sur la parcelle",
+    "seuilsNote": "Ce seuil est une proposition : l’application ne l’applique jamais d’elle-même.",
+    "npkTitle": "Seuils d’alerte NPK (mg/kg)",
+    "npkN": "Azote (N) : {value} mg/kg",
+    "npkP": "Phosphore (P) : {value} mg/kg",
+    "npkK": "Potassium (K) : {value} mg/kg",
+    "npkNote": "Ce sont des seuils d’alerte, pas des mesures.",
+    "etalTitle": "Étalonnage de la sonde d’humidité",
+    "etalDry": "Valeur ADC à sec : {value}",
+    "etalWater": "Valeur ADC dans l’eau : {value}",
+    "agroTitle": "Culture et stade",
+    "culture": "Culture",
+    "stage": "Stade",
+    "sowing": "Date de semis",
+    "kc": "Kc",
+    "description": "L’état de chaque kit de terrain, son dernier contact et ses réglages d’irrigation."
+  },
+  "fertilization": {
+    "noFields": "Aucune parcelle accessible.",
+    "empty": "Aucune recommandation de fertilisation pour cette parcelle.",
+    "indicativeTitle": "Valeurs indicatives",
+    "nutrient": {
+      "n": "Azote (N)",
+      "p": "Phosphore (P)",
+      "k": "Potassium (K)"
+    },
+    "doseValue": "{value} kg/ha",
+    "noDose": "Pas de dose calculée",
+    "crop": "Culture",
+    "stage": "Stade",
+    "npkClassLabel": "Classe NPK du sol",
+    "npkClass": {
+      "bas": "Basse",
+      "moyen": "Moyenne",
+      "eleve": "Élevée"
+    },
+    "readingTitle": "Lecture du résultat",
+    "readingNote": "Phrase composée par l’écran à partir des champs ci-dessus ; ce n’est pas une explication produite par le modèle.",
+    "reading": {
+      "withDose": "Pour {crop} au stade {stage}, avec une classe NPK du sol {npkClass}, les doses ci-dessus sont indicatives.",
+      "noDose": "Pour {crop} au stade {stage}, aucune dose n’a pu être calculée ; classe NPK du sol : {npkClass}."
+    },
+    "readingDegraded": "Ce résultat n’est pas à jour ou vient d’une valeur de secours : voir la provenance.",
+    "description": "Doses d’azote, de phosphore et de potassium à titre indicatif, à confirmer avec votre technicien.",
+    "resultTitle": "Doses conseillées"
+  },
+  "pestRisk": {
+    "noFields": "Aucune parcelle accessible.",
+    "empty": "Aucun organisme suivi pour cette parcelle.",
+    "highestTitle": "Niveau le plus élevé parmi les organismes suivis",
+    "highestNote": "Niveau repris des lignes ci-dessous ; ce n’est pas un score calculé par le modèle.",
+    "level": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé"
+    },
+    "pestsTitle": "Ravageurs",
+    "diseasesTitle": "Maladies",
+    "unclassifiedTitle": "Non classé",
+    "noPests": "Aucun ravageur suivi pour cette culture.",
+    "noDiseases": "Aucune maladie suivie pour cette culture.",
+    "p7": "Foyer à 7 jours",
+    "p14": "Foyer à 14 jours",
+    "pUncalibrated": "probabilité non calibrée",
+    "factors": "Facteurs",
+    "organisms": {
+      "thrips_tabaci": {
+        "name": "Thrips de l’oignon",
+        "kind": "pest"
+      },
+      "tuta_absoluta": {
+        "name": "Mineuse de la tomate",
+        "kind": "pest"
+      },
+      "helicoverpa_armigera": {
+        "name": "Noctuelle de la tomate",
+        "kind": "pest"
+      },
+      "plutella_xylostella": {
+        "name": "Teigne des crucifères",
+        "kind": "pest"
+      },
+      "phthorimaea_operculella": {
+        "name": "Teigne de la pomme de terre",
+        "kind": "pest"
+      }
+    },
+    "description": "Le risque de foyer de ravageurs et de maladies pour la parcelle, sur 7 et 14 jours.",
+    "resultTitle": "Risque phytosanitaire"
+  },
+  "kitHealth": {
+    "title": "Santé du kit",
+    "empty": "Aucun état de capteur disponible pour ce kit.",
+    "sensors": {
+      "soil": "Humidité du sol",
+      "bme": "Température et humidité de l’air",
+      "npk": "Capteur NPK",
+      "flow": "Débitmètre",
+      "pump": "Pompe",
+      "battery": "Batterie"
+    },
+    "states": {
+      "ok": "Normal",
+      "degraded": "Dégradé",
+      "fault": "En défaut",
+      "absent": "Non installé"
+    },
+    "overall": {
+      "ok": "Tous les capteurs sont normaux",
+      "degraded": "Au moins un capteur est dégradé",
+      "fault": "Au moins un capteur est en défaut",
+      "absent": "Capteurs normaux ; certains ne sont pas installés"
+    },
+    "since": "Depuis le {date}",
+    "pumpRisk": "Risque de panne de pompe à 48 h",
+    "riskUncalibrated": "risque non calibré, aucun pourcentage affiché",
+    "checkedAt": "Vérifié le {date}"
+  },
+  "diagnosis": {
+    "noFields": "Aucune parcelle accessible.",
+    "intro": "Choisissez ou prenez une photo d’une feuille ou d’un plant. L’analyse indique l’état probable de la plante ; elle ne remplace pas l’avis d’un conseiller agricole.",
+    "photoLabel": "Photo de la plante",
+    "photoHint": "JPEG, PNG ou WebP, 12 Mo au plus. La photo est réduite et ses informations d’origine (lieu, appareil) sont retirées avant l’envoi.",
+    "preparing": "Préparation de la photo…",
+    "previewAlt": "Aperçu de la photo qui sera envoyée",
+    "analyze": "Analyser la photo",
+    "analyzing": "Analyse en cours…",
+    "fileError": {
+      "type": "Format non pris en charge. Choisissez une photo JPEG, PNG ou WebP.",
+      "size": "Photo trop lourde (12 Mo au plus).",
+      "empty": "Le fichier est vide.",
+      "unreadable": "Impossible de lire cette photo. Essayez-en une autre.",
+      "tooLarge": "Même réduite, la photo reste trop lourde. Choisissez-en une autre."
+    },
+    "verdict": {
+      "healthy": "Plante saine",
+      "sick": "Maladie probable",
+      "suspect": "Suspect",
+      "uncertain": "Incertain, faites vérifier"
+    },
+    "advice": {
+      "healthy": "Aucun signe de maladie reconnu sur cette photo.",
+      "sick": "Faites confirmer ce diagnostic par un conseiller agricole avant tout traitement.",
+      "suspect": "Des signes sont visibles mais le modèle ne conclut pas. Faites vérifier la plante.",
+      "uncertain": "Le modèle n’est pas assez sûr pour conclure (en dessous de {threshold}). Refaites une photo plus nette de la feuille ou faites vérifier la plante."
+    },
+    "top3Title": {
+      "certain": "Autres hypothèses",
+      "uncertain": "Pistes possibles, non confirmées"
+    },
+    "pUncalibrated": "probabilité non calibrée, aucun pourcentage affiché",
+    "capturedAt": "Photo du {date}",
+    "names": {
+      "healthy": "Plante saine",
+      "downy_mildew": "Mildiou",
+      "alternaria_leaf_spot": "Alternariose (taches sur les feuilles)",
+      "fusarium_wilt": "Fusariose (flétrissement)"
+    }
+  },
+  "soilForecast": {
+    "description": "Humidité du sol attendue dans 24, 48 et 72 heures, avec la plage d’incertitude du modèle.",
+    "noFields": "Aucune parcelle accessible.",
+    "empty": "Aucune prévision : cette parcelle n’a pas de kit installé.",
+    "cardTitle": "Humidité du sol sur les 72 prochaines heures",
+    "issuedAt": "Prévision émise {when}.",
+    "horizon": "Dans {hours} h",
+    "range": "Entre {low} et {high}",
+    "chartTitle": "Humidité du sol prévue",
+    "median": "Médiane (p50)",
+    "band": "Plage p10–p90",
+    "startLine": "Seuil de démarrage",
+    "stopLine": "Seuil d’arrêt",
+    "chartSummary": "Humidité du sol prévue à {count} échéances, de {low} à {high}.",
+    "alertBelow": "La médiane passe sous le seuil de démarrage ({start}) dans {hours} h : l’arrosage pourrait se déclencher.",
+    "alertOk": "La médiane reste au-dessus du seuil de démarrage ({start}) sur toute la période.",
+    "noThresholds": "Les seuils du kit ne sont pas communiqués : la prévision ne peut pas être située par rapport à eux.",
+    "status": {
+      "below_start": "Sous le seuil de démarrage",
+      "between": "Entre les deux seuils",
+      "above_stop": "Au-dessus du seuil d’arrêt"
+    }
+  },
+  "irrigationPlan": {
+    "description": "Créneaux d’arrosage proposés pour l’exploitation. Rien n’est lancé automatiquement : à valider sur le terrain.",
+    "noFarms": "Aucune exploitation accessible.",
+    "empty": "Aucun créneau proposé pour ce jour.",
+    "dayLegend": "Jour",
+    "today": "Aujourd’hui",
+    "tomorrow": "Demain",
+    "cardTitle": "Créneaux proposés",
+    "proposal": "Proposition à confirmer : vérifiez l’état de la pompe et de la parcelle avant de lancer l’arrosage.",
+    "kpiVolume": "Volume total",
+    "kpiDuration": "Durée cumulée",
+    "kpiFields": "Parcelles concernées",
+    "tableCaption": "Créneaux d’arrosage du {date}",
+    "colSlot": "Créneau",
+    "colField": "Parcelle",
+    "colPump": "Pompe",
+    "colDuration": "Durée",
+    "colVolume": "Volume",
+    "slot": "{start} – {end}",
+    "unknownField": "Parcelle {id}"
+  },
+  "traps": {
+    "description": "Insectes comptés sur les photos du piège collant de chaque kit.",
+    "noDevices": "Aucun kit actif.",
+    "empty": "Aucun comptage sur cette période.",
+    "windowLegend": "Période",
+    "days7": "7 jours",
+    "days14": "14 jours",
+    "days30": "30 jours",
+    "cardTitle": "Captures sur le piège",
+    "organism": "Organisme compté : {name}",
+    "kpiTotal": "Captures",
+    "kpiPerDay": "Moyenne par jour",
+    "kpiPhotos": "Photos analysées",
+    "kpiTrend": "Tendance",
+    "trend": {
+      "up": "En hausse",
+      "down": "En baisse",
+      "flat": "Stable",
+      "none": "Trop peu de jours"
+    },
+    "trendHint": "Seconde moitié de la période comparée à la première.",
+    "chartTitle": "Captures par jour",
+    "series": "Captures",
+    "chartSummary": "Captures par jour sur {days} jours, {total} au total.",
+    "caveat": "Comptage automatique sur photo : à vérifier sur le piège avant toute décision de traitement."
+  },
+  "vegetation": {
+    "description": "Indices de végétation par satellite (NDVI, EVI) et stade de la culture.",
+    "noFields": "Aucune parcelle accessible.",
+    "empty": "Aucune image exploitable sur cette période.",
+    "windowLegend": "Période",
+    "days30": "30 jours",
+    "days60": "60 jours",
+    "days90": "90 jours",
+    "cardTitle": "Vigueur de la végétation",
+    "kpiNdvi": "NDVI",
+    "kpiEvi": "EVI",
+    "kpiCanopy": "Couvert végétal",
+    "kpiStage": "Stade de la culture",
+    "bbch": "Code BBCH {code}",
+    "noStage": "Stade non communiqué",
+    "latest": "Relevé du {date}",
+    "delta": "Variation : {value}",
+    "indexHelp": "Plus l’indice est élevé, plus la végétation est dense et vigoureuse.",
+    "chartTitle": "NDVI et EVI",
+    "ndvi": "NDVI",
+    "evi": "EVI",
+    "chartSummary": "NDVI et EVI sur {count} relevés, du {from} au {to}.",
+    "gapfilled": "{share} des relevés sont reconstitués (nuages) : ils sont interpolés, pas mesurés."
+  },
+  "markets": {
+    "description": "Prix de gros attendus (FCFA/kg) dans 1 à 4 semaines, avec la plage d’incertitude du modèle.",
+    "cropLegend": "Culture",
+    "marketLegend": "Marché",
+    "empty": "Aucune prévision de prix pour cette culture sur ce marché.",
+    "cardTitle": "Prix attendu : {crop}, {market}",
+    "cropNames": {
+      "oignon": "Oignon",
+      "tomate": "Tomate",
+      "chou": "Chou",
+      "carotte": "Carotte",
+      "pomme_de_terre": "Pomme de terre"
+    },
+    "marketNames": {
+      "thiaroye": "Thiaroye (Dakar)",
+      "kaolack": "Kaolack",
+      "saint-louis": "Saint-Louis"
+    },
+    "observed": "Dernier prix observé",
+    "observedOn": "Relevé du {date}",
+    "noObserved": "Aucun prix observé récemment",
+    "week": "{weeks, plural, one {Dans # semaine} other {Dans # semaines}}",
+    "range": "Entre {low} et {high}",
+    "change": "{value} par rapport au dernier prix observé",
+    "chartTitle": "Prix attendu",
+    "observedLabel": "Observé",
+    "median": "Médiane (p50)",
+    "band": "Plage p10–p90",
+    "chartSummary": "Prix de {crop} attendu sur {count} semaines, de {low} à {high}.",
+    "caveat": "Prévision indicative : le prix réel du jour dépend de l’offre sur le marché.",
+    "colWeek": "Échéance",
+    "colChange": "Écart au dernier prix"
+  },
+  "crops": {
+    "description": "Les cycles de culture de chaque parcelle : du semis à la récolte, avec leur état et leur rendement.",
+    "noFields": "Aucune parcelle : ajoutez-en une pour suivre ses cultures.",
+    "empty": "Aucun cycle de culture pour cette parcelle.",
+    "emptyFilter": "Aucun cycle dans cet état.",
+    "filterLegend": "Afficher les cycles",
+    "filterOption": "{label} ({count})",
+    "filter": {
+      "all": "Tous",
+      "active": "En cours",
+      "planned": "Prévus",
+      "harvested": "Récoltés",
+      "abandoned": "Abandonnés"
+    },
+    "listLabel": "Cycles de culture",
+    "status": {
+      "planned": "Prévu",
+      "active": "En cours",
+      "harvested": "Récolté",
+      "abandoned": "Abandonné"
+    },
+    "steps": {
+      "sow": "Semis",
+      "growth": "Croissance",
+      "harvest": "Récolte"
+    },
+    "stepsLabel": "Étapes du cycle {crop}",
+    "stepState": {
+      "done": "Fait",
+      "current": "En cours",
+      "todo": "À venir"
+    },
+    "expectedOn": "prévue le {date}",
+    "yieldLine": "Rendement récolté : {value} kg",
+    "noYield": "Rendement non communiqué"
+  },
+  "campaigns": {
+    "description": "Les campagnes agricoles de votre organisation et leur avancement dans la saison.",
+    "empty": "Aucune campagne pour le moment.",
+    "listLabel": "Campagnes agricoles",
+    "status": {
+      "planned": "Prévue",
+      "active": "En cours",
+      "closed": "Close"
+    },
+    "season": "Saison {season}",
+    "period": "Du {start} au {end}",
+    "progressLabel": "Avancement de la campagne {name}",
+    "progressValue": "{pct} % de la période écoulée",
+    "daysLeft": "{count, plural, =0 {Dernier jour} one {# jour restant} other {# jours restants}}",
+    "startsOn": "Commence le {date}",
+    "closedOn": "Terminée le {date}",
+    "datesUnknown": "Dates non exploitables : l’avancement n’est pas calculé."
+  },
+  "yield": {
+    "description": "Le rendement attendu de la récolte en cours, avec l’intervalle dans lequel il devrait se situer.",
+    "noFields": "Aucune parcelle : ajoutez-en une pour obtenir une prévision.",
+    "cardTitle": "Rendement prévu",
+    "cycle": "{crop}, semé le {date}",
+    "experimental": "Expérimental",
+    "predicted": "Rendement prévu",
+    "interval": "Intervalle probable",
+    "intervalValue": "{p10} à {p90}",
+    "intervalHelp": "Le rendement réel devrait se situer dans cet intervalle dans 8 cas sur 10.",
+    "model": "Modèle",
+    "actual": "Rendement réel",
+    "noActual": "Pas encore récolté",
+    "noForecast": "Pas encore de prévision pour ce cycle.",
+    "chartTitle": "Rendement prévu et intervalle probable",
+    "chartSummary": "Rendement attendu de {p50} t/ha, entre {p10} et {p90} t/ha dans 8 cas sur 10.",
+    "low": "Prudent",
+    "mid": "Attendu",
+    "high": "Optimiste",
+    "actualRef": "Rendement réel"
+  },
+  "equipment": {
+    "description": "L’inventaire de votre matériel : pompes, réservoirs, capteurs et kits, avec leur état.",
+    "empty": "Aucun équipement enregistré.",
+    "caption": "Équipements",
+    "columns": {
+      "flow": "Débit (m³/h)",
+      "installed": "Installé le",
+      "kind": "Type",
+      "label": "Équipement",
+      "serial": "N° de série",
+      "status": "État"
+    },
+    "kind": {
+      "pump": "Pompe",
+      "tank": "Réservoir",
+      "solar_panel": "Panneau solaire",
+      "battery": "Batterie",
+      "sensor": "Capteur",
+      "camera": "Caméra",
+      "gateway": "Passerelle",
+      "other": "Autre"
+    },
+    "status": {
+      "ok": "En service",
+      "maintenance": "En maintenance",
+      "out_of_service": "Hors service"
+    },
+    "kpiTotal": "Équipements",
+    "kpiOk": "En service",
+    "kpiMaintenance": "En maintenance",
+    "kpiOut": "Hors service",
+    "attention": "{count, plural, one {# équipement demande une intervention.} other {# équipements demandent une intervention.}}",
+    "allGood": "Tous les équipements sont en service.",
+    "kitLink": "Voir l’état des kits"
+  }
+}

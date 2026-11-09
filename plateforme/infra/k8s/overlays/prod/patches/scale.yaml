@@ -1,0 +1,26 @@
+# Production : au moins 3 répliques de l'API (une par AZ), autoscaling jusqu'à 10.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+  namespace: smartagri92
+spec:
+  minReplicas: 3
+  maxReplicas: 10
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web
+  namespace: smartagri92
+spec:
+  minReplicas: 2
+  maxReplicas: 6
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference
+  namespace: smartagri92-ml
+spec:
+  replicas: 2

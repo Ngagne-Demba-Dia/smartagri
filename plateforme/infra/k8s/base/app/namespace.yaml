@@ -1,0 +1,13 @@
+# Pod Security Standards « restricted » appliqués par l'admission Kubernetes.
+# Vague ArgoCD -3 : le namespace doit exister avant les secrets (-2) et le Job de migration (-1).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smartagri92
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

@@ -1,0 +1,23 @@
+# Sorties générées (volumineuses, reproductibles) : jamais versionnées
+bundles/
+artifacts/
+data/synthetic/
+data/raw/
+data/private/
+mlruns/
+mlartifacts/
+notebooks/*.executed.ipynb
+*.onnx
+*.pt
+*.ckpt
+*.joblib
+
+# Caches Python / tests
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secrets : le sel de pseudonymisation et la clé OctOpus restent dans l'environnement
+.env
+.env.*

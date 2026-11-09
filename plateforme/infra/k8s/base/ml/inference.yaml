@@ -1,0 +1,173 @@
+# Service d'inférence (maladies, rendement, recommandations) à partir d'un paquet de modèles S3.
+#  1. fetch-bundle (aws-cli) : téléchargement + contrôle SHA-256 ; échec = pod jamais prêt.
+#  2. extract-bundle (image ML) : extraction sûre (tarfile, filtre « data »).
+#  3. inference : sert /models/current, monté en lecture seule.
+# Sonde de disponibilité : empreinte du paquet recalculée (check-bundle.py) ; un fichier altéré retire
+# le pod du Service.
+# Commande de service : « agriml.predict serve » est le point d'entrée prévu par CONVENTIONS §9 ;
+# il reste à fournir par le lot ML (voir README).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference
+  labels:
+    app.kubernetes.io/name: inference
+    app.kubernetes.io/component: ml-serving
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inference
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: inference
+        app.kubernetes.io/component: ml-serving
+        smartagri92.io/egress-https: "true"
+    spec:
+      serviceAccountName: agri-inference
+      automountServiceAccountToken: true # jeton IRSA (lecture models/bundles/*)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: fetch-bundle
+          image: amazon/aws-cli:2.22.0
+          command: ["/bin/sh", "/scripts/fetch-bundle.sh"]
+          envFrom:
+            - configMapRef:
+                name: inference-bundle
+            - configMapRef:
+                name: ml-config
+          env:
+            - name: HOME
+              value: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+        - name: extract-bundle
+          image: smartagri92/ml:unset
+          command: ["python", "/scripts/extract-bundle.py"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+      containers:
+        - name: inference
+          image: smartagri92/ml:unset
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "agriml.predict", "serve", "--bundle-dir", "/models/current", "--host", "0.0.0.0", "--port", "8080"]
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: inference-bundle
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            exec:
+              command: ["python", "/scripts/check-bundle.py"]
+            initialDelaySeconds: 10
+            periodSeconds: 60
+            timeoutSeconds: 20
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: models
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: scripts
+          configMap:
+            name: bundle-scripts
+            defaultMode: 0444
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inference
+  labels:
+    app.kubernetes.io/name: inference
+spec:
+  selector:
+    app.kubernetes.io/name: inference
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: inference
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inference

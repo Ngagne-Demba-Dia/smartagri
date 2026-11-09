@@ -1,0 +1,56 @@
+# ARN issus de « terraform output irsa_role_arns » (envs/prod). Compte fictif 111111111111.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agri-api
+  namespace: smartagri92
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-api
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agri-ingestor
+  namespace: smartagri92
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-ingestor
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-secrets-reader
+  namespace: smartagri92
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-external-secrets
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agri-ml-jobs
+  namespace: smartagri92-ml
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-ml-jobs
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agri-inference
+  namespace: smartagri92-ml
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-inference
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agri-mlflow
+  namespace: smartagri92-ml
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-mlflow
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-secrets-reader
+  namespace: smartagri92-ml
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/smartagri92-prod-external-secrets-ml

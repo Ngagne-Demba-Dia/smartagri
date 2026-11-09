@@ -1,0 +1,12 @@
+# Tableaux de bord versionnés, montés en lecture seule depuis infra/observability/grafana/dashboards.
+apiVersion: 1
+
+providers:
+  - name: smartagri92
+    folder: Smart Agri92
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    updateIntervalSeconds: 60
+    options:
+      path: /var/lib/grafana/dashboards

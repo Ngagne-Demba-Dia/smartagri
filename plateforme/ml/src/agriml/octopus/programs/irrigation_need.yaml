@@ -1,0 +1,32 @@
+# IA-1 — Besoin en eau d'une parcelle sur 24 h (mm). Confidentiel - réservé aux partenaires de travail.
+# Compétition : non applicable. Production : run OctOpus planifié chaque semaine (espace agri92-pilot).
+# Compromis : référence agriml (HGB + bilan FAO-56) toujours entraînée ; OctOpus challenger.
+name: irrigation_need
+dataset: irrigation_need
+workspace: agri92-pilot
+task: regression
+target: target_need_mm_24h
+metric: mae
+objective: >-
+  Prédire le besoin en eau des 24 prochaines heures (mm) par parcelle pour déclencher l'irrigation
+  au bon moment, sans dépasser la capacité au champ.
+groups: field_key
+time_column: ts
+cv: {scheme: purged_time, n_splits: 5, gap_hours: 72, groups: field_key}
+time_budget_min: 120
+hints:
+  - "Validation temporelle purgée (intervalle >= 72 h) ET groupes par parcelle (field_key) : jamais de mélange aléatoire."
+  - "Bilan hydrique FAO-56 : besoin ~ ET0 x Kc - pluie efficace (0,8 x pluie) ; et0_mm, kc et rain_eff_mm sont fournis."
+  - "Les retards (lags) et fenêtres glissantes doivent être calculés PAR parcelle et uniquement vers le passé."
+  - "Interdit : toute variable mesurée après ts (pump_minutes_next_24h, soil_moisture_pct_t+24) = fuite."
+  - "Sortie bornée : 0 <= besoin <= capacité au champ de la parcelle (field_capacity_mm)."
+guardrails:
+  drop: [owner_name, phone, email, address, notes]
+  pseudonymize: [field_key, device_id, farm_key]
+  round_coords: [lat, lon]
+acceptance:
+  min_relative_gain: 0.02
+  absolute_threshold: 3.0     # MAE <= 3 mm sur le holdout figé
+  max_cv_holdout_gap: 0.15
+  max_slice_regression: 0.03  # par culture et par zone
+schedule: {cron: "0 2 * * 1", action: retrain}

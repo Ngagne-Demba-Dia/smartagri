@@ -1,0 +1,277 @@
+# Déploiement continu, déclenché après une CI réussie sur main.
+#  1. build-push : construit et publie les images dans ECR (OIDC GitHub → rôle IAM, aucune clé
+#     longue durée), analyse l'image publiée (trivy), la signe (cosign sans clé) et y attache le
+#     SBOM SPDX en attestation.
+#  2. gitops-recette : ouvre ou met à jour la PR qui fixe étiquette et condensat dans
+#     infra/k8s/overlays/dev et active sa fusion automatique dès que la CI de la PR passe.
+#     ArgoCD (smartagri92-dev) synchronise ensuite le cluster de recette.
+#  3. gitops-prod : après approbation manuelle (environnement « production », à donner une fois la
+#     recette vérifiée), ouvre ou met à jour la PR de infra/k8s/overlays/prod. La fusion de cette PR
+#     (relue) est la mise en production ; ArgoCD synchronise ensuite.
+# Les fusions de PR GitOps ne touchent que les overlays : ci.yml les ignore sur main (paths-ignore),
+# ce qui évite une boucle construction → PR → fusion → construction.
+# Prérequis GitHub :
+#  - variable de dépôt AWS_ECR_PUSH_ROLE_ARN (sortie Terraform github_ecr_push_role_arn) ;
+#  - environnement « ecr-push » limité à la branche main (le rôle IAM n'accepte que ce sujet OIDC) ;
+#  - environnement « production » avec relecteurs obligatoires ;
+#  - option « Allow auto-merge » du dépôt et contrôles obligatoires sur main ;
+#  - application GitHub (GITOPS_APP_ID + secret GITOPS_APP_PRIVATE_KEY) : une PR ouverte avec
+#    GITHUB_TOKEN ne déclenche pas la CI, donc la PR de recette ne serait jamais fusionnée seule.
+#    Sans application, le jeton du workflow est utilisé et la fusion de recette reste manuelle.
+# Outils lancés en conteneur (trivy, syft) : ils ne voient pas les identifiants AWS du job.
+# Actions référencées par étiquette : les épingler par SHA de commit (Dependabot les maintient).
+name: cd
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-3
+  TRIVY_IMAGE: aquasec/trivy:0.58.1
+  SYFT_IMAGE: anchore/syft:v1.18.1
+  OVERLAY_DEV: infra/k8s/overlays/dev/kustomization.yaml
+  OVERLAY_PROD: infra/k8s/overlays/prod/kustomization.yaml
+
+jobs:
+  build-push:
+    # workflow_run : uniquement une CI réussie déclenchée par un push (jamais une PR de fork).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: ecr-push
+    permissions:
+      contents: read
+      id-token: write # OIDC : rôle AWS + signature cosign (Fulcio)
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - image: api
+            context: backend
+            # Le Dockerfile copie le schéma (COPY --from=migrations) : contexte nommé hors de backend/.
+            build-contexts: migrations=db/migrations
+          - image: ml
+            context: ml
+          - image: mlflow
+            context: infra/mlflow
+          - image: web
+            context: web
+    env:
+      IMAGE: ${{ matrix.image }}
+      REPOSITORY: smartagri92/${{ matrix.image }}
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Identifiants AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ECR_PUSH_ROLE_ARN }}
+          role-session-name: gha-cd-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Connexion ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Référence de l'image
+        id: ref
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          tag="sha-${SOURCE_SHA}"
+          # Étiquettes ECR immuables : une relance réutilise l'image déjà publiée pour ce commit.
+          existing=$(aws ecr describe-images --repository-name "$REPOSITORY" --image-ids imageTag="$tag" \
+            --query 'imageDetails[0].imageDigest' --output text 2>/dev/null || true)
+          if [[ "$existing" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "Image déjà publiée : $REGISTRY/$REPOSITORY:$tag@$existing"
+            echo "digest=$existing" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo "name=$REGISTRY/$REPOSITORY"
+            echo "tag=$tag"
+          } >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+        if: steps.ref.outputs.digest == ''
+      - name: Construction et publication
+        id: build
+        if: steps.ref.outputs.digest == ''
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          build-contexts: ${{ matrix.build-contexts }}
+          push: true
+          # Manifeste unique : signature et attestation passent par cosign.
+          provenance: false
+          sbom: false
+          tags: ${{ steps.ref.outputs.name }}:${{ steps.ref.outputs.tag }}
+          labels: |
+            org.opencontainers.image.revision=${{ env.SOURCE_SHA }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+      - name: Condensat publié
+        id: digest
+        env:
+          BUILT: ${{ steps.build.outputs.digest }}
+          EXISTING: ${{ steps.ref.outputs.digest }}
+        run: |
+          set -euo pipefail
+          digest="${BUILT:-$EXISTING}"
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::condensat invalide : '$digest'"; exit 1; }
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+      - name: Vulnérabilités de l'image publiée (trivy)
+        env:
+          REF: ${{ steps.ref.outputs.name }}@${{ steps.digest.outputs.digest }}
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$HOME/.docker/config.json:/root/.docker/config.json:ro" "$TRIVY_IMAGE" \
+            image --quiet --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1 "$REF"
+      - name: SBOM SPDX (syft)
+        env:
+          REF: ${{ steps.ref.outputs.name }}@${{ steps.digest.outputs.digest }}
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$HOME/.docker:/docker:ro" -e DOCKER_CONFIG=/docker "$SYFT_IMAGE" \
+            scan "registry:$REF" -o spdx-json > "sbom-$IMAGE.spdx.json"
+      - uses: sigstore/cosign-installer@v3
+      - name: Signature et attestation SBOM (cosign sans clé)
+        env:
+          REF: ${{ steps.ref.outputs.name }}@${{ steps.digest.outputs.digest }}
+          DIGEST: ${{ steps.digest.outputs.digest }}
+        run: |
+          set -euo pipefail
+          # cosign range signature et attestation sous les étiquettes sha256-<hex>.sig / .att :
+          # avec des étiquettes immuables, ne les écrire qu'une fois.
+          has_tag() {
+            aws ecr describe-images --repository-name "$REPOSITORY" --image-ids imageTag="$1" >/dev/null 2>&1
+          }
+          base="${DIGEST/:/-}"
+          if has_tag "$base.sig"; then echo "Signature déjà présente"; else cosign sign --yes "$REF"; fi
+          if has_tag "$base.att"; then
+            echo "Attestation déjà présente"
+          else
+            cosign attest --yes --type spdxjson --predicate "sbom-$IMAGE.spdx.json" "$REF"
+          fi
+      - name: Fiche de l'image pour la PR GitOps
+        env:
+          NAME: ${{ steps.ref.outputs.name }}
+          TAG: ${{ steps.ref.outputs.tag }}
+          DIGEST: ${{ steps.digest.outputs.digest }}
+        run: printf 'smartagri92/%s %s %s %s\n' "$IMAGE" "$NAME" "$TAG" "$DIGEST" > "image-$IMAGE.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-${{ matrix.image }}
+          path: |
+            image-${{ matrix.image }}.txt
+            sbom-${{ matrix.image }}.spdx.json
+          retention-days: 90
+
+  gitops-recette:
+    needs: build-push
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Jeton d'application GitHub (la PR déclenchera la CI)
+        id: app-token
+        if: vars.GITOPS_APP_ID != ''
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GITOPS_APP_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          path: images
+          merge-multiple: true
+      - name: Mise à jour de l'overlay de recette
+        run: infra/scripts/gitops-bump.sh "$OVERLAY_DEV" smartagri92-dev
+      - name: Rendu kustomize de contrôle
+        run: kubectl kustomize infra/k8s/overlays/dev > /dev/null
+      - name: PR GitOps
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token || github.token }}
+          branch: gitops/dev-images
+          base: main
+          add-paths: ${{ env.OVERLAY_DEV }}
+          commit-message: "chore: images recette ${{ env.SOURCE_SHA }}"
+          title: "chore: déploiement en recette des images ${{ env.SOURCE_SHA }}"
+          body-path: pr-body.md
+          labels: gitops, recette
+          delete-branch: true
+      - name: Fusion automatique une fois la CI de la PR passée
+        if: steps.app-token.outputs.token != '' && steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr merge "$PR" --auto --squash --repo "$GITHUB_REPOSITORY"
+
+  gitops-prod:
+    needs: gitops-recette
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production # relecteurs obligatoires : approuver après vérification de la recette
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Jeton d'application GitHub (la PR déclenchera la CI)
+        id: app-token
+        if: vars.GITOPS_APP_ID != ''
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GITOPS_APP_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          path: images
+          merge-multiple: true
+      - name: Mise à jour de l'overlay prod
+        run: infra/scripts/gitops-bump.sh "$OVERLAY_PROD" smartagri92-prod
+      - name: Rendu kustomize de contrôle
+        run: kubectl kustomize infra/k8s/overlays/prod > /dev/null
+      - name: PR GitOps
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token || github.token }}
+          # Branche fixe : la PR ouverte est mise à jour à chaque build (seule la dernière compte).
+          branch: gitops/prod-images
+          base: main
+          add-paths: ${{ env.OVERLAY_PROD }}
+          commit-message: "chore: images prod ${{ env.SOURCE_SHA }}"
+          title: "chore: mise en production des images ${{ env.SOURCE_SHA }}"
+          body-path: pr-body.md
+          labels: gitops, production
+          delete-branch: true

@@ -1,0 +1,5 @@
+# Copier en backend.hcl (ignoré par git) puis : terraform init -backend-config=backend.hcl
+# Compartiment d'état propre au compte de recette, créé une fois hors de cette pile.
+# Terraform >= 1.10 peut remplacer DynamoDB par « use_lockfile = true » (verrou natif S3).
+bucket         = "smartagri92-tfstate-222222222222"
+dynamodb_table = "smartagri92-tflock"

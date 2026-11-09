@@ -1,0 +1,26 @@
+# Projet ArgoCD : limite les sources (dépôt privé de la plateforme) et les destinations (deux
+# namespaces). Seuls les objets Namespace sont autorisés au niveau du cluster.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: smartagri92
+  namespace: argocd
+spec:
+  description: Plateforme Smart Agri92 (API, ingestion, web, plateforme IA)
+  sourceRepos:
+    - https://github.com/organisation/smartagri92.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: smartagri92
+    - server: https://kubernetes.default.svc
+      namespace: smartagri92-ml
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
+  orphanedResources:
+    warn: true

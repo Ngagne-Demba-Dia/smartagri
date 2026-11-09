@@ -1,0 +1,29 @@
+# IA-8 — Rendement par cycle cultural (t/ha). Confidentiel - réservé aux partenaires de travail.
+# Plusieurs saisons nécessaires (V3) ; validation humaine obligatoire avant promotion.
+name: yield_forecast
+dataset: yield
+workspace: agri92-pilot
+task: regression
+target: yield_t_ha
+metric: rmse
+objective: >-
+  Prévoir le rendement (t/ha) par parcelle et culture à mi-saison, avec intervalle p10-p90, pour la
+  planification des récoltes et du crédit intrants.
+groups: field_id
+time_column: year
+cv: {scheme: group, n_splits: 5, groups: field_id}
+time_budget_min: 120
+hints:
+  - "GroupKFold par parcelle (field_id) : une même parcelle ne doit jamais être à la fois en entraînement et en validation."
+  - "Features métier fournies : NDVI/EVI par décade (aire sous la courbe, pic, date du pic), degrés-jours, pluie cumulée."
+  - "Cible asymétrique : essayer log1p ; métrique officielle = RMSE sur l'échelle d'origine."
+  - "Rapporter l'erreur par culture (crop) et par région : pas de régression > 2 % sur une culture."
+guardrails:
+  drop: [owner_name, phone, email, address]
+  pseudonymize: [field_id, farm_key]
+  round_coords: [lat, lon]
+acceptance:
+  min_relative_gain: 0.01
+  max_cv_holdout_gap: 0.10
+  max_slice_regression: 0.02
+  human_review: true

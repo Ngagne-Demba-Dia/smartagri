@@ -1,0 +1,79 @@
+# --- Secrets et configuration locale ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+infra/mosquitto/secrets/*
+!infra/mosquitto/secrets/.gitkeep
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# --- ML ---
+ml/artifacts/
+ml/data/
+mlruns/
+mlartifacts/
+.dvc/cache/
+*.onnx
+*.pt
+*.ckpt
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.example
+backend.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# --- Rendus locaux ---
+.build/
+sbom*.json
+
+# --- Flutter / Dart ---
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/android/**/*.jks
+mobile/ios/Pods/
+mobile/ios/Flutter/Generated.xcconfig
+
+# --- Éditeurs / OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

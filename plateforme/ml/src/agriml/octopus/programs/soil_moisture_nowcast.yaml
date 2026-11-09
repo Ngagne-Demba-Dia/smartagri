@@ -1,0 +1,29 @@
+# IA-1 / IA-10 — Humidité du sol à t + 24/48/72 h par kit. Confidentiel - réservé aux partenaires de travail.
+# Référence agriml : agriml.forecast.soil_moisture (direct multi-horizon, walk-forward purgé).
+name: soil_moisture_nowcast
+dataset: soil_nowcast
+workspace: agri92-pilot
+task: forecast
+target: soil_moisture_pct
+metric: rmse
+objective: >-
+  Prévoir l'humidité du sol (%) à 24, 48 et 72 h pour anticiper le franchissement du seuil de démarrage de la
+  pompe (threshold_start_pct) ; battre nettement la persistance.
+groups: device_id
+time_column: ts
+cv: {scheme: purged_time, n_splits: 4, gap_hours: 72, horizons: [24, 48, 72]}
+time_budget_min: 90
+hints:
+  - "Rééchantillonnage horaire ; lectures avec soil_sensor_ok = false à traiter comme manquantes, interpolation <= 3 h."
+  - "Prédire le DELTA (y(t+h) - y(t)) puis reconstruire ; borner entre 0 et 100 %."
+  - "Exogènes autorisés : pompe, pluie, température, humidité de l'air passées ; jamais pump_on futur réel."
+  - "Seuils firmware : entiers, 0 <= start, start + 5 <= stop <= 100 ; distance au seuil = feature utile."
+  - "Référence à battre : persistance (y(t+h) = y(t)) ; rapporter le skill par horizon."
+guardrails:
+  drop: [owner_name, phone, email]
+  pseudonymize: [device_id, field_key]
+  round_coords: [lat, lon]
+acceptance:
+  min_relative_gain: 0.02
+  max_cv_holdout_gap: 0.15
+schedule: {cron: "0 3 * * *", action: score_and_drift}

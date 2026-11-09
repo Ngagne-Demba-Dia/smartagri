@@ -1,0 +1,235 @@
+# FICHIER GÉNÉRÉ par infra/observability/render_prometheusrule.py : ne pas modifier à la main.
+# Source : infra/observability/prometheus/rules/*.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: smartagri92
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: smartagri92-ml-drift
+    rules:
+    - alert: ModelDriftHigh
+      expr: max by (model, feature) (agri_model_drift_psi) > 0.25
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        summary: Dérive forte du modèle {{ $labels.model }} sur {{ $labels.feature }}
+        description: PSI = {{ $value | printf "%.2f" }} sur la fenêtre de 7 jours. Évaluer un ré-entraînement.
+    - alert: DriftCheckStale
+      expr: time() - max(push_time_seconds{job="agri_drift"}) > 36 * 3600
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        summary: Contrôle de dérive non exécuté depuis plus de 36 h
+        description: Vérifier le CronJob drift (namespace smartagri92-ml).
+    - alert: DriftCheckNeverPushed
+      expr: |
+        absent(push_time_seconds{job="agri_drift"})
+          and on() (kube_cronjob_spec_suspend{namespace="smartagri92-ml", cronjob="drift"} == 0)
+      for: 36h
+      labels:
+        severity: warning
+      annotations:
+        summary: Le contrôle de dérive n'a jamais publié de résultat
+        description: Le CronJob drift est actif mais aucune série job="agri_drift" n'a été poussée.
+  - name: smartagri92-ml-inference
+    rules:
+    - alert: InferenceUnavailable
+      expr: |
+        kube_deployment_status_replicas_available{namespace="smartagri92-ml", deployment="inference"} < 1
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        summary: Service d'inférence sans réplique prête
+        description: Vérifier les conteneurs d'initialisation fetch-bundle / extract-bundle et MODEL_BUNDLE_SHA256.
+    - alert: InferenceLatencyP95High
+      expr: |
+        histogram_quantile(0.95,
+          sum by (le, model) (rate(agri_inference_request_seconds_bucket[5m]))
+        ) > 0.5
+        and sum by (model) (rate(agri_inference_request_seconds_count[5m])) > 0.05
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Latence d'inférence p95 supérieure à 500 ms ({{ $labels.model }})
+        description: p95 = {{ $value | humanizeDuration }}.
+    - alert: InferenceErrorRateHigh
+      expr: |
+        (
+          sum by (model) (rate(agri_inference_requests_total{outcome="error"}[10m]))
+            / sum by (model) (rate(agri_inference_requests_total[10m]))
+        ) > 0.05
+        and sum by (model) (rate(agri_inference_requests_total[10m])) > 0.05
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: Plus de 5 % d'erreurs d'inférence ({{ $labels.model }})
+        description: 'Taux : {{ $value | humanizePercentage }}.'
+  - name: smartagri92-ml-octopus
+    rules:
+    - alert: OctopusApiErrors
+      expr: |
+        (
+          sum(rate(agri_octopus_requests_total{status=~"5..|429|timeout|network"}[15m]))
+            / sum(rate(agri_octopus_requests_total[15m]))
+        ) > 0.1
+        and sum(rate(agri_octopus_requests_total[15m])) > 0
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Plus de 10 % d'échecs sur l'API OctOpus
+        description: 'Taux : {{ $value | humanizePercentage }}. Les appels retombent sur le repli prévu.'
+    - alert: OctopusAuthFailures
+      expr: sum(increase(agri_octopus_requests_total{status=~"401|403"}[15m])) > 0
+      labels:
+        severity: critical
+      annotations:
+        summary: Refus d'authentification de l'API OctOpus
+        description: Vérifier le secret <préfixe>/ml dans Secrets Manager et l'ExternalSecret agri-ml.
+  - name: smartagri92-ml-retrain
+    rules:
+    - alert: RetrainJobFailed
+      expr: |
+        max by (job_name) (kube_job_status_failed{namespace="smartagri92-ml", job_name=~"retrain-.*"}) > 0
+      labels:
+        severity: warning
+      annotations:
+        summary: Échec du ré-entraînement ({{ $labels.job_name }})
+        description: Consulter les journaux du Job ; le modèle en production reste inchangé.
+    - alert: RetrainStale
+      expr: time() - max(push_time_seconds{job="agri_retrain"}) > 8 * 86400
+      for: 1h
+      labels:
+        severity: info
+      annotations:
+        summary: Aucun ré-entraînement réussi depuis plus de 8 jours
+        description: Le CronJob retrain est hebdomadaire ; vérifier s'il a été suspendu volontairement.
+  - name: smartagri92-api
+    rules:
+    - alert: ApiDown
+      expr: up{job="api"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: API injoignable ({{ $labels.instance }})
+        description: La cible {{ $labels.instance }} ne répond plus à la collecte depuis 5 minutes.
+    - alert: ApiHigh5xxRate
+      expr: |
+        (
+          sum(rate(agri_http_requests_total{status=~"5.."}[5m]))
+            / sum(rate(agri_http_requests_total[5m]))
+        ) > 0.02
+        and sum(rate(agri_http_requests_total[5m])) > 0.1
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        summary: Plus de 2 % de réponses 5xx sur l'API
+        description: 'Taux d''erreurs serveur : {{ $value | humanizePercentage }} sur 5 minutes.'
+    - alert: ApiLatencyP95High
+      expr: |
+        histogram_quantile(0.95,
+          sum by (le) (rate(agri_http_request_seconds_bucket{route!~"/metrics|/healthz|/readyz|/v1/assistant/.*"}[5m]))
+        ) > 1
+        and sum(rate(agri_http_request_seconds_count[5m])) > 0.1
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Latence p95 de l'API supérieure à 1 s
+        description: p95 = {{ $value | humanizeDuration }} (hors sondes et assistant).
+  - name: smartagri92-ingestion
+    rules:
+    - alert: TelemetryRejectRatioHigh
+      expr: |
+        (
+          sum(rate(agri_telemetry_points_total{outcome=~"rejected_point|rejected_value"}[15m]))
+            / sum(rate(agri_telemetry_points_total[15m]))
+        ) > 0.05
+        and sum(rate(agri_telemetry_points_total[15m])) > 0
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Plus de 5 % de points de télémétrie rejetés
+        description: Vérifier la version du micrologiciel et le mapping telemetry.v1 (CONVENTIONS §3).
+    - alert: TelemetryIngestionStalled
+      expr: |
+        sum(rate(agri_telemetry_points_total{outcome="accepted"}[30m])) == 0
+        and sum(increase(agri_telemetry_points_total{outcome="accepted"}[1d])) > 0
+      for: 30m
+      labels:
+        severity: critical
+      annotations:
+        summary: Aucun point de télémétrie accepté depuis 30 minutes
+        description: Vérifier le broker MQTT, l'ingestor et l'API /v1/telemetry/batch.
+    - alert: TelemetryIngestionLagHigh
+      expr: |
+        histogram_quantile(0.95,
+          sum by (le) (rate(agri_telemetry_ingest_lag_seconds_bucket{source="mqtt"}[10m]))
+        ) > 300
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Retard d'ingestion MQTT p95 supérieur à 5 minutes
+        description: p95 = {{ $value | humanizeDuration }}.
+  - name: smartagri92-devices
+    rules:
+    - alert: DeviceSilent
+      expr: (time() - max by (device_id) (agri_device_last_seen_timestamp_seconds)) > 6 * 3600
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Kit {{ $labels.device_id }} silencieux depuis plus de 6 h
+        description: Dernier message il y a {{ $value | humanizeDuration }}.
+  - name: smartagri92-storage
+    rules:
+    - alert: NodeDiskSpaceLow
+      expr: |
+        (
+          node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+            / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+        ) < 0.15
+        and node_filesystem_readonly{fstype!~"tmpfs|overlay|squashfs|ramfs"} == 0
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Moins de 15 % d'espace libre sur {{ $labels.instance }} ({{ $labels.mountpoint }})
+        description: 'Espace libre : {{ $value | humanizePercentage }}.'
+    - alert: NodeDiskSpaceCritical
+      expr: |
+        (
+          node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+            / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+        ) < 0.05
+        and node_filesystem_readonly{fstype!~"tmpfs|overlay|squashfs|ramfs"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Moins de 5 % d'espace libre sur {{ $labels.instance }} ({{ $labels.mountpoint }})
+        description: 'Espace libre : {{ $value | humanizePercentage }}.'
+    - alert: ObjectStorageSpaceLow
+      expr: |
+        (
+          minio_cluster_capacity_usable_free_bytes
+            / minio_cluster_capacity_usable_total_bytes
+        ) < 0.15
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: Moins de 15 % d'espace libre sur MinIO
+        description: 'Espace libre : {{ $value | humanizePercentage }}.'

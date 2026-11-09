@@ -1,0 +1,338 @@
+# Environnement local complet Smart Agri92.
+# Démarrage : cp .env.example .env (remplacer chaque CHANGER_MOI), make mqtt-passwd, puis make up.
+# Tous les secrets viennent de .env : la syntaxe ${VAR:?message} fait échouer « docker compose » si une
+# variable obligatoire manque, plutôt que de démarrer avec un mot de passe vide.
+# Les ports sont liés à 127.0.0.1 : rien n'est exposé sur le réseau local du poste.
+# Les versions d'images sont épinglées ; en équipe, épingler aussi le condensat (@sha256:...).
+
+name: smartagri92
+
+x-backend: &backend
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+    additional_contexts:
+      migrations: ./db/migrations
+  image: smartagri92/backend:local
+  restart: unless-stopped
+  environment: &backend-env
+    APP_ENV: ${APP_ENV:-local}
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-agri}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant dans .env}@db:5432/${POSTGRES_DB:-agri}
+    JWT_SECRET: ${JWT_SECRET:?JWT_SECRET manquant dans .env}
+    DEVICE_KEY_PEPPER: ${DEVICE_KEY_PEPPER:?DEVICE_KEY_PEPPER manquant dans .env}
+    MQTT_URL: mqtt://mqtt:1883
+    S3_ENDPOINT: http://minio:9000
+    S3_BUCKET_RAW: ${S3_BUCKET_RAW:-agri-raw}
+    AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:?S3_ACCESS_KEY manquant dans .env}
+    AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:?S3_SECRET_KEY manquant dans .env}
+    AWS_REGION: ${AWS_REGION:-eu-west-3}
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ASSISTANT_MODEL: ${ASSISTANT_MODEL:-claude-opus-5-5}
+    MLFLOW_TRACKING_URI: http://mlflow:5000
+    # Inférence : none | local (paquets de modèles lus dans MODEL_BUNDLE_DIR) | octopus (API distante).
+    INFERENCE_BACKEND: ${INFERENCE_BACKEND:-local}
+    MODEL_BUNDLE_DIR: /models
+    OCTOPUS_BASE_URL: ${OCTOPUS_BASE_URL:-https://octopus.ml}
+    OCTOPUS_API_KEY: ${OCTOPUS_API_KEY:-}
+    CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+    METRICS_ENABLED: "true"
+  depends_on:
+    db:
+      condition: service_healthy
+    migrate:
+      condition: service_completed_successfully
+    mqtt:
+      condition: service_healthy
+    minio-init:
+      condition: service_completed_successfully
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  db:
+    # Image TimescaleDB « ha » : PostgreSQL 16 + TimescaleDB + PostGIS préinstallés.
+    # Étiquette à confirmer sur Docker Hub avant usage (docker pull), puis épingler le condensat.
+    image: timescale/timescaledb-ha:pg16-ts2.17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agri}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant dans .env}
+      POSTGRES_DB: ${POSTGRES_DB:-agri}
+      MLFLOW_DB_PASSWORD: ${MLFLOW_DB_PASSWORD:?MLFLOW_DB_PASSWORD manquant dans .env}
+      PGDATA: /home/postgres/pgdata/data
+    volumes:
+      - pgdata:/home/postgres/pgdata
+      # Scripts exécutés une seule fois, au premier démarrage sur un volume vide (base MLflow).
+      # Le schéma applicatif est appliqué par le service « migrate », à chaque démarrage.
+      - ./infra/compose/db-init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  mqtt:
+    image: eclipse-mosquitto:2.0.20
+    restart: unless-stopped
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./infra/mosquitto/acl:/mosquitto/config/acl:ro
+      # Fichier de mots de passe généré par « make mqtt-passwd » (jamais versionné).
+      - ./infra/mosquitto/secrets:/mosquitto/secrets:ro
+      - mqtt-data:/mosquitto/data
+    ports:
+      - "127.0.0.1:1883:1883"
+    environment:
+      MQTT_HEALTH_PASSWORD: ${MQTT_HEALTH_PASSWORD:?MQTT_HEALTH_PASSWORD manquant dans .env}
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "mosquitto_sub -h 127.0.0.1 -p 1883 -u healthcheck -P \"$${MQTT_HEALTH_PASSWORD}\" -t '$$SYS/broker/uptime' -C 1 -W 5"
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  minio:
+    # MinIO a réduit la publication de ses images communautaires fin 2025 : vérifier la disponibilité
+    # de l'étiquette ou basculer vers une alternative compatible S3 (SeaweedFS, Garage) si nécessaire.
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER manquant dans .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD manquant dans .env}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    volumes:
+      - minio-data:/data
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  minio-init:
+    # Tâche ponctuelle : crée les compartiments et l'utilisateur applicatif, puis s'arrête (code 0).
+    image: minio/mc:RELEASE.2024-11-21T17-21-54Z
+    restart: "no"
+    entrypoint: ["/bin/sh", "/init/minio-init.sh"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER manquant dans .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD manquant dans .env}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?S3_ACCESS_KEY manquant dans .env}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?S3_SECRET_KEY manquant dans .env}
+    volumes:
+      - ./infra/compose/minio-init.sh:/init/minio-init.sh:ro
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  migrate:
+    # Tâche ponctuelle, même image que l'API : applique db/migrations (copié dans l'image) et inscrit
+    # chaque fichier dans schema_migrations ; sans effet si tout est déjà appliqué. Code 0 attendu.
+    <<: *backend
+    restart: "no"
+    command: ["python", "-m", "app.db.migrate"]
+    # Remplace l'environnement commun : aucun secret applicatif (JWT, MQTT, S3) n'est utile ici.
+    # En local, le rôle propriétaire est le super-utilisateur de l'image ; sur les clusters, c'est un
+    # rôle DDL dédié (secret agri-database-migrate).
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      MIGRATION_DATABASE_URL: postgresql://${POSTGRES_USER:-agri}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant dans .env}@db:5432/${POSTGRES_DB:-agri}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *backend
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    environment:
+      <<: *backend-env
+      MQTT_USERNAME: ${MQTT_API_USER:-api}
+      MQTT_PASSWORD: ${MQTT_API_PASSWORD:?MQTT_API_PASSWORD manquant dans .env}
+    volumes:
+      # Paquets de modèles produits localement par ml/ (lecture seule).
+      - ./ml/artifacts/bundles:/models:ro
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3).status == 200 else 1)"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  ingestor:
+    <<: *backend
+    command: ["python", "-m", "app.ingestion.mqtt_bridge"]
+    environment:
+      <<: *backend-env
+      MQTT_USERNAME: ${MQTT_INGESTOR_USER:-ingestor}
+      MQTT_PASSWORD: ${MQTT_INGESTOR_PASSWORD:?MQTT_INGESTOR_PASSWORD manquant dans .env}
+
+  mlflow:
+    build:
+      context: ./infra/mlflow
+    image: smartagri92/mlflow:local
+    restart: unless-stopped
+    command:
+      - "mlflow"
+      - "server"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "5000"
+      - "--backend-store-uri"
+      - "postgresql://mlflow:${MLFLOW_DB_PASSWORD:?MLFLOW_DB_PASSWORD manquant dans .env}@db:5432/mlflow"
+      - "--artifacts-destination"
+      - "s3://mlflow/"
+      - "--serve-artifacts"
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:?S3_ACCESS_KEY manquant dans .env}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:?S3_SECRET_KEY manquant dans .env}
+    ports:
+      - "127.0.0.1:5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=3).status == 200 else 1)"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  ml-jobs:
+    # Profil « ml » : entraînement / ré-entraînement à la demande, ex. :
+    #   docker compose --profile ml run --rm ml-jobs python scripts/make_synthetic.py
+    #   docker compose --profile ml run --rm ml-jobs
+    # Le Dockerfile de ml/ relève du lot ML (non fourni ici).
+    profiles: ["ml"]
+    build:
+      context: ./ml
+    image: smartagri92/ml:local
+    restart: "no"
+    command: ["python", "-m", "agriml.train", "--config", "configs/yield_regression.yaml", "--no-tuning"]
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:?S3_ACCESS_KEY manquant dans .env}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:?S3_SECRET_KEY manquant dans .env}
+      AWS_REGION: ${AWS_REGION:-eu-west-3}
+      OCTOPUS_BASE_URL: ${OCTOPUS_BASE_URL:-https://octopus.ml}
+      OCTOPUS_API_KEY: ${OCTOPUS_API_KEY:-}
+    volumes:
+      # Hypothèse : WORKDIR /app dans l'image ML.
+      - ./ml/data:/app/data
+      - ./ml/artifacts:/app/artifacts
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+
+  prometheus:
+    profiles: ["observability"]
+    image: prom/prometheus:v2.55.1
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+    volumes:
+      - ./infra/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/observability/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9090/-/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    profiles: ["observability"]
+    image: grafana/grafana:11.4.0
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD manquant dans .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./infra/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3001:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  otel-collector:
+    profiles: ["observability"]
+    # Étiquette à confirmer avant usage ; image sans shell, donc sans healthcheck compose
+    # (extension health_check sur le port 13133 du conteneur).
+    image: otel/opentelemetry-collector-contrib:0.115.0
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/observability/otel/collector.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+
+  web:
+    # Interface Next.js (web/Dockerfile, sortie « standalone »). Le BFF appelle l'API sur le réseau compose.
+    build:
+      context: ./web
+    image: smartagri92/web:local
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://api:8000
+      NODE_ENV: production
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  pgdata:
+  mqtt-data:
+  minio-data:
+  prometheus-data:
+  grafana-data:

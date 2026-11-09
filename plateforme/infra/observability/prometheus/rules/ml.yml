@@ -1,0 +1,125 @@
+# Alertes de la plateforme IA (dérive, inférence, OctOpus, ré-entraînement).
+# Les métriques agri_inference_*, agri_octopus_* et agri_model_drift_psi sont un contrat avec le lot
+# ML (voir ../../README.md). Les tâches planifiées poussent vers le Pushgateway ; celui-ci ajoute
+# push_time_seconds{job=...} à chaque envoi.
+groups:
+  - name: smartagri92-ml-drift
+    rules:
+      - alert: ModelDriftHigh
+        # PSI > 0,25 : dérive importante de la distribution d'une variable d'entrée.
+        expr: max by (model, feature) (agri_model_drift_psi) > 0.25
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Dérive forte du modèle {{ $labels.model }} sur {{ $labels.feature }}"
+          description: "PSI = {{ $value | printf \"%.2f\" }} sur la fenêtre de 7 jours. Évaluer un ré-entraînement."
+
+      - alert: DriftCheckStale
+        expr: time() - max(push_time_seconds{job="agri_drift"}) > 36 * 3600
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Contrôle de dérive non exécuté depuis plus de 36 h"
+          description: "Vérifier le CronJob drift (namespace smartagri92-ml)."
+
+      - alert: DriftCheckNeverPushed
+        # CronJob actif mais aucun envoi au Pushgateway (DriftCheckStale ne voit pas une série absente).
+        # Hors Kubernetes, kube_cronjob_spec_suspend n'existe pas : l'alerte reste muette.
+        expr: |
+          absent(push_time_seconds{job="agri_drift"})
+            and on() (kube_cronjob_spec_suspend{namespace="smartagri92-ml", cronjob="drift"} == 0)
+        for: 36h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Le contrôle de dérive n'a jamais publié de résultat"
+          description: "Le CronJob drift est actif mais aucune série job=\"agri_drift\" n'a été poussée."
+
+  - name: smartagri92-ml-inference
+    rules:
+      - alert: InferenceUnavailable
+        # Aucune réplique prête : souvent une empreinte sha256 de paquet qui ne correspond plus.
+        expr: |
+          kube_deployment_status_replicas_available{namespace="smartagri92-ml", deployment="inference"} < 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service d'inférence sans réplique prête"
+          description: "Vérifier les conteneurs d'initialisation fetch-bundle / extract-bundle et MODEL_BUNDLE_SHA256."
+
+      - alert: InferenceLatencyP95High
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le, model) (rate(agri_inference_request_seconds_bucket[5m]))
+          ) > 0.5
+          and sum by (model) (rate(agri_inference_request_seconds_count[5m])) > 0.05
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence d'inférence p95 supérieure à 500 ms ({{ $labels.model }})"
+          description: "p95 = {{ $value | humanizeDuration }}."
+
+      - alert: InferenceErrorRateHigh
+        expr: |
+          (
+            sum by (model) (rate(agri_inference_requests_total{outcome="error"}[10m]))
+              / sum by (model) (rate(agri_inference_requests_total[10m]))
+          ) > 0.05
+          and sum by (model) (rate(agri_inference_requests_total[10m])) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Plus de 5 % d'erreurs d'inférence ({{ $labels.model }})"
+          description: "Taux : {{ $value | humanizePercentage }}."
+
+  - name: smartagri92-ml-octopus
+    rules:
+      - alert: OctopusApiErrors
+        # status : code HTTP, ou « timeout » / « network » quand aucune réponse n'est reçue.
+        expr: |
+          (
+            sum(rate(agri_octopus_requests_total{status=~"5..|429|timeout|network"}[15m]))
+              / sum(rate(agri_octopus_requests_total[15m]))
+          ) > 0.1
+          and sum(rate(agri_octopus_requests_total[15m])) > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Plus de 10 % d'échecs sur l'API OctOpus"
+          description: "Taux : {{ $value | humanizePercentage }}. Les appels retombent sur le repli prévu."
+
+      - alert: OctopusAuthFailures
+        # 401/403 : clé OCTOPUS_API_KEY expirée, révoquée ou mal synchronisée par External Secrets.
+        expr: sum(increase(agri_octopus_requests_total{status=~"401|403"}[15m])) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Refus d'authentification de l'API OctOpus"
+          description: "Vérifier le secret <préfixe>/ml dans Secrets Manager et l'ExternalSecret agri-ml."
+
+  - name: smartagri92-ml-retrain
+    rules:
+      - alert: RetrainJobFailed
+        expr: |
+          max by (job_name) (kube_job_status_failed{namespace="smartagri92-ml", job_name=~"retrain-.*"}) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "Échec du ré-entraînement ({{ $labels.job_name }})"
+          description: "Consulter les journaux du Job ; le modèle en production reste inchangé."
+
+      - alert: RetrainStale
+        # Ne se déclenche qu'après un premier envoi réussi (CronJob suspendu par défaut).
+        expr: time() - max(push_time_seconds{job="agri_retrain"}) > 8 * 86400
+        for: 1h
+        labels:
+          severity: info
+        annotations:
+          summary: "Aucun ré-entraînement réussi depuis plus de 8 jours"
+          description: "Le CronJob retrain est hebdomadaire ; vérifier s'il a été suspendu volontairement."

@@ -1,0 +1,72 @@
+# =====================================================================================================
+# Risque de foyer de maladie dans les 14 jours (classement binaire, AUC) — suivi hebdomadaire
+# Données : data/synthetic/disease (SYNTHÉTIQUES, générées par scripts/make_synthetic.py)
+#
+# Le test contient de NOUVELLES parcelles → validation groupée par parcelle, stratifiée sur la cible.
+# Retards / fenêtres glissantes calculés par parcelle-saison, uniquement sur le passé.
+#
+# 1. Compétition : hgb + xgb + rf multi-graines, stacking (méta-OOF imbriqué), seuil F1 optimisé sur OOF
+#    si la métrique l'exige ; pseudo-étiquetage seulement si autorisé par le règlement.
+# 2. Production  : hgb seul, probabilités calibrées, alerte si P > seuil fixé avec les agronomes
+#    (coût d'un faux négatif ≫ faux positif) ; surveillance de dérive hebdomadaire.
+# 3. Compromis   : moyenne hgb + logreg (robuste, explicable), réentraînement mensuel.
+# =====================================================================================================
+name: disease_risk_binary
+task: binary
+metric: auc
+seeds: [42, 7]
+
+data:
+  train: data/synthetic/disease/disease_train.csv
+  test: data/synthetic/disease/disease_test.csv
+  sample_submission: data/synthetic/disease/disease_sample_submission.csv
+  test_labels: data/synthetic/disease/disease_test_labels.csv
+
+columns:
+  id: row_id
+  target: outbreak_next_14d
+  group: field_id
+  time: date
+  lat: lat
+  lon: lon
+  categorical: [region, crop]
+  drop: [field_season, season]
+
+cv:
+  scheme: stratified_group
+  n_splits: 5
+
+features:
+  blocks: [temporal, date_cyclical, target_encoding]
+  temporal:
+    group: field_season
+    columns: [air_humidity_pct, air_temp_c, leaf_wetness_h, rain_mm, disease_obs]
+    lags: [1, 2]
+    windows: [3]
+    stats: [mean, max]
+    diff: true
+  date_cyclical:
+    - {column: week, kind: raw, period: 52}
+  target_encoding:
+    columns: [region, crop]   # pas field_id : le test = nouvelles parcelles (l'encodage n'y servirait à rien)
+    smoothing: 50
+
+models:
+  - name: hgb
+    kind: hgb
+    params: {max_iter: 400, learning_rate: 0.05, max_leaf_nodes: 15, l2_regularization: 1.0}
+  - name: xgb
+    kind: xgb
+    params: {max_depth: 4, subsample: 0.8, colsample_bytree: 0.8, learning_rate: 0.03}
+  - name: rf
+    kind: rf
+    params: {n_estimators: 300, min_samples_leaf: 5}
+  - name: logreg
+    kind: logreg
+    params: {C: 0.5}
+
+tuning:
+  enabled: false
+
+ensemble:
+  method: stacking

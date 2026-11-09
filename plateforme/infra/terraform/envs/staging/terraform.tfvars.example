@@ -1,0 +1,10 @@
+# Copier en terraform.tfvars (ignoré par git) et adapter. Aucune valeur secrète ici :
+# Si set_database_url_secret = true, DATABASE_URL et MIGRATION_DATABASE_URL passent par les variables
+# d'environnement TF_VAR_database_url et TF_VAR_migration_database_url.
+# Le compte prod doit lister ce compte dans ecr_pull_account_ids pour que les nœuds tirent les images.
+
+account_id                   = "222222222222"
+endpoint_public_access_cidrs = ["203.0.113.10/32"]
+admin_role_arns              = ["arn:aws:iam::222222222222:role/smartagri92-platform-admin"]
+monthly_budget_usd           = 400
+budget_alert_emails          = ["finops@example.org"]

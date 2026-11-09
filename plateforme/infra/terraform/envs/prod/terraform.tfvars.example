@@ -1,0 +1,11 @@
+# Copier en terraform.tfvars (ignoré par git) et adapter. Aucune valeur secrète ici :
+# Si set_database_url_secret = true, DATABASE_URL et MIGRATION_DATABASE_URL passent par les variables
+# d'environnement TF_VAR_database_url et TF_VAR_migration_database_url.
+
+account_id                   = "111111111111"
+endpoint_public_access_cidrs = ["203.0.113.10/32"]
+admin_role_arns              = ["arn:aws:iam::111111111111:role/smartagri92-platform-admin"]
+ecr_pull_account_ids         = ["222222222222"]
+github_repository            = "organisation/smartagri92"
+monthly_budget_usd           = 1500
+budget_alert_emails          = ["finops@example.org"]

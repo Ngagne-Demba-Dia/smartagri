@@ -1,0 +1,95 @@
+# =====================================================================================================
+# Prévision du rendement (t/ha) par parcelle et campagne — régression tabulaire
+# Données : data/synthetic/yield (SYNTHÉTIQUES, générées par scripts/make_synthetic.py)
+#
+# Le test couvre des campagnes FUTURES (2024-2025) des mêmes parcelles → validation temporelle purgée.
+#
+# 1. Compétition : 3 graines × 5 plis, xgb optimisé (Optuna si installé, ≥ 100 essais), lgbm/catboost si
+#    installés, ensemble hill climbing sur l'OOF ; contrôler l'AUC adversariale avant de soumettre.
+# 2. Production  : un seul modèle hgb (rapide, gère les NaN et les catégories), 1 graine, variables
+#    agronomiques explicables (GDD, ET0, bilan hydrique) ; recalibrage annuel après la récolte.
+# 3. Compromis   : hgb + xgb avec poids de l'ensemble figés, 2 graines, sans optimisation lourde.
+# =====================================================================================================
+name: yield_regression
+task: regression
+metric: rmse
+metric_direction: minimize
+seeds: [42, 7, 2025]
+
+data:
+  train: data/synthetic/yield/yield_train.csv
+  test: data/synthetic/yield/yield_test.csv
+  sample_submission: data/synthetic/yield/yield_sample_submission.csv
+  test_labels: data/synthetic/yield/yield_test_labels.csv   # holdout figé : rapport uniquement
+
+columns:
+  id: row_id
+  target: yield_t_ha
+  group: field_id
+  time: year
+  lat: lat
+  lon: lon
+  categorical: [region, crop, soil_type]
+  drop: []
+
+cv:
+  scheme: purged_time     # blocs d'années ; train = passé ET futur hors embargo (saisons quasi indépendantes)
+  n_splits: 5
+  gap: 0
+  embargo: 0
+  forward: false          # true = walk-forward (plus pessimiste, premier bloc sans OOF)
+
+features:
+  blocks: [agronomy, remote_sensing, date_cyclical, target_encoding]
+  agronomy:
+    tmin: tmin_mean
+    tmax: tmax_mean
+    rh: rh_mean
+    rain: rain_mm
+    irrigation: irrigation_mm
+    lat: lat
+    doy: mid_season_doy
+    crop: crop
+    season_days: season_days
+    heat_days: heat_days_35
+  remote_sensing:
+    series: [ndvi_, evi_]
+  date_cyclical:
+    - {column: sowing_doy, kind: doy}
+  target_encoding:
+    columns: [field_id, crop, region]   # field_id : effet parcelle (légitime car le test = mêmes parcelles)
+    smoothing: 20
+    n_splits: 5
+
+models:
+  - name: hgb
+    kind: hgb
+    params: {max_iter: 600, learning_rate: 0.05, max_leaf_nodes: 31, l2_regularization: 1.0}
+  - name: xgb
+    kind: xgb
+    params: {max_depth: 6, subsample: 0.8, colsample_bytree: 0.8, min_child_weight: 3}
+    search_space:
+      learning_rate: {type: float, low: 0.02, high: 0.15, log: true}
+      max_depth: {type: int, low: 3, high: 8}
+      min_child_weight: {type: float, low: 1, high: 20, log: true}
+      subsample: {type: float, low: 0.6, high: 1.0}
+      colsample_bytree: {type: float, low: 0.5, high: 1.0}
+  - name: ridge
+    kind: ridge
+    params: {alpha: 3.0}
+  - name: lgbm
+    kind: lgbm           # ignoré proprement si lightgbm n'est pas installé
+    params: {num_leaves: 31, subsample: 0.8, subsample_freq: 1, colsample_bytree: 0.8}
+
+tuning:
+  enabled: true
+  models: [xgb]
+  n_trials: 8            # smoke ; viser 100-300 en compétition
+  timeout_s: 240
+
+ensemble:
+  method: hill_climbing
+  n_iter: 50
+
+submission:
+  clip_min: 0

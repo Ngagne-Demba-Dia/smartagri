@@ -1,0 +1,23 @@
+# ACL Mosquitto Smart Agri92 (contrat CONVENTIONS.md §4).
+# Principe du moindre privilège : chaque compte ne voit que les sujets dont il a besoin.
+
+# Worker d'ingestion : lit la télémétrie, les événements et les accusés de commande de tous les kits.
+user ingestor
+topic read agri92/v1/devices/+/telemetry
+topic read agri92/v1/devices/+/events
+topic read agri92/v1/devices/+/commands/ack
+
+# API : publie les commandes (ex. set_thresholds) et suit leurs accusés.
+user api
+topic write agri92/v1/devices/+/commands
+topic read agri92/v1/devices/+/commands/ack
+
+# Sonde de santé docker-compose : lecture d'un seul sujet système.
+user healthcheck
+topic read $SYS/broker/uptime
+
+# Kits : identifiant MQTT = device_id (%u). Un kit ne publie et ne s'abonne que sous son propre device_id.
+pattern write agri92/v1/devices/%u/telemetry
+pattern write agri92/v1/devices/%u/events
+pattern read agri92/v1/devices/%u/commands
+pattern write agri92/v1/devices/%u/commands/ack

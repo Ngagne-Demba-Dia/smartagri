@@ -1,0 +1,70 @@
+# Collecteur OpenTelemetry (distribution « contrib »).
+# Reçoit traces, métriques et journaux en OTLP ; retire les attributs sensibles avant tout export.
+# Aucun service n'émet encore d'OTLP : variable prévue OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318.
+# En local, les traces et journaux vont vers « debug » (sortie standard) ; en production, remplacer par
+# l'exportateur du système retenu (Tempo, Loki, CloudWatch…).
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 20
+  # Données personnelles et secrets : jamais exportés (en-têtes d'authentification, coordonnées).
+  attributes/scrub:
+    actions:
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.cookie
+        action: delete
+      - key: http.response.header.set-cookie
+        action: delete
+      - key: user.email
+        action: delete
+      - key: user.phone
+        action: delete
+      - key: enduser.id
+        action: hash
+      - key: geo.location
+        action: delete
+  batch:
+    send_batch_size: 1024
+    timeout: 5s
+
+exporters:
+  debug:
+    verbosity: basic
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: otel
+    resource_to_telemetry_conversion:
+      enabled: false
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  telemetry:
+    logs:
+      level: info
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/scrub, batch]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/scrub, batch]
+      exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/scrub, batch]
+      exporters: [debug]

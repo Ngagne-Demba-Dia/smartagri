@@ -1,0 +1,16 @@
+# Dépendances d'exécution épinglées pour l'image Docker (API + pont MQTT + assistant + métriques).
+# Les versions FastAPI/Starlette/SQLAlchemy/Pydantic/httpx/argon2/PyJWT/uvicorn sont celles validées
+# par la suite de tests locale ; psycopg, paho-mqtt et anthropic ne sont pas installés localement
+# (chemins non testés hors CI) — à vérifier lors du premier build.
+fastapi==0.133.0
+starlette==1.8.0
+uvicorn[standard]==0.44.0
+SQLAlchemy==2.0.39
+psycopg[binary]==3.2.3
+pydantic==2.13.2
+httpx==0.28.1
+argon2-cffi==21.3.0
+PyJWT==2.10.1
+prometheus-client==0.21.1
+paho-mqtt==2.1.0
+anthropic==0.70.0

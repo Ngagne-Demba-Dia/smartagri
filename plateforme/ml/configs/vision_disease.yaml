@@ -1,0 +1,39 @@
+# Classification de maladies foliaires (sain / suspect / malade) — images ESP32-CAM et téléphone
+#
+# 1. Compétition (score max)  : backend timm, ConvNeXt-S / EfficientNetV2-S pré-entraînés, 384 px, 30 époques,
+#                               5 plis × 2 graines, TTA, ensemble de plis + pseudo-étiquetage contrôlé.
+# 2. Production (robuste)     : MobileNetV3-large ou EfficientNet-B0 à 224 px, pré-entraîné, EMA, export ONNX
+#                               avec parité onnxruntime ; distillé depuis le modèle compétition.
+# 3. Compromis réaliste       : ce fichier — mobilenet_v3_small torchvision, 224 px, 5 plis groupés par plante ;
+#                               l'ESP32-CAM ne fait qu'un tri « suspect », le diagnostic tourne côté serveur.
+#
+# pretrained: false = aucun téléchargement de poids ; passer à true après décision explicite (licence, réseau).
+# Lancer : python -m agriml.vision.train_vision --config configs/vision_disease.yaml
+# Essai CPU rapide : ajouter --epochs 1 --max-folds 1 --image-size 96
+
+name: vision_disease
+data_dir: data/synthetic/images
+metadata: metadata.csv
+path_col: path
+label_col: label
+group_col: plant_id
+classes: [sain, suspect, malade]
+model_name: mobilenet_v3_small
+backend: auto          # auto (timm si installé, sinon torchvision) | timm | hf | torchvision
+pretrained: false
+image_size: 224
+n_splits: 5
+epochs: 10
+batch_size: 16
+lr: 0.001
+weight_decay: 0.0001
+label_smoothing: 0.1
+mixup_alpha: 0.2
+cutmix_alpha: 1.0
+mix_prob: 0.5
+ema_decay: 0.99
+amp: true
+tta: true
+num_workers: 0
+seed: 42
+output_dir: artifacts

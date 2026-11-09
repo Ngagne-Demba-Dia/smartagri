@@ -1,0 +1,31 @@
+# Production : la porte d'approbation est la PR GitOps (relue, puis fusionnée dans main).
+# ArgoCD applique automatiquement le contenu fusionné et corrige les dérives manuelles, mais ne
+# supprime rien seul (prune: false) : une suppression demande une synchronisation manuelle.
+# À appliquer dans le cluster de production uniquement.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: smartagri92-prod
+  namespace: argocd
+spec:
+  project: smartagri92
+  source:
+    repoURL: https://github.com/organisation/smartagri92.git
+    targetRevision: main
+    path: infra/k8s/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 10m

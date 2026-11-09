@@ -1,0 +1,50 @@
+# Namespace applicatif : API, ingestion MQTT, tableau de bord web.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: smartagri92
+
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - external-secrets.yaml
+  # Hook ArgoCD (Sync, vague -1) : python -m app.db.migrate avant le déploiement de l'API.
+  - migrate-job.yaml
+  - api.yaml
+  - ingestor.yaml
+  - web.yaml
+  - ingress.yaml
+  - networkpolicies.yaml
+  - monitoring.yaml
+  # Généré par infra/observability/render_prometheusrule.py (règles de tout le projet, y compris ML).
+  - prometheusrules.yaml
+
+# Vague ArgoCD -3 pour toutes les NetworkPolicies : au premier déploiement, le Job de migration (vague -1)
+# démarre déjà sous le refus par défaut et sa politique « migrate » (PostgreSQL seulement).
+patches:
+  - target:
+      kind: NetworkPolicy
+    patch: |-
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: toutes
+        annotations:
+          argocd.argoproj.io/sync-wave: "-3"
+
+# Configuration non secrète partagée par l'API et l'ingestion.
+# Les overlays fusionnent leurs valeurs (behavior: merge).
+configMapGenerator:
+  - name: agri-config
+    literals:
+      - APP_ENV=staging
+      - MQTT_URL=mqtts://mqtt.example.invalid:8883
+      - S3_BUCKET_RAW=agri-raw
+      - AWS_REGION=eu-west-3
+      - ASSISTANT_MODEL=claude-opus-5-5
+      - MLFLOW_TRACKING_URI=http://mlflow.smartagri92-ml.svc.cluster.local:5000
+      - CORS_ORIGINS=https://app.example.invalid
+      - METRICS_ENABLED=true
+      # « none » tant que l'API ne sait pas appeler le service d'inférence du namespace ML
+      # (voir infra/k8s/README.md, section Inférence).
+      - INFERENCE_BACKEND=none

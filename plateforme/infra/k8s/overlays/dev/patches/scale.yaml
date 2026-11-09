@@ -1,0 +1,48 @@
+# Recette : une réplique suffit. Les PDB (minAvailable 1) sont retirés : avec une seule réplique ils
+# bloqueraient les drains de nœuds lors des mises à jour du groupe de nœuds.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+  namespace: smartagri92
+spec:
+  minReplicas: 1
+  maxReplicas: 3
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web
+  namespace: smartagri92
+spec:
+  minReplicas: 1
+  maxReplicas: 2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference
+  namespace: smartagri92-ml
+spec:
+  replicas: 1
+---
+$patch: delete
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api
+  namespace: smartagri92
+---
+$patch: delete
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web
+  namespace: smartagri92
+---
+$patch: delete
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: inference
+  namespace: smartagri92-ml

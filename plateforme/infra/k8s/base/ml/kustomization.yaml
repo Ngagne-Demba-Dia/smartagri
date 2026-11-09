@@ -1,0 +1,35 @@
+# Namespace de la plateforme IA : inférence, MLflow, ré-entraînement (OctOpus / agriml), dérive.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: smartagri92-ml
+
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - external-secrets.yaml
+  - inference.yaml
+  - mlflow.yaml
+  - retrain-cronjob.yaml
+  - drift-cronjob.yaml
+  - networkpolicies.yaml
+  - monitoring.yaml
+
+configMapGenerator:
+  # Paquet de modèles servi. La promotion d'un modèle = une PR GitOps qui change ces deux valeurs.
+  - name: inference-bundle
+    literals:
+      - MODEL_BUNDLE_URI=s3://example-models-bucket/bundles/disease-v0/bundle.tar.gz
+      - MODEL_BUNDLE_SHA256=0000000000000000000000000000000000000000000000000000000000000000
+  - name: ml-config
+    literals:
+      - AWS_REGION=eu-west-3
+      - MLFLOW_TRACKING_URI=http://mlflow.smartagri92-ml.svc.cluster.local:5000
+      - MLFLOW_ARTIFACTS_DESTINATION=s3://example-models-bucket/mlflow/
+      - OCTOPUS_BASE_URL=https://octopus.ml
+      - PUSHGATEWAY_URL=http://prometheus-pushgateway.monitoring.svc.cluster.local:9091
+  - name: bundle-scripts
+    files:
+      - scripts/fetch-bundle.sh
+      - scripts/extract-bundle.py
+      - scripts/check-bundle.py

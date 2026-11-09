@@ -1,0 +1,29 @@
+# IA-3 — Diagnostic foliaire (sain / suspect / malade). Confidentiel - réservé aux partenaires de travail.
+# Prise en charge des images par OctOpus : À VÉRIFIER. Sinon : agriml.vision sur GPU à la demande.
+# Photos envoyées uniquement floutées et SANS métadonnées EXIF ; validation humaine obligatoire.
+name: disease_image_classification
+dataset: disease_images
+workspace: agri92-pilot
+task: image_classification
+target: label
+metric: f1_macro
+objective: >-
+  Classer les photos de feuilles en sain / suspect / malade ; priorité au rappel de la classe « malade »,
+  le verdict ESP32-CAM n'alerte qu'après 3 images consécutives confiantes.
+groups: plant_id
+cv: {scheme: stratified_group, n_splits: 5, groups: plant_id}
+time_budget_min: 240
+hints:
+  - "StratifiedGroupKFold par plante (plant_id) : plusieurs vues d'une même plante restent dans le même pli."
+  - "Augmentations terrain : reflets solaires, flou, recadrage serré, rotation ; pas de retournement de couleur."
+  - "Petits modèles déployables (MobileNetV3, EfficientNet-B0) : exporter en ONNX, contrôler la parité."
+  - "Rapporter le rappel de « malade » et la matrice de confusion, pas seulement le F1 macro."
+guardrails:
+  drop: [owner_name, phone, email, photo_exif, gps_exif, notes]
+  pseudonymize: [plant_id, field_id, device_id]
+  round_coords: [lat, lon]
+acceptance:
+  min_relative_gain: 0.02
+  max_cv_holdout_gap: 0.10
+  max_slice_regression: 0.05
+  human_review: true

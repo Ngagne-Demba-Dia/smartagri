@@ -1,0 +1,141 @@
+# Alertes de la plateforme (API, ingestion, kits, stockage).
+# Métriques marquées « contrat » : pas encore exposées par le backend, voir ../../README.md.
+groups:
+  - name: smartagri92-api
+    rules:
+      - alert: ApiDown
+        expr: up{job="api"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API injoignable ({{ $labels.instance }})"
+          description: "La cible {{ $labels.instance }} ne répond plus à la collecte depuis 5 minutes."
+
+      - alert: ApiHigh5xxRate
+        expr: |
+          (
+            sum(rate(agri_http_requests_total{status=~"5.."}[5m]))
+              / sum(rate(agri_http_requests_total[5m]))
+          ) > 0.02
+          and sum(rate(agri_http_requests_total[5m])) > 0.1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Plus de 2 % de réponses 5xx sur l'API"
+          description: "Taux d'erreurs serveur : {{ $value | humanizePercentage }} sur 5 minutes."
+
+      - alert: ApiLatencyP95High
+        # Exclut les sondes, /metrics et l'assistant (réponses longues attendues).
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(agri_http_request_seconds_bucket{route!~"/metrics|/healthz|/readyz|/v1/assistant/.*"}[5m]))
+          ) > 1
+          and sum(rate(agri_http_request_seconds_count[5m])) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence p95 de l'API supérieure à 1 s"
+          description: "p95 = {{ $value | humanizeDuration }} (hors sondes et assistant)."
+
+  - name: smartagri92-ingestion
+    rules:
+      - alert: TelemetryRejectRatioHigh
+        expr: |
+          (
+            sum(rate(agri_telemetry_points_total{outcome=~"rejected_point|rejected_value"}[15m]))
+              / sum(rate(agri_telemetry_points_total[15m]))
+          ) > 0.05
+          and sum(rate(agri_telemetry_points_total[15m])) > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Plus de 5 % de points de télémétrie rejetés"
+          description: "Vérifier la version du micrologiciel et le mapping telemetry.v1 (CONVENTIONS §3)."
+
+      - alert: TelemetryIngestionStalled
+        # Ne se déclenche que si des points ont déjà été reçus (pas d'alerte sur un environnement vide).
+        expr: |
+          sum(rate(agri_telemetry_points_total{outcome="accepted"}[30m])) == 0
+          and sum(increase(agri_telemetry_points_total{outcome="accepted"}[1d])) > 0
+        for: 30m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Aucun point de télémétrie accepté depuis 30 minutes"
+          description: "Vérifier le broker MQTT, l'ingestor et l'API /v1/telemetry/batch."
+
+      - alert: TelemetryIngestionLagHigh
+        # Contrat : histogramme agri_telemetry_ingest_lag_seconds (réception serveur - horodatage du
+        # point). Limité à la voie MQTT : les envois différés de l'application hors ligne sont normaux.
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(agri_telemetry_ingest_lag_seconds_bucket{source="mqtt"}[10m]))
+          ) > 300
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Retard d'ingestion MQTT p95 supérieur à 5 minutes"
+          description: "p95 = {{ $value | humanizeDuration }}."
+
+  - name: smartagri92-devices
+    rules:
+      - alert: DeviceSilent
+        # Contrat : jauge agri_device_last_seen_timestamp_seconds{device_id} (exporteur SQL sur
+        # devices.last_seen_at, kits actifs). Seuil d'exploitation 6 h ; l'alerte agriculteur
+        # (DEVICE_SILENT_HOURS, 24 h par défaut) reste gérée par l'API.
+        expr: (time() - max by (device_id) (agri_device_last_seen_timestamp_seconds)) > 6 * 3600
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kit {{ $labels.device_id }} silencieux depuis plus de 6 h"
+          description: "Dernier message il y a {{ $value | humanizeDuration }}."
+
+  - name: smartagri92-storage
+    rules:
+      - alert: NodeDiskSpaceLow
+        expr: |
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+              / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+          ) < 0.15
+          and node_filesystem_readonly{fstype!~"tmpfs|overlay|squashfs|ramfs"} == 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Moins de 15 % d'espace libre sur {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "Espace libre : {{ $value | humanizePercentage }}."
+
+      - alert: NodeDiskSpaceCritical
+        expr: |
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+              / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+          ) < 0.05
+          and node_filesystem_readonly{fstype!~"tmpfs|overlay|squashfs|ramfs"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Moins de 5 % d'espace libre sur {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "Espace libre : {{ $value | humanizePercentage }}."
+
+      - alert: ObjectStorageSpaceLow
+        # MinIO (local) : en production, S3 n'a pas de limite de capacité.
+        expr: |
+          (
+            minio_cluster_capacity_usable_free_bytes
+              / minio_cluster_capacity_usable_total_bytes
+          ) < 0.15
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Moins de 15 % d'espace libre sur MinIO"
+          description: "Espace libre : {{ $value | humanizePercentage }}."

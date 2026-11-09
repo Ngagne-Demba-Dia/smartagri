@@ -1,0 +1,133 @@
+# Politiques réseau du namespace ML : tout refusé, puis ouvert flux par flux.
+# Sortie OctOpus (octopus.ml:443) : une NetworkPolicy standard ne sait pas filtrer par nom DNS.
+#  - Sans Cilium : seuls les pods étiquetés smartagri92.io/egress-https ont le 443 sortant (S3, STS,
+#    OctOpus) ; le filtrage se fait par pod, pas par destination.
+#  - Avec Cilium : le composant components/egress-fqdn-cilium remplace egress-https par des règles
+#    toFQDNs ; seuls les pods smartagri92.io/octopus=true joignent octopus.ml, et les autres S3/STS.
+#  - Alternative sans Cilium : proxy de sortie (Squid, Envoy) avec liste blanche de domaines.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Inférence : appelée par l'API du namespace applicatif ; métriques lues par Prometheus.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: inference
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: inference
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: smartagri92
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: api
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 8080
+---
+# MLflow : joignable uniquement par les tâches ML de ce namespace ; métadonnées en PostgreSQL privé.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mlflow
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mlflow
+  policyTypes: ["Ingress", "Egress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values: ["ml-training", "ml-monitoring"]
+      ports:
+        - port: 5000
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8
+      ports:
+        - port: 5432
+---
+# Tâches ML (ré-entraînement, dérive) : MLflow et Pushgateway.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ml-jobs
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: In
+        values: ["ml-training", "ml-monitoring"]
+  policyTypes: ["Ingress", "Egress"]
+  ingress: []
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mlflow
+      ports:
+        - port: 5000
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 9091
+---
+# HTTPS sortant (S3, STS, OctOpus) pour les pods explicitement étiquetés. Remplacée par des règles
+# toFQDNs quand le composant Cilium est activé.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: egress-https
+spec:
+  podSelector:
+    matchLabels:
+      smartagri92.io/egress-https: "true"
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.169.254/32
+      ports:
+        - protocol: TCP
+          port: 443

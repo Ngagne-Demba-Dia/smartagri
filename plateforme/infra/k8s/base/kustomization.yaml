@@ -1,0 +1,13 @@
+# Base commune : namespace applicatif (smartagri92) et namespace de la plateforme IA (smartagri92-ml).
+# Pas de champ « namespace » ici : chaque sous-base fixe le sien.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - app
+  - ml
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: smartagri92
+    includeSelectors: false

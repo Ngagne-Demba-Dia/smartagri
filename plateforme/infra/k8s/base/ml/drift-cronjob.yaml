@@ -1,0 +1,74 @@
+# Contrôle quotidien de dérive : compare les distributions récentes (zone curated) à la référence
+# d'entraînement du modèle servi, puis pousse les indicateurs (agri_model_drift_psi, …) vers la
+# Pushgateway. L'alerte ModelDriftHigh (infra/observability) se déclenche au-delà du seuil.
+# « agriml.monitoring.drift » existe (calcul PSI/KS) mais n'a pas encore de CLI (--window-days,
+# --push) : lancé tel quel, le module se terminerait sans rien faire avec le code 0. Le CronJob reste
+# donc suspendu jusqu'à la livraison de cette CLI (voir README, section Inférence).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: drift
+  labels:
+    app.kubernetes.io/name: drift
+    app.kubernetes.io/component: ml-monitoring
+spec:
+  schedule: "30 4 * * *"
+  timeZone: Africa/Dakar
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  suspend: true # activé par overlay une fois la CLI livrée
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 3600
+      ttlSecondsAfterFinished: 259200
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: drift
+            app.kubernetes.io/component: ml-monitoring
+            smartagri92.io/egress-https: "true"
+        spec:
+          serviceAccountName: agri-ml-jobs
+          automountServiceAccountToken: true # jeton IRSA (lecture curated, models)
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            fsGroup: 10001
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: drift
+              image: smartagri92/ml:unset
+              command: ["python", "-m", "agriml.monitoring.drift", "--window-days", "7", "--push"]
+              envFrom:
+                - configMapRef:
+                    name: ml-config
+                - configMapRef:
+                    name: inference-bundle
+              env:
+                - name: HOME
+                  value: /tmp
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 512Mi
+                limits:
+                  cpu: "1"
+                  memory: 2Gi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: work
+                  mountPath: /tmp
+          volumes:
+            - name: work
+              emptyDir:
+                sizeLimit: 2Gi

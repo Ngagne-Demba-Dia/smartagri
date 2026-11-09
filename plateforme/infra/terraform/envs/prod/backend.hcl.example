@@ -1,0 +1,6 @@
+# Copier en backend.hcl (ignoré par git) puis : terraform init -backend-config=backend.hcl
+# Le compartiment d'état et la table de verrouillage sont créés une fois, hors de cette pile
+# (versionnage, chiffrement KMS, blocage public). Terraform >= 1.10 peut remplacer DynamoDB par
+# « use_lockfile = true » (verrou natif S3).
+bucket         = "smartagri92-tfstate-111111111111"
+dynamodb_table = "smartagri92-tflock"

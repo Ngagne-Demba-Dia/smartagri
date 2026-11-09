@@ -1,0 +1,100 @@
+# Overlay « prod » : cluster de production (compte AWS prod, APP_ENV=prod).
+# Les étiquettes d'images sont modifiées uniquement par la PR GitOps ouverte par .github/workflows/cd.yml
+# (relue et approuvée avant fusion ; ArgoCD synchronise ensuite).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+# Décommenter si le cluster utilise Cilium (filtrage de la sortie par FQDN, dont octopus.ml).
+# components:
+#   - ../../components/egress-fqdn-cilium
+
+images:
+  - name: smartagri92/api
+    newName: 111111111111.dkr.ecr.eu-west-3.amazonaws.com/smartagri92/api
+    newTag: 0.0.0-placeholder
+  - name: smartagri92/ml
+    newName: 111111111111.dkr.ecr.eu-west-3.amazonaws.com/smartagri92/ml
+    newTag: 0.0.0-placeholder
+  - name: smartagri92/mlflow
+    newName: 111111111111.dkr.ecr.eu-west-3.amazonaws.com/smartagri92/mlflow
+    newTag: 0.0.0-placeholder
+  - name: smartagri92/web
+    newName: 111111111111.dkr.ecr.eu-west-3.amazonaws.com/smartagri92/web
+    newTag: 0.0.0-placeholder
+
+configMapGenerator:
+  - name: agri-config
+    namespace: smartagri92
+    behavior: merge
+    literals:
+      - APP_ENV=prod
+      - MQTT_URL=mqtts://mqtt.smartagri92.example:8883
+      - S3_BUCKET_RAW=smartagri92-prod-raw-111111111111
+      - CORS_ORIGINS=https://app.smartagri92.example
+  - name: ml-config
+    namespace: smartagri92-ml
+    behavior: merge
+    literals:
+      - MLFLOW_ARTIFACTS_DESTINATION=s3://smartagri92-prod-models-111111111111/mlflow/
+  - name: inference-bundle
+    namespace: smartagri92-ml
+    behavior: merge
+    literals:
+      - MODEL_BUNDLE_URI=s3://smartagri92-prod-models-111111111111/bundles/disease-v0/bundle.tar.gz
+
+patches:
+  - path: patches/irsa.yaml
+  - path: patches/scale.yaml
+  - target:
+      kind: Ingress
+      name: smartagri92
+    patch: |-
+      - op: replace
+        path: /spec/tls/0/hosts
+        value: ["api.smartagri92.example", "app.smartagri92.example"]
+      - op: replace
+        path: /spec/rules/0/host
+        value: api.smartagri92.example
+      - op: replace
+        path: /spec/rules/1/host
+        value: app.smartagri92.example
+  - target:
+      kind: ExternalSecret
+      name: agri-app
+    patch: |-
+      - op: replace
+        path: /spec/dataFrom/0/extract/key
+        value: smartagri92-prod/app
+  - target:
+      kind: ExternalSecret
+      name: agri-database
+    patch: |-
+      - op: replace
+        path: /spec/data/0/remoteRef/key
+        value: smartagri92-prod/database
+  - target:
+      kind: ExternalSecret
+      name: agri-database-migrate
+    patch: |-
+      - op: replace
+        path: /spec/data/0/remoteRef/key
+        value: smartagri92-prod/database
+  - target:
+      kind: ExternalSecret
+      name: agri-ml
+    patch: |-
+      - op: replace
+        path: /spec/data/0/remoteRef/key
+        value: smartagri92-prod/ml
+      - op: replace
+        path: /spec/data/1/remoteRef/key
+        value: smartagri92-prod/ml
+      - op: replace
+        path: /spec/data/2/remoteRef/key
+        value: smartagri92-prod/ml
+      - op: replace
+        path: /spec/data/3/remoteRef/key
+        value: smartagri92-prod/ml

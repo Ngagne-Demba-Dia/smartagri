@@ -1,0 +1,13 @@
+# Source de données Prometheus (environnement local). L'uid est référencé par les tableaux de bord.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 30s

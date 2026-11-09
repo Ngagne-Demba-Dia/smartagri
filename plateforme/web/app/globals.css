@@ -1,0 +1,934 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Jetons de couleur (doc 10 §5) et direction artistique « exploitation intelligente ».
+ * Thème sombre : préférence système, ou data-theme sur <html>.
+ * Les graphiques lisent --series-1/--series-2 et les rampes --ramp-1…5 (lib/chart-option.ts, SERIES_COLORS).
+ *
+ * Verre : --bg et --card restent des couleurs pleines (hex) = le PIRE cas de l'arrière-plan réel (photo + voile)
+ * et de la carte de verre posée dessus. scripts/contrast.mjs mesure les contrastes sur ces valeurs prudentes ;
+ * --glass, --glass-strong, --surface-glass sont les versions translucides réellement peintes.
+ */
+:root {
+  color-scheme: light;
+  --bg: #c4d3c1;
+  --card: #eef4ec;
+  --ink: #10221a;
+  --mute: #3b4e41;
+  --line: rgb(22 58 34 / 0.16);
+  --g: #17591f;
+  --g2: #66bb6a;
+  --on-g: #ffffff;
+  --accent: #3aa655;
+  --gold: #e9a92f;
+  --ok-ink: #1b5e20;
+  --ok-bg: #e4f2e1;
+  --warn-ink: #7a4a00;
+  --warn-bg: #fff1d9;
+  --bad-ink: #b3261e;
+  --bad-bg: #fde8e6;
+  --blue: #0f5aa6;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --ramp-1: #86b6ef;
+  --ramp-2: #5598e7;
+  --ramp-3: #2a78d6;
+  --ramp-4: #1c5cab;
+  --ramp-5: #104281;
+  --focus: #0f5aa6;
+  --surface: #dfe9dc;
+  --glass: rgb(255 255 255 / 0.66);
+  --glass-strong: rgb(255 255 255 / 0.84);
+  --surface-glass: rgb(255 255 255 / 0.5);
+  --glass-edge: rgb(255 255 255 / 0.7);
+  --glass-rim: rgb(255 255 255 / 0.85);
+  --shadow-card:
+    0 1px 1px rgb(16 40 24 / 0.06), 0 4px 8px -2px rgb(16 40 24 / 0.1), 0 14px 32px -8px rgb(16 40 24 / 0.26);
+  --shadow-pop:
+    0 2px 4px rgb(16 40 24 / 0.1), 0 12px 24px -6px rgb(16 40 24 / 0.22), 0 34px 60px -14px rgb(16 40 24 / 0.4);
+  --glass-sheen: rgb(255 255 255 / 0.5);
+  --glass-hover: rgb(255 255 255 / 0.4);
+  --vignette: rgb(8 30 14 / 0.28);
+  --scrim-from: rgb(5 26 12 / 0.74);
+  --scrim-to: rgb(5 26 12 / 0.06);
+  --veil: linear-gradient(
+    180deg,
+    rgb(238 245 234 / 0.4) 0%,
+    rgb(226 237 223 / 0.62) 42%,
+    rgb(214 228 211 / 0.78) 100%
+  );
+  --glow-a: rgb(255 214 120 / 0.5);
+  --glow-b: rgb(120 200 130 / 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #283737;
+    --card: #172620;
+    --ink: #e8f1e9;
+    --mute: #a4b8a9;
+    --line: rgb(255 255 255 / 0.12);
+    --g: #7ccf80;
+    --g2: #43a047;
+    --on-g: #0b1a10;
+    --accent: #5bc56f;
+    --gold: #f2bd52;
+    --ok-ink: #a5d6a7;
+    --ok-bg: #1d3323;
+    --warn-ink: #ffc16b;
+    --warn-bg: #3a2c10;
+    --bad-ink: #f4a6a0;
+    --bad-bg: #3d1c1b;
+    --blue: #7cc0f7;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --ramp-1: #184f95;
+    --ramp-2: #2a78d6;
+    --ramp-3: #5598e7;
+    --ramp-4: #86b6ef;
+    --ramp-5: #b7d3f6;
+    --focus: #7cc0f7;
+    --surface: #1f3027;
+    --glass: rgb(14 26 19 / 0.62);
+    --glass-strong: rgb(12 22 16 / 0.86);
+    --surface-glass: rgb(255 255 255 / 0.07);
+    --glass-edge: rgb(255 255 255 / 0.16);
+    --glass-rim: rgb(255 255 255 / 0.28);
+    --shadow-card: 0 1px 1px rgb(0 0 0 / 0.3), 0 6px 12px -3px rgb(0 0 0 / 0.35), 0 16px 36px -8px rgb(0 0 0 / 0.6);
+    --glass-sheen: rgb(255 255 255 / 0.12);
+    --glass-hover: rgb(255 255 255 / 0.1);
+    --vignette: rgb(0 8 3 / 0.5);
+    --shadow-pop: 0 2px 4px rgb(0 0 0 / 0.4), 0 26px 50px -12px rgb(0 0 0 / 0.7);
+    --scrim-from: rgb(3 14 7 / 0.8);
+    --scrim-to: rgb(3 14 7 / 0.16);
+    --veil: linear-gradient(
+      180deg,
+      rgb(7 18 11 / 0.66) 0%,
+      rgb(7 18 11 / 0.7) 50%,
+      rgb(5 13 8 / 0.82) 100%
+    );
+    --glow-a: rgb(255 190 90 / 0.22);
+    --glow-b: rgb(90 190 120 / 0.2);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #283737;
+  --card: #172620;
+  --ink: #e8f1e9;
+  --mute: #a4b8a9;
+  --line: rgb(255 255 255 / 0.12);
+  --g: #7ccf80;
+  --g2: #43a047;
+  --on-g: #0b1a10;
+  --accent: #5bc56f;
+  --gold: #f2bd52;
+  --ok-ink: #a5d6a7;
+  --ok-bg: #1d3323;
+  --warn-ink: #ffc16b;
+  --warn-bg: #3a2c10;
+  --bad-ink: #f4a6a0;
+  --bad-bg: #3d1c1b;
+  --blue: #7cc0f7;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --ramp-1: #184f95;
+  --ramp-2: #2a78d6;
+  --ramp-3: #5598e7;
+  --ramp-4: #86b6ef;
+  --ramp-5: #b7d3f6;
+  --focus: #7cc0f7;
+  --surface: #1f3027;
+  --glass: rgb(14 26 19 / 0.62);
+  --glass-strong: rgb(12 22 16 / 0.86);
+  --surface-glass: rgb(255 255 255 / 0.07);
+  --glass-edge: rgb(255 255 255 / 0.16);
+  --glass-rim: rgb(255 255 255 / 0.28);
+  --shadow-card: 0 1px 1px rgb(0 0 0 / 0.3), 0 6px 12px -3px rgb(0 0 0 / 0.35), 0 16px 36px -8px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 2px 4px rgb(0 0 0 / 0.4), 0 26px 50px -12px rgb(0 0 0 / 0.7);
+  --glass-sheen: rgb(255 255 255 / 0.12);
+  --glass-hover: rgb(255 255 255 / 0.1);
+  --vignette: rgb(0 8 3 / 0.5);
+  --scrim-from: rgb(3 14 7 / 0.8);
+  --scrim-to: rgb(3 14 7 / 0.16);
+  --veil: linear-gradient(180deg, rgb(7 18 11 / 0.66) 0%, rgb(7 18 11 / 0.7) 50%, rgb(5 13 8 / 0.82) 100%);
+  --glow-a: rgb(255 190 90 / 0.22);
+  --glow-b: rgb(90 190 120 / 0.2);
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    var(--font-inter),
+    var(--font-inter-ext),
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans",
+    sans-serif;
+  font-feature-settings: "cv11", "ss03";
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Animations : uniquement transform et opacity (compositées par le GPU). ---------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.08);
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cloud-drift {
+  0%,
+  100% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+}
+@keyframes rain-fall {
+  0% {
+    opacity: 0;
+    transform: translate(2px, -8px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-4px, 14px);
+  }
+}
+@keyframes ring-in {
+  from {
+    opacity: 0;
+    transform: rotate(-70deg) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes ping-dot {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer components {
+  /* ---------- Illustrations animées (SVG décoratifs de components/Illustrations.tsx) ---------- */
+  .art-spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spin-slow 42s linear infinite;
+  }
+  .art-drift {
+    animation: cloud-drift 9s ease-in-out infinite;
+  }
+  .art-fall {
+    animation: rain-fall 1.5s ease-in infinite;
+  }
+  .art-delay-0 {
+    animation-delay: 0s;
+  }
+  .art-delay-1 {
+    animation-delay: 0.3s;
+  }
+  .art-delay-2 {
+    animation-delay: 0.6s;
+  }
+  .art-delay-3 {
+    animation-delay: 0.9s;
+  }
+  /* Anneau et jauge : se dessinent à l'apparition de la carte. */
+  .ring-anim {
+    transform-origin: center;
+    animation: ring-in 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .meter-fill {
+    transform-box: fill-box;
+    transform-origin: 0 50%;
+    animation: grow-x 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) 150ms both;
+  }
+  .pop {
+    animation: pop 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* Point « en direct » : un halo qui s'étend. */
+  .live-dot {
+    @apply relative inline-block h-2.5 w-2.5 rounded-full bg-accent;
+  }
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--accent);
+    animation: ping-dot 2s ease-out infinite;
+  }
+
+  /* ---------- Météo immersive : un ciel par situation (pluie, faible pluie, journée sèche). ---------- */
+  .sky {
+    @apply relative isolate overflow-hidden rounded-card border border-glass-edge text-white;
+    box-shadow:
+      var(--shadow-pop),
+      inset 0 1px 0 rgb(255 255 255 / 0.35);
+  }
+  .sky-dry {
+    background:
+      radial-gradient(60% 80% at 88% 8%, rgb(255 200 80 / 0.55), transparent 60%),
+      linear-gradient(160deg, #0b3b6e 0%, #145a98 55%, #1b6fb0 100%);
+  }
+  .sky-light {
+    background:
+      radial-gradient(50% 70% at 82% 12%, rgb(255 205 100 / 0.35), transparent 60%),
+      linear-gradient(160deg, #1b3a5c 0%, #2c5680 55%, #3c6a96 100%);
+  }
+  .sky-rain {
+    background:
+      radial-gradient(60% 70% at 85% 0%, rgb(120 170 230 / 0.35), transparent 60%),
+      linear-gradient(160deg, #14263d 0%, #22405f 55%, #2f5173 100%);
+  }
+  .sky h2,
+  .sky p {
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.3);
+  }
+  .sky-tile {
+    @apply flex min-w-0 flex-col items-center gap-1 rounded-btn border px-2 py-3 text-center;
+    border-color: rgb(255 255 255 / 0.28);
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.08));
+    -webkit-backdrop-filter: blur(8px) saturate(1.4);
+    backdrop-filter: blur(8px) saturate(1.4);
+    transition:
+      transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      background-color 220ms ease;
+  }
+  .sky-tile:hover {
+    transform: translateY(-4px);
+  }
+
+  /* ---------- Conseiller agronome : bulle de dialogue et décision. ---------- */
+  .advisor-bubble {
+    @apply glass glass-strong relative p-4;
+    border-top-left-radius: 6px;
+  }
+  .decision {
+    @apply flex items-center gap-3 rounded-btn border px-4 py-3 font-semibold;
+    border-color: currentColor;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      0 6px 16px -8px currentColor;
+  }
+  .decision-icon {
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full;
+    background: rgb(255 255 255 / 0.55);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8);
+  }
+  .step-line {
+    @apply relative flex flex-col gap-3 pl-7;
+  }
+  .step-line::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--gold), var(--blue));
+    opacity: 0.7;
+  }
+  .step-dot {
+    @apply absolute -left-7 top-1.5 h-4 w-4 rounded-full border-2 border-white;
+    background: var(--accent);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+  }
+
+  /* ---------- Verre : fond translucide, flou léger, bord lumineux, coins généreux. ---------- */
+  .glass {
+    @apply relative rounded-card border border-glass-edge text-ink;
+    background:
+      linear-gradient(155deg, var(--glass-sheen) 0%, transparent 38%),
+      var(--glass);
+    box-shadow:
+      var(--shadow-card),
+      inset 0 1px 0 var(--glass-rim),
+      inset 0 0 0 1px var(--glass-edge),
+      inset 0 -14px 24px -18px rgb(0 0 0 / 0.14);
+    -webkit-backdrop-filter: blur(10px) saturate(1.6) brightness(1.04);
+    backdrop-filter: blur(10px) saturate(1.6) brightness(1.04);
+  }
+  .glass-strong {
+    background:
+      linear-gradient(155deg, var(--glass-sheen) 0%, transparent 34%),
+      var(--glass-strong);
+    -webkit-backdrop-filter: blur(15px) saturate(1.6);
+    backdrop-filter: blur(15px) saturate(1.6);
+  }
+  .card {
+    @apply glass p-4 sm:p-5;
+    transition:
+      transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 220ms ease,
+      border-color 220ms ease;
+  }
+  .card-link {
+    @apply hover:-translate-y-1.5 hover:shadow-pop;
+  }
+  .card-link:hover {
+    border-color: var(--glass-rim);
+  }
+  .card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(120% 90% at 18% 0%, var(--glass-hover), transparent 60%);
+    opacity: 0;
+    transition: opacity 320ms ease;
+    pointer-events: none;
+  }
+  .card-link:hover::after {
+    opacity: 1;
+  }
+  /* Capsule : pastille d'information (provenance, confiance, météo, alertes…). */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-glass-edge px-2.5 py-1 text-xs font-medium text-ink;
+    background: var(--surface-glass);
+    box-shadow: inset 0 1px 0 var(--glass-rim);
+  }
+  .chip-label {
+    @apply font-normal text-mute;
+  }
+  /* Contour dégradé « conseiller » : un filet lumineux vert → or → bleu autour de la carte. */
+  .card-ai::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, var(--accent), var(--gold) 55%, var(--blue));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  .ai-orb {
+    @apply relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white;
+    background: radial-gradient(circle at 30% 25%, #9be37f, var(--accent) 55%, #0f6a2c);
+    box-shadow:
+      0 0 0 4px rgb(58 166 85 / 0.18),
+      0 6px 16px -4px rgb(23 89 31 / 0.6);
+    animation: bob 5s ease-in-out infinite;
+  }
+  .ai-orb::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: inherit;
+    border: 1.5px solid var(--accent);
+    opacity: 0.5;
+    animation: breathe 3.2s ease-in-out infinite;
+  }
+  /* Bouton « conseil IA » : dégradé vert profond, halo doux. */
+  .btn-ai {
+    @apply btn relative overflow-hidden text-white;
+    background: linear-gradient(135deg, #1f7a34, #0f5a2a);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.25) inset,
+      0 8px 20px -8px rgb(15 90 42 / 0.7);
+  }
+  .btn-ai:hover {
+    transform: translateY(-1px);
+  }
+  .btn-ai::after,
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.38) 50%, transparent 65%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .btn-ai:hover::after,
+  .btn-primary:hover:not(:disabled)::after {
+    transform: translateX(120%);
+    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  /* Entrée de navigation active : halo vert qui s'estompe vers la droite. */
+  .nav-active {
+    background: linear-gradient(90deg, rgb(58 166 85 / 0.28), rgb(58 166 85 / 0.04));
+    box-shadow: inset 0 1px 0 var(--glass-rim);
+  }
+  .nav-active-bottom {
+    background: radial-gradient(60% 70% at 50% 100%, rgb(58 166 85 / 0.28), transparent);
+  }
+  .tile {
+    @apply flex min-w-0 flex-col gap-0.5 rounded-btn border border-glass-edge px-3 py-2;
+    background: var(--surface-glass);
+  }
+
+  /* ---------- Squelette : balayage de lumière (transform seulement). ---------- */
+  .skeleton {
+    @apply relative overflow-hidden rounded-btn;
+    background: var(--surface-glass);
+    border: 1px solid var(--glass-edge);
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 20%, var(--glass-rim) 50%, transparent 80%);
+    opacity: 0.55;
+    animation: sweep 1.7s ease-in-out infinite;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Boutons et champs ---------- */
+  .btn {
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-btn px-4 font-semibold;
+    transition:
+      transform 160ms ease,
+      box-shadow 200ms ease,
+      background-color 200ms ease;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn-primary {
+    @apply btn relative overflow-hidden text-on-g disabled:opacity-60;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--g) 82%, white), var(--g));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.3) inset,
+      0 8px 20px -6px color-mix(in srgb, var(--g) 70%, transparent);
+  }
+  .btn-primary:hover:not(:disabled) {
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.3) inset,
+      0 12px 26px -6px color-mix(in srgb, var(--g) 80%, transparent);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    @apply btn glass border-glass-edge text-ink disabled:opacity-60;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--glass-strong);
+    transform: translateY(-1px);
+  }
+  .field-input {
+    @apply min-h-[44px] w-full rounded-btn border border-glass-edge px-3 text-ink;
+    background: var(--glass-strong);
+    transition:
+      box-shadow 200ms ease,
+      border-color 200ms ease;
+  }
+  .field-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgb(58 166 85 / 0.22);
+  }
+
+  /* Pastilles de la rampe séquentielle (carte en lecture seule) : classes plutôt qu'attribut style,
+     que la CSP à nonce bloquerait dans le HTML rendu côté serveur. */
+  .ramp-0 {
+    @apply border border-dashed border-line bg-bg;
+  }
+  .ramp-1 {
+    background: var(--ramp-1);
+  }
+  .ramp-2 {
+    background: var(--ramp-2);
+  }
+  .ramp-3 {
+    background: var(--ramp-3);
+  }
+  .ramp-4 {
+    background: var(--ramp-4);
+  }
+  .ramp-5 {
+    background: var(--ramp-5);
+  }
+  .chart-box {
+    @apply h-64 w-full sm:h-72;
+  }
+
+  /* ---------- Décor : photo de champ globale, une « scène » par grand écran. ---------- */
+  .scene {
+    @apply pointer-events-none fixed inset-0 -z-10 overflow-hidden;
+    background: var(--bg);
+  }
+  .scene-photo {
+    @apply absolute inset-0 h-full w-full object-cover;
+    transform-origin: 50% 60%;
+    object-position: 50% 60%;
+    transition:
+      transform 1400ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      object-position 1400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: transform;
+    filter: saturate(1.18) contrast(1.06);
+  }
+  .scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 90% at 50% 40%, transparent 55%, var(--vignette) 100%);
+    pointer-events: none;
+  }
+  .scene-tint {
+    @apply absolute inset-0;
+    background-color: transparent;
+    transition: background-color 1400ms ease;
+  }
+  .scene-veil {
+    @apply absolute inset-0;
+    background: var(--veil);
+  }
+  /* Lumières diffuses : deux halos qui dérivent très lentement (opacity/transform seulement). */
+  .scene-glow {
+    @apply absolute -right-[10%] -top-[15%] h-[60vmax] w-[60vmax] rounded-full;
+    background: radial-gradient(closest-side, var(--glow-a), transparent);
+    animation: drift 26s ease-in-out infinite;
+  }
+  .scene-glow-b {
+    inset: auto auto -20% -15%;
+    background: radial-gradient(closest-side, var(--glow-b), transparent);
+    animation-duration: 34s;
+    animation-direction: reverse;
+  }
+
+  [data-scene="dashboard"] .scene-photo {
+    object-position: 50% 55%;
+    transform: scale(1.02);
+  }
+  [data-scene="parcelles"] .scene-photo {
+    object-position: 15% 85%;
+    transform: scale(1.3);
+    transform-origin: 15% 85%;
+  }
+  [data-scene="irrigation"] .scene-photo {
+    object-position: 85% 30%;
+    transform: scale(1.18);
+    transform-origin: 85% 30%;
+  }
+  [data-scene="irrigation"] .scene-tint {
+    background-color: rgb(40 130 210 / 0.22);
+  }
+  [data-scene="maladies"] .scene-photo {
+    object-position: 60% 90%;
+    transform: scale(1.55);
+    transform-origin: 60% 90%;
+  }
+  [data-scene="maladies"] .scene-tint {
+    background-color: rgb(230 150 40 / 0.16);
+  }
+  [data-scene="recommandations"] .scene-photo {
+    object-position: 58% 45%;
+    transform: scale(1.12);
+    transform-origin: 58% 45%;
+  }
+  [data-scene="recommandations"] .scene-tint {
+    background-color: rgb(250 200 80 / 0.16);
+  }
+  /* Connexion : la photo est la star, voile sombre à gauche pour porter le texte blanc. */
+  [data-scene="login"] .scene-veil {
+    background: linear-gradient(105deg, rgb(4 24 11 / 0.86) 0%, rgb(4 24 11 / 0.45) 55%, rgb(4 24 11 / 0.1) 100%);
+  }
+  [data-scene="login"] .scene-photo {
+    object-position: 60% 50%;
+  }
+
+  /* ---------- Bandeau agricole en tête de page : la même photo, recadrée par écran. ---------- */
+  .banner {
+    @apply relative isolate overflow-hidden rounded-card border border-glass-edge;
+    box-shadow:
+      var(--shadow-pop),
+      inset 0 1px 0 var(--glass-rim);
+  }
+  .banner-img {
+    @apply absolute inset-0 -z-20 h-full w-full object-cover;
+    object-position: 50% 45%;
+    filter: saturate(1.2) contrast(1.06);
+    transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .banner h1,
+  .banner > div > div > p {
+    text-shadow: 0 1px 14px rgb(0 0 0 / 0.4);
+  }
+  .banner:hover .banner-img {
+    transform: scale(1.03);
+  }
+  .banner-scrim {
+    @apply absolute inset-0 -z-10;
+    background:
+      linear-gradient(100deg, var(--scrim-from), var(--scrim-to)),
+      linear-gradient(0deg, rgb(3 16 8 / 0.35), transparent 50%);
+  }
+  /* Sur la photo du bandeau, le verre est plus dense : le texte garde son contraste quel que soit le cadrage. */
+  .banner .card,
+  .banner .tile {
+    background: var(--glass-strong);
+  }
+  [data-scene="parcelles"] .banner-img {
+    object-position: 20% 88%;
+  }
+  [data-scene="irrigation"] .banner-img {
+    object-position: 80% 30%;
+  }
+  [data-scene="maladies"] .banner-img {
+    object-position: 60% 92%;
+  }
+  [data-scene="recommandations"] .banner-img {
+    object-position: 58% 42%;
+  }
+  [data-scene="dashboard"] .banner-img {
+    object-position: 50% 40%;
+  }
+
+  /* ---------- Apparition progressive ---------- */
+  .reveal {
+    animation: rise 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .stagger > * {
+    animation: rise 560ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .stagger > *:nth-child(2) {
+    animation-delay: 70ms;
+  }
+  .stagger > *:nth-child(3) {
+    animation-delay: 140ms;
+  }
+  .stagger > *:nth-child(4) {
+    animation-delay: 210ms;
+  }
+  .stagger > *:nth-child(5) {
+    animation-delay: 280ms;
+  }
+  .stagger > *:nth-child(6) {
+    animation-delay: 350ms;
+  }
+  .stagger > *:nth-child(7) {
+    animation-delay: 420ms;
+  }
+  .stagger > *:nth-child(n + 8) {
+    animation-delay: 490ms;
+  }
+}
+
+/* Sur petit écran le flou coûte cher : on l'allège, le verre reste lisible. */
+@media (max-width: 640px) {
+  .glass {
+    -webkit-backdrop-filter: blur(7px) saturate(1.4);
+    backdrop-filter: blur(7px) saturate(1.4);
+  }
+}
+/* Pas de verre si le navigateur ne sait pas flouter, ou si l'utilisateur réduit les transparences. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--glass-strong);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-strong,
+  .btn-secondary {
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/*
+ * Carte Leaflet (features/map, lib/map-style.ts). Hors @layer : Tailwind ne lit pas lib/ et retirerait
+ * ces classes. Les tracés SVG de Leaflet portent des attributs fill/stroke, que ces règles remplacent.
+ * Aucun fond de tuiles : le fond est la surface de la carte (CSP connect-src/img-src 'self').
+ */
+.leaflet-container {
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  border-radius: inherit;
+}
+.map-field {
+  stroke: var(--ink);
+  stroke-width: 1.5px;
+  stroke-opacity: 0.6;
+  fill-opacity: 0.85;
+}
+.map-fill-0 {
+  fill: var(--bg);
+  fill-opacity: 0.7;
+  stroke-dasharray: 4 3;
+}
+.map-fill-1 {
+  fill: var(--ramp-1);
+}
+.map-fill-2 {
+  fill: var(--ramp-2);
+}
+.map-fill-3 {
+  fill: var(--ramp-3);
+}
+.map-fill-4 {
+  fill: var(--ramp-4);
+}
+.map-fill-5 {
+  fill: var(--ramp-5);
+}
+.map-fill-neutral {
+  fill: var(--line);
+  fill-opacity: 0.8;
+}
+.map-selected {
+  stroke: var(--ink);
+  stroke-width: 4px;
+  stroke-opacity: 1;
+}
+.map-boundary {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5px;
+  stroke-dasharray: 6 4;
+}
+.map-kit {
+  stroke: var(--card);
+  stroke-width: 2px;
+  fill-opacity: 1;
+}
+.map-kit-active {
+  fill: var(--g);
+}
+.map-kit-off {
+  fill: var(--mute);
+}
+.map-kit-estimated {
+  stroke: var(--ink);
+  stroke-dasharray: 3 2;
+}
+.leaflet-tooltip.map-tooltip,
+.leaflet-tooltip.map-label {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.leaflet-tooltip.map-label {
+  box-shadow: none;
+  font-size: 0.75rem;
+  padding: 1px 6px;
+}
+
+/* Sélecteur de fichier : bouton vert cohérent avec le reste du verre. */
+input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: 12px;
+  background: var(--g);
+  color: var(--on-g);
+  font-weight: 600;
+  cursor: pointer;
+}

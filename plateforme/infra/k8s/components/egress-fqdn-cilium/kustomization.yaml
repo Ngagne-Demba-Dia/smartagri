@@ -1,0 +1,27 @@
+# Composant optionnel : filtrage de la sortie HTTPS par nom DNS (Cilium >= 1.14 requis comme CNI ou
+# en mode chaînage avec le VPC CNI). Il supprime les NetworkPolicies « egress-https » (ouvertes sur
+# 0.0.0.0/0:443) et les remplace par des CiliumNetworkPolicies toFQDNs.
+# Activation dans un overlay :
+#   components:
+#     - ../../components/egress-fqdn-cilium
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - cilium-egress.yaml
+
+patches:
+  - patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: egress-https
+        namespace: smartagri92
+  - patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: egress-https
+        namespace: smartagri92-ml

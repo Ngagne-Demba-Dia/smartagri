@@ -1,0 +1,60 @@
+# Pipeline reproductible : données → entraînement → évaluation → paquet signé.
+# Prérequis : `pip install -e ".[pipelines]"` (dvc), puis `dvc repro` depuis ml/ (PYTHONPATH=src).
+# Non exécuté dans l'environnement de développement actuel (dvc non installé) : à vérifier au premier `dvc repro`.
+vars:
+  - params.yaml
+
+stages:
+  make_data:
+    cmd: python scripts/make_synthetic.py --out ${data.out} --seed ${data.seed}
+    deps:
+      - scripts/make_synthetic.py
+    params:
+      - data.seed
+    outs:
+      - ${data.out}
+
+  train:
+    foreach: [yield_regression, disease_risk_binary]
+    do:
+      cmd: python -m agriml.train --config configs/${item}.yaml --no-tuning
+      deps:
+        - configs/${item}.yaml
+        - src/agriml
+        - ${data.out}
+      outs:
+        - artifacts/${item}/models
+        - artifacts/${item}/oof.parquet
+      metrics:
+        - artifacts/${item}/cv_scores.json:
+            cache: false
+
+  evaluate:
+    foreach: [yield_regression, disease_risk_binary]
+    do:
+      cmd: python -m agriml.evaluate --run artifacts/${item}
+      deps:
+        - artifacts/${item}/oof.parquet
+      metrics:
+        - artifacts/${item}/evaluation.json:
+            cache: false
+
+  export:
+    foreach: [yield_regression, disease_risk_binary]
+    do:
+      cmd: python -m agriml.export --run artifacts/${item} --out ${export.out_root}/${item}
+      deps:
+        - artifacts/${item}/evaluation.json
+        - artifacts/${item}/models
+        - docs/model_card_template.md
+      outs:
+        - ${export.out_root}/${item}
+
+  soil_forecast:
+    cmd: python -m agriml.forecast.soil_moisture --config configs/soil_moisture_forecast.yaml
+    deps:
+      - configs/soil_moisture_forecast.yaml
+      - src/agriml/forecast
+      - ${data.out}/telemetry
+    outs:
+      - artifacts/soil_moisture_forecast

@@ -1,0 +1,1393 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SmartAgri92 — Maquette</title>
+<!--
+  Maquette cliquable de la plateforme web SmartAgri92 : les 13 modules de docs/10_web_ux.md.
+  Confidentiel, réservé aux partenaires de travail. Fichier local : ne pas publier.
+  Données fictives. Aucun appel réseau, aucune dépendance externe.
+  Un seul fichier de plus de 800 lignes, par choix : il doit s'ouvrir hors ligne d'un double-clic.
+  Couleurs des graphiques et de la carte vérifiées avec le validateur de palettes (voir docs/10_web_ux.md §5).
+-->
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f4f7f2;--card:#ffffff;--ink:#1b2a1f;--mute:#5f6f63;--line:#dfe7da;--soft:#e8f3e6;
+  --g:#2e7d32;--g-ink:#ffffff;--g2:#66bb6a;
+  --ok-ink:#1b5e20;--ok-bg:#e8f3e6;--warn-ink:#8a5300;--warn-bg:#fff3e0;--bad-ink:#b3261e;--bad-bg:#fdecea;--off-ink:#5f6f63;--off-bg:#eef1ed;
+  --st-ok:#0ca30c;--st-warn:#fab219;--st-bad:#d03b3b;
+  --s1:#2a78d6;--s2:#eb6834;--grid:#e6ece3;--axis:#c3cbbf;
+  --m1:#86b6ef;--m2:#5598e7;--m3:#2a78d6;--m4:#1c5cab;--m5:#104281;
+  /* Étiquettes de la carte : texte (--lN) et liseré (--hN) par classe, contraste ≥ 6 sauf classe 3 (texte blanc liseré foncé) */
+  --l1:#0f1712;--h1:#86b6ef;--l2:#0f1712;--h2:#5598e7;--l3:#ffffff;--h3:#104281;--l4:#ffffff;--h4:#1c5cab;--l5:#ffffff;--h5:#104281;
+  --hatch-bg:#eef1ed;--hatch-fg:#9aa69d;--road:#e6dfcf;
+  --shadow:0 1px 2px rgba(20,40,25,.06),0 4px 14px rgba(20,40,25,.05);
+  --hdr:58px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0f1712;--card:#18231b;--ink:#e6efe7;--mute:#9bb0a0;--line:#26362b;--soft:#1d2e21;
+  --g:#66bb6a;--g-ink:#0f1712;--g2:#43a047;
+  --ok-ink:#a5d6a7;--ok-bg:#1d2e21;--warn-ink:#ffb74d;--warn-bg:#3a2c10;--bad-ink:#ef9a9a;--bad-bg:#3a1a1a;--off-ink:#9bb0a0;--off-bg:#212e25;
+  --s1:#3987e5;--s2:#d95926;--grid:#26362b;--axis:#3a4a3e;
+  --m1:#184f95;--m2:#2a78d6;--m3:#5598e7;--m4:#86b6ef;--m5:#b7d3f6;
+  --l1:#ffffff;--h1:#184f95;--l2:#ffffff;--h2:#104281;--l3:#0f1712;--h3:#5598e7;--l4:#0f1712;--h4:#86b6ef;--l5:#0f1712;--h5:#b7d3f6;
+  --hatch-bg:#212e25;--hatch-fg:#4d5f52;--road:#2a3329;
+  --shadow:none;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1712;--card:#18231b;--ink:#e6efe7;--mute:#9bb0a0;--line:#26362b;--soft:#1d2e21;
+  --g:#66bb6a;--g-ink:#0f1712;--g2:#43a047;
+  --ok-ink:#a5d6a7;--ok-bg:#1d2e21;--warn-ink:#ffb74d;--warn-bg:#3a2c10;--bad-ink:#ef9a9a;--bad-bg:#3a1a1a;--off-ink:#9bb0a0;--off-bg:#212e25;
+  --s1:#3987e5;--s2:#d95926;--grid:#26362b;--axis:#3a4a3e;
+  --m1:#184f95;--m2:#2a78d6;--m3:#5598e7;--m4:#86b6ef;--m5:#b7d3f6;
+  --l1:#ffffff;--h1:#184f95;--l2:#ffffff;--h2:#104281;--l3:#0f1712;--h3:#5598e7;--l4:#0f1712;--h4:#86b6ef;--l5:#0f1712;--h5:#b7d3f6;
+  --hatch-bg:#212e25;--hatch-fg:#4d5f52;--road:#2a3329;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+a{color:inherit}
+h1{font-size:1.5rem;line-height:1.25;margin:0}
+h2{font-size:1.05rem;margin:0}
+h3{font-size:.95rem;margin:0}
+p{margin:.4rem 0}
+:focus-visible{outline:3px solid var(--s1);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--card);padding:10px 14px;border-radius:10px;border:1px solid var(--line)}
+.skip:focus{left:8px}
+.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.sm{width:16px;height:16px}
+.i.lg{width:28px;height:28px}
+.num{font-variant-numeric:tabular-nums}
+.mute{color:var(--mute)}
+.small{font-size:.85rem}
+
+/* Ossature */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+header.top{grid-column:1/-1;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;text-decoration:none;margin-right:6px}
+.brand svg{width:30px;height:30px}
+.top .spacer{flex:1}
+.top select,.top input{min-height:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:.9rem;padding:0 10px;max-width:230px}
+.top input{width:170px}
+.top form{display:flex;align-items:center}
+.iconbtn{min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font:inherit;padding:0 10px;text-decoration:none}
+.count{font-size:.8rem;font-weight:700;background:var(--bad-bg);color:var(--bad-ink);border-radius:999px;padding:0 7px}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--mute)}
+nav.side{background:var(--card);border-right:1px solid var(--line);padding:6px 10px 24px;position:sticky;top:var(--hdr);height:calc(100vh - var(--hdr));overflow:auto}
+.grp{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin:14px 10px 4px;font-weight:700}
+.navlink{display:flex;align-items:center;gap:10px;min-height:42px;padding:0 10px;border-radius:10px;text-decoration:none;color:var(--ink)}
+.navlink:hover{background:var(--soft)}
+.navlink[aria-current="page"]{background:var(--soft);font-weight:700;box-shadow:inset 3px 0 0 var(--g)}
+.ver{margin-left:auto;font-size:.7rem;color:var(--mute);border:1px solid var(--line);border-radius:6px;padding:0 5px;font-weight:600}
+.sidefoot{margin:18px 10px 0;font-size:.85rem;color:var(--mute);display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.sidefoot label{display:flex;gap:8px;align-items:center;min-height:32px}
+.demo{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;border:1px dashed var(--line);border-radius:10px;padding:10px;font-size:.85rem;color:var(--mute)}
+.demo b{color:var(--ink)}
+.demo select{width:100%;min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;padding:0 8px}
+.demo label{display:flex;gap:8px;align-items:center;min-height:32px}
+main{padding:20px 24px 100px;min-width:0;width:100%;max-width:1320px}
+.bottom{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);justify-content:space-around;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+.bottom a,.bottom button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;justify-content:center;font-size:.75rem;text-decoration:none;color:var(--ink);background:none;border:0;font-family:inherit;cursor:pointer;border-radius:10px}
+.bottom [aria-current="page"]{font-weight:800;background:var(--soft)}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  nav.side{display:none}
+  main{padding:16px 16px 100px}
+  .bottom{display:flex}
+  .hide-sm{display:none!important}
+  .top select{max-width:46vw}
+}
+
+/* Composants */
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:16px}
+.head .sub{color:var(--mute);margin:.2rem 0 0}
+.crumb{font-size:.85rem;color:var(--mute);margin-bottom:4px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.g2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.stack{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.card-h .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kpi .lab{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:.9rem}
+.kpi .val{font-size:2rem;font-weight:800;line-height:1.15;margin-top:4px}
+.kpi .val small{font-size:1rem;font-weight:600;color:var(--mute)}
+.kpi .sub{font-size:.85rem;color:var(--mute)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 8px;border-radius:999px;font-size:.85rem;font-weight:700;white-space:nowrap}
+.tag.ok{color:var(--ok-ink);background:var(--ok-bg)}
+.tag.warn{color:var(--warn-ink);background:var(--warn-bg)}
+.tag.bad{color:var(--bad-ink);background:var(--bad-bg)}
+.tag.off{color:var(--off-ink);background:var(--off-bg)}
+.tag.plain{color:var(--ink);background:var(--soft)}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:.8rem;color:var(--mute)}
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--g);color:var(--g-ink);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn[aria-pressed="true"]{background:var(--soft);border-color:var(--mute)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap}
+.seg button{min-height:40px;padding:0 12px;border:0;border-right:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:.9rem;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--soft);font-weight:800}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--soft);margin-bottom:16px}
+.banner.warn{background:var(--warn-bg);color:var(--warn-ink);border-color:transparent}
+.banner.bad{background:var(--bad-bg);color:var(--bad-ink);border-color:transparent}
+.banner p{margin:0}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border-bottom:0}
+.list .grow{flex:1;min-width:180px}
+.list li.arow{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"tag body time acts";gap:6px 12px}
+.arow>.tag{grid-area:tag;justify-self:start}.arow>.grow{grid-area:body;min-width:0}.arow>.at{grid-area:time}.arow>.acts{grid-area:acts;display:flex;gap:8px}
+@media (max-width:600px){.list li.arow{grid-template-columns:auto 1fr;grid-template-areas:"tag time" "body body" "acts acts"}.arow>.at{justify-self:end}}
+.meter{position:relative;height:12px;background:var(--soft);border-radius:999px;margin:10px 0 4px}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--s1)}
+.meter .mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+.tscroll{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.92rem}
+.tbl th,.tbl td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.tbl th{color:var(--mute);font-size:.8rem;font-weight:700}
+.tbl td.n,.tbl th.n{text-align:right}
+.tbl tr.sel td{background:var(--soft)}
+.tbl tbody tr.clk{cursor:pointer}
+.tbl tbody tr.clk:hover td{background:var(--soft)}
+.form{display:grid;gap:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.fld{display:grid;gap:4px;min-width:140px;flex:1}
+.fld label{font-weight:600;font-size:.9rem}
+.fld input,.fld select,.fld textarea{min-height:44px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--card);color:var(--ink);font:inherit}
+.fld input[aria-invalid="true"]{border-color:var(--bad-ink);box-shadow:0 0 0 1px var(--bad-ink)}
+.hint{font-size:.85rem;color:var(--mute)}
+.err{color:var(--bad-ink);font-weight:600;font-size:.9rem;min-height:1.2em;margin:0}
+.okmsg{color:var(--ok-ink);font-weight:600;font-size:.9rem}
+.big{font-size:2.6rem;font-weight:800;line-height:1}
+.pair{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.pair:last-child{border-bottom:0}
+.empty{text-align:center;padding:40px 16px;color:var(--mute)}
+details summary{cursor:pointer;color:var(--mute);font-size:.85rem}
+
+/* Graphiques */
+.chart{position:relative;margin-top:6px;border-radius:8px}
+.chart svg{display:block;max-width:100%;height:auto}
+.legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.85rem;color:var(--mute);margin:6px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px}
+.sw.ln{height:3px;width:18px;border-radius:2px}
+.sw.band{width:18px;opacity:.25}
+.sum{font-size:.9rem;color:var(--mute);margin:0 0 4px}
+.tip{position:absolute;top:6px;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.85rem;box-shadow:0 4px 18px rgba(0,0,0,.14);min-width:150px;z-index:5}
+.tip strong{display:block;margin-bottom:4px}
+.tip .r{display:flex;align-items:center;gap:8px;justify-content:space-between;white-space:nowrap}
+.tip .r span:first-child{display:inline-flex;align-items:center;gap:6px;color:var(--mute)}
+.chart .gl{stroke:var(--grid);stroke-width:1}
+.chart .ax{stroke:var(--axis);stroke-width:1}
+.chart .tk{fill:var(--mute);font-size:12px}
+.chart .ref{stroke:var(--mute);stroke-width:1.5;stroke-dasharray:5 4}
+.chart .rl{fill:var(--mute);font-size:12px;font-weight:700;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.chart .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .bandp{fill:var(--s1);fill-opacity:.12}
+.chart .cross{stroke:var(--mute);stroke-width:1}
+.chart .mk{stroke:var(--card);stroke-width:2}
+.chart .el{fill:var(--ink);font-size:12px;font-weight:800;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.chart svg.hov .bar:not(.on){opacity:.4}
+.chart .gbar{rx:4}
+.hbar{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:8px;align-items:center;margin:6px 0}
+.hbar .tr{height:14px;background:var(--soft);border-radius:4px;overflow:hidden}
+.hbar .tr i{display:block;height:100%;background:var(--s1);border-radius:0 4px 4px 0}
+
+/* Carte */
+.map .fld-p{stroke:var(--card);stroke-width:2;cursor:pointer;outline:none}
+.map .fld-p:hover,.map .fld-p:focus-visible{stroke:var(--ink);stroke-width:3}
+.map .lab{fill:var(--ink);font-size:15px;font-weight:800;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.map .lab2{font-size:14px;font-weight:600}
+.map.compact .lab{font-size:26px;stroke-width:5px;transform:translateY(9px)}
+.map.compact .lab2{display:none}
+.map .road{fill:none;stroke:var(--road);stroke-width:14;stroke-linecap:round}
+.map .roadlab{fill:var(--mute);font-size:11px;font-style:italic}
+.map .badge{fill:var(--card);stroke-width:2}
+.mlegend{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:.85rem;color:var(--mute);margin-top:8px}
+.ramp{display:inline-flex;align-items:stretch;gap:2px}
+.ramp span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.75rem}
+.ramp b{display:block;width:44px;height:12px}
+.ramp span:first-child b{border-radius:4px 0 0 4px}
+.ramp span:last-child b{border-radius:0 4px 4px 0}
+.hatch{display:inline-block;width:22px;height:12px;border-radius:3px;background:repeating-linear-gradient(45deg,var(--hatch-fg) 0 2px,var(--hatch-bg) 2px 6px)}
+
+/* Assistant */
+.chat{display:flex;flex-direction:column;gap:10px;max-height:58vh;min-height:280px;overflow:auto;padding:4px 2px}
+.msg{max-width:min(88%,640px);padding:10px 12px;border-radius:14px;white-space:pre-line}
+.msg.me{align-self:flex-end;background:var(--soft)}
+.msg.ai{align-self:flex-start;border:1px solid var(--line);background:var(--card)}
+.msg .meta{font-size:.8rem;color:var(--mute);margin-top:6px;white-space:normal}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chips button{min-height:40px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);padding:0 14px;font:inherit;font-size:.9rem;cursor:pointer}
+
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:18px;max-width:min(520px,calc(100vw - 32px));width:100%}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin-bottom:8px}
+.photo{max-width:100%;max-height:240px;border-radius:10px;display:block;margin-top:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){.tag,.chip,.seg{border:1px solid CanvasText}.meter .fill{background:Highlight}}
+</style>
+</head>
+<body>
+<!-- Icônes au trait (inspirées du jeu Lucide), et motif hachuré « pas de mesure » de la carte -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" style="fill:var(--hatch-bg)"/><rect width="2" height="6" style="fill:var(--hatch-fg)"/>
+    </pattern>
+  </defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/></symbol>
+  <symbol id="i-farm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></symbol>
+  <symbol id="i-fields" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 7 18z"/></symbol>
+  <symbol id="i-rain" viewBox="0 0 24 24"><path d="M7 15h10a4 4 0 0 0 0-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 7 15zM8 19l-1 2M12 19l-1 2M16 19l-1 2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 10c0-3 2.5-6 7-6 0 4-3 6-7 6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8zM19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13c0-5 5-9 16-9 0 9-4 14-9 16zM4 21c3-5 6-8 10-10"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0 5 5L21 13l-8 8-3-3 1.5-1.5a4 4 0 0 0-5-5L3 10l8-8 3 3z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9zM15 9l-6 6M9 9l6 6"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.9a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></symbol>
+  <symbol id="i-wifioff" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M2 8.8a15 15 0 0 1 4.2-2.7M10.7 5a15 15 0 0 1 11.3 3.8M5 12.9a10 10 0 0 1 5.2-2.8M19 12.9a10 10 0 0 0-2-1.4M12 20h.01"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.7s7 7.3 7 12.3a7 7 0 0 1-14 0c0-5 7-12.3 7-12.3z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16M3 12a9 9 0 0 1 15.5-6.3L21 8M21 3v5h-5M3 21v-5h5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.8 0"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Aller au contenu</a>
+<div class="app">
+  <header class="top" id="top">
+    <a class="brand" href="#/tableau" aria-label="SmartAgri92, tableau de bord">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--g)"/><path d="M9 22c0-7 5-12 14-12 0 8-5 13-12 13" fill="none" stroke="var(--g-ink)" stroke-width="2.4" stroke-linecap="round"/><path d="M9 24c3-4 6-7 10-9" fill="none" stroke="var(--g-ink)" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>SmartAgri92</span>
+    </a>
+    <label class="sr" for="org">Organisation</label>
+    <select id="org"></select>
+    <label class="sr" for="camp">Campagne</label>
+    <select id="camp"></select>
+    <form id="search" class="hide-sm" role="search">
+      <label class="sr" for="q">Rechercher une parcelle ou un kit</label>
+      <input id="q" type="search" placeholder="Parcelle ou kit…" list="qlist" autocomplete="off">
+      <datalist id="qlist"></datalist>
+    </form>
+    <span class="spacer"></span>
+    <span class="sync hide-sm" id="sync" role="status"></span>
+    <a class="iconbtn" href="#/alertes" id="bell" aria-label="Alertes ouvertes"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg><span class="count" id="bellcount"></span></a>
+    <label class="sr" for="lang">Langue</label>
+    <select id="lang" class="hide-sm"><option value="fr">FR</option><option value="wo">Wolof</option><option value="ff">Pulaar</option></select>
+    <button class="iconbtn" id="theme" type="button" aria-label="Changer de thème"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg></button>
+  </header>
+  <nav class="side" id="side" aria-label="Modules"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+<nav class="bottom" id="bottom" aria-label="Navigation principale"></nav>
+<div class="sr" id="announce" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ====================== Données fictives ====================== */
+const NOW = Date.UTC(2026, 9, 26, 9, 0); // lundi 26/10/2026, 09:00 (heure du Sénégal = UTC)
+const ORGS = [{id: 'o1', name: 'GIE Niayes (démo)'}, {id: 'o2', name: 'Coopérative vide (démo)'}];
+const CAMPAIGNS = [
+  {id: 'c2', name: 'Contre-saison froide 2026-27', from: '2026-09-01', to: '2027-03-31', active: true},
+  {id: 'c1', name: 'Hivernage 2026', from: '2026-06-15', to: '2026-10-15', active: false}
+];
+const FARMS = [
+  {id: 'F1', name: 'Exploitation Keur Mbaye', place: 'Keur Mbaye (Thiès)', ha: 2.4,
+    members: [['Responsable', '+221 77 ••• •• 12'], ['Membre, téléphone relais', '+221 76 ••• •• 48'], ['Membre', '+221 70 ••• •• 05']]},
+  {id: 'F2', name: 'Exploitation Bayakh', place: 'Bayakh (Thiès)', ha: 2.1,
+    members: [['Responsable', '+221 78 ••• •• 31'], ['Membre, téléphone relais', '+221 77 ••• •• 90']]},
+  {id: 'F3', name: 'Exploitation Mboro Nord', place: 'Mboro (Thiès)', ha: 3.1,
+    members: [['Responsable', '+221 76 ••• •• 77'], ['Membre', '+221 77 ••• •• 14'], ['Membre', '+221 78 ••• •• 63'], ['Membre, téléphone relais', '+221 70 ••• •• 29']]},
+  {id: 'F4', name: 'Exploitation Notto', place: 'Notto Diobass (Thiès)', ha: 1.4,
+    members: [['Responsable, téléphone relais', '+221 77 ••• •• 56']]}
+];
+// pump : off | on | fault. air et npk : null quand le capteur est absent (le kit v1.1 renvoie null, plus NaN).
+const FIELDS = [
+  {code: 'P-01', name: 'Keur Mbaye 1', farm: 'F1', crop: 'Oignon', stage: 'bulbaison', day: 54, ha: 0.8, moist: 41, start: 30, stop: 60, pump: 'off', online: true, seen: '09:00', air: [32.8, 43, 1009], npk: [46, 22, 101], kc: 1.05, sow: '2026-09-02', harvest: '2027-01-10'},
+  {code: 'P-02', name: 'Keur Mbaye 2', farm: 'F1', crop: 'Oignon', stage: 'bulbaison', day: 52, ha: 0.9, moist: 24, start: 30, stop: 60, pump: 'fault', online: true, seen: '09:00', air: [33.1, 41, 1009], npk: [42, 18, 95], kc: 1.05, sow: '2026-09-04', harvest: '2027-01-12'},
+  {code: 'P-03', name: 'Keur Mbaye 3', farm: 'F1', crop: 'Tomate', stage: 'floraison', day: 38, ha: 0.7, moist: 35, start: 32, stop: 62, pump: 'off', online: true, seen: '09:00', air: [32.6, 44, 1009], npk: [58, 30, 120], kc: 1.1, sow: '2026-09-18', harvest: '2027-01-20'},
+  {code: 'P-04', name: 'Bayakh 1', farm: 'F2', crop: 'Oignon', stage: 'bulbaison', day: 60, ha: 0.8, moist: 52, start: 30, stop: 60, pump: 'off', online: true, seen: '08:40', air: [31.9, 52, 1010], npk: [50, 25, 110], kc: 1.05, sow: '2026-08-27', harvest: '2027-01-02', disease: true},
+  {code: 'P-05', name: 'Bayakh 2', farm: 'F2', crop: 'Chou', stage: 'pommaison', day: 47, ha: 0.7, moist: 46, start: 35, stop: 65, pump: 'off', online: true, seen: '08:40', air: [31.7, 53, 1010], npk: [62, 28, 115], kc: 1.0, sow: '2026-09-09', harvest: '2026-12-20'},
+  {code: 'P-06', name: 'Bayakh 3', farm: 'F2', crop: 'Piment', stage: 'croissance', day: 30, ha: 0.6, moist: 33, start: 30, stop: 60, pump: 'off', online: true, seen: '08:40', air: null, npk: [40, 20, 90], kc: 0.85, sow: '2026-09-26', harvest: '2027-02-15'},
+  {code: 'P-07', name: 'Mboro Nord 1', farm: 'F3', crop: 'Tomate', stage: 'nouaison', day: 52, ha: 0.9, moist: 29, start: 32, stop: 62, pump: 'on', online: true, seen: '08:55', air: [30.4, 58, 1011], npk: [55, 27, 118], kc: 1.15, sow: '2026-09-04', harvest: '2027-01-05'},
+  {code: 'P-08', name: 'Mboro Nord 2', farm: 'F3', crop: 'Oignon', stage: 'levée', day: 12, ha: 0.8, moist: 57, start: 35, stop: 65, pump: 'off', online: true, seen: '08:55', air: [30.6, 57, 1011], npk: [60, 31, 108], kc: 0.7, sow: '2026-10-14', harvest: '2027-03-05'},
+  {code: 'P-09', name: 'Mboro Nord 3', farm: 'F3', crop: 'Aubergine', stage: 'floraison', day: 44, ha: 0.7, moist: 38, start: 30, stop: 60, pump: 'off', online: true, seen: '08:55', air: [30.5, 58, 1011], npk: [48, 24, 104], kc: 1.0, sow: '2026-09-12', harvest: '2027-01-25'},
+  {code: 'P-10', name: 'Notto 1', farm: 'F4', crop: 'Gombo', stage: 'croissance', day: 25, ha: 0.7, moist: 18, start: 30, stop: 60, pump: 'on', online: true, seen: '07:55', air: [33.4, 38, 1008], npk: [38, 19, 88], kc: 0.8, sow: '2026-10-01', harvest: '2027-01-15'},
+  {code: 'P-11', name: 'Notto 2', farm: 'F4', crop: 'Oignon', stage: 'bulbaison', day: 58, ha: 0.7, moist: null, start: 30, stop: 60, pump: 'off', online: false, seen: '02:04', air: null, npk: null, kc: 1.05, sow: '2026-08-29', harvest: '2027-01-04'},
+  {code: 'P-12', name: 'Mboro Nord 4', farm: 'F3', crop: 'Chou', stage: 'croissance', day: 20, ha: 0.7, moist: 44, start: 35, stop: 65, pump: 'off', online: true, seen: '08:55', air: [30.7, 57, 1011], npk: [57, 26, 112], kc: 0.75, sow: '2026-10-06', harvest: '2027-01-30'}
+].map((f, i) => ({...f, kit: 'SA92-0001' + String(i + 1).padStart(2, '0')}));
+// Contours fictifs, en coordonnées de la carte (600 × 370)
+const POLYS = {
+  'P-01': '22,30 112,22 116,176 26,180', 'P-02': '118,22 204,28 210,172 122,176', 'P-03': '210,28 300,20 304,170 216,172',
+  'P-04': '306,20 392,26 398,176 310,170', 'P-05': '398,26 488,22 494,180 404,176', 'P-06': '494,22 580,30 576,182 500,180',
+  'P-07': '26,210 120,214 116,352 20,346', 'P-08': '126,214 214,210 210,356 122,352', 'P-09': '220,210 318,216 312,358 216,356',
+  'P-10': '324,216 410,210 414,350 318,358', 'P-11': '416,210 500,214 506,354 420,350', 'P-12': '506,214 578,210 582,348 512,354'
+};
+const ALERTS = [
+  {id: 'a1', field: 'P-02', kind: 'bad', at: '08:41', text: 'Pompe en défaut : 3 arrêts de sécurité depuis hier (10 min de marche sans hausse d’humidité). Sol à 24 %. Vérifier la cuve et la crépine.'},
+  {id: 'a2', field: 'P-11', kind: 'off', at: '09:00', text: 'Kit muet depuis 7 h : dernier relais à 02:04. Vérifier la batterie ou le téléphone relais.'},
+  {id: 'a3', field: 'P-04', kind: 'warn', at: '07:32', text: 'Suspicion de mildiou (71 %) sur une photo : à valider par un conseiller.'}
+];
+const RECOS = [
+  {id: 'r1', field: 'P-02', action: 'Arroser 22 min ce soir après 18 h, une fois la pompe réparée', why: 'Sol à 24 %, sous le seuil de 30 %. ET0 prévue 6,1 mm, pas de pluie annoncée.', factors: ['Humidité du sol 24 %', 'ET0 du jour 6,1 mm', 'Stade bulbaison (Kc 1,05)'], conf: 0.82, src: 'Modèle irrigation_need v12 (champion)', status: 'todo', until: 'ce soir'},
+  {id: 'r2', field: 'P-04', action: 'Réduire l’arrosage de 30 % jeudi', why: 'Pluie prévue jeudi : 8 mm (probabilité 70 %).', factors: ['Pluie prévue 8 mm', 'Sol à 52 %', 'Biais local de la prévision corrigé'], conf: 0.74, src: 'Modèle irrigation_need v12 (champion)', status: 'todo', until: 'jeudi'},
+  {id: 'r3', field: 'P-10', action: 'Vérifier le goutte-à-goutte : débit anormalement faible', why: 'Pendant les arrosages, l’humidité monte deux fois moins vite que d’habitude.', factors: ['Pente d’humidité en arrosage −52 %', 'Pompe en marche 47 min', 'Aucune pluie'], conf: 0.61, src: 'Modèle sensor_anomaly v3', status: 'todo', until: 'aujourd’hui'},
+  {id: 'r4', field: 'P-01', action: 'Arroser 18 min ce matin', why: 'Sol proche du seuil, forte demande en eau prévue.', factors: ['Humidité 33 % à 07:00', 'ET0 6,1 mm'], conf: 0.88, src: 'Modèle irrigation_need v12 (champion)', status: 'done', until: '08:12'},
+  {id: 'r5', field: 'P-07', action: 'Prévoir un apport d’azote dans 5 jours, à confirmer par un conseiller', why: 'Azote mesuré (55 mg/kg) sous la plage visée au stade nouaison.', factors: ['N 55 mg/kg', 'Stade nouaison'], conf: null, src: 'Règles agronomiques (repli : modèle npk_calibration pas encore servi)', status: 'todo', until: '31/10'},
+  {id: 'r6', field: 'P-11', action: 'Pas de recommandation', why: 'Données manquantes : le kit n’a rien envoyé depuis 7 h. La plateforme préfère ne rien conseiller plutôt que de conseiller à l’aveugle.', factors: [], conf: null, src: 'Aucune source disponible', status: 'none', until: ''}
+];
+const WATER7 = [41, 44, 39, 47, 52, 46, 43]; // m³ par jour, organisation
+const WATER8W = [268, 281, 295, 290, 305, 322, 298, 312]; // m³ par semaine
+const WEATHER = {
+  days: ['lun. 26', 'mar. 27', 'mer. 28', 'jeu. 29', 'ven. 30', 'sam. 31', 'dim. 1er'],
+  tmax: [33, 34, 32, 31, 33, 34, 33], tmin: [22, 23, 22, 21, 22, 23, 22],
+  rain: [0, 0, 0, 8, 2, 0, 0], p: [5, 5, 10, 70, 35, 5, 5], et0: [6.1, 6.3, 5.8, 4.2, 5.0, 6.0, 6.2]
+};
+const ETC = {weeks: ['S38', 'S39', 'S40', 'S41', 'S42', 'S43'], need: [28, 31, 34, 38, 40, 41], given: [26, 30, 35, 33, 36, 30]};
+const YIELD = {
+  dates: ['28/09', '05/10', '12/10', '19/10', '26/10'],
+  p10: [12.0, 13.1, 14.0, 14.9, 15.6], p50: [17.5, 17.9, 18.3, 18.6, 18.9], p90: [23.0, 22.4, 21.9, 21.5, 21.0], last: 18.4
+};
+const KPIS = [
+  ['Eau économisée par rapport aux parcelles témoins', '18 %', 'Objectif de 20 % à valider', 'warn', 'Proche de la cible'],
+  ['Disponibilité des kits', '96,4 %', '≥ 95 %', 'ok', 'Atteint'],
+  ['Fraîcheur des données (délai médian)', '3 h 40', '< 24 h en relais différé', 'ok', 'Atteint'],
+  ['Précision des alertes maladie', '68 %', '≥ 70 %', 'warn', 'Sous la cible'],
+  ['Rétention (actifs chaque semaine / équipés)', '64 %', '≥ 60 % à 3 mois', 'ok', 'Atteint'],
+  ['Recommandations suivies', '71 %', 'Suivi, sans cible', 'plain', 'Suivi'],
+  ['Eau apportée (8 semaines)', '2 371 m³', '—', 'plain', 'Suivi']
+];
+const CMDS = [
+  {field: 'P-02', at: '25/10 18:02', what: 'Seuils 30 / 60 %', from: 'Plateforme, relayé par le téléphone de l’exploitation', st: 'ok', stl: 'Appliqué par le kit'},
+  {field: 'P-02', at: '22/10 07:15', what: 'Seuils 28 / 60 %', from: 'Application mobile, sur place', st: 'ok', stl: 'Appliqué par le kit'},
+  {field: 'P-02', at: '21/10 19:40', what: 'Seuils 58 / 60 %', from: 'Plateforme', st: 'bad', stl: 'Refusé (écart < 5)'}
+];
+const DIAG_QUEUE = [
+  {id: 'd1', field: 'P-04', at: '26/10 07:32', res: 'Mildiou (Peronospora destructor)', conf: 0.71, st: 'todo'},
+  {id: 'd2', field: 'P-03', at: '24/10 16:10', res: 'Sain', conf: 0.93, st: 'done'},
+  {id: 'd3', field: 'P-09', at: '23/10 10:05', res: 'Acariens', conf: 0.58, st: 'fixed'}
+];
+const MAINT = [
+  {eq: 'POMPE-P-02', at: '26/10', type: 'Diagnostic', cost: 0, note: 'Arrêts de sécurité répétés, crépine à contrôler'},
+  {eq: 'POMPE-P-02', at: '02/09', type: 'Installation', cost: 45000, note: 'Pompe solaire 12 V'},
+  {eq: 'SA92-000111', at: '15/10', type: 'Remplacement batterie', cost: 18000, note: 'Batterie 12 V 7 Ah'}
+];
+
+/* ====================== État de l'interface ====================== */
+const ROLE_LABEL = {farmer: 'Producteur·rice (exploitation Keur Mbaye)', coop_manager: 'Gestion de la coopérative', agronomist: 'Conseil agricole', admin: 'Administration'};
+const PERMS = {
+  'thresholds.edit': ['farmer', 'coop_manager', 'admin'], 'reco.decide': ['farmer', 'admin'], 'reco.write': ['agronomist', 'admin'],
+  'diag.send': ['farmer', 'agronomist', 'admin'], 'diag.validate': ['agronomist', 'admin'], 'farm.manage': ['coop_manager', 'admin'],
+  'equip.manage': ['coop_manager', 'admin'], 'campaign.manage': ['coop_manager', 'admin'], 'report.export': ['coop_manager', 'admin']
+};
+const PERM_WHO = {
+  'thresholds.edit': 'l’exploitation, la gestion de la coopérative ou l’administration', 'reco.decide': 'l’exploitation concernée',
+  'reco.write': 'le conseil agricole', 'diag.send': 'l’exploitation ou le conseil agricole', 'diag.validate': 'le conseil agricole',
+  'farm.manage': 'la gestion de la coopérative', 'equip.manage': 'la gestion de la coopérative', 'campaign.manage': 'la gestion de la coopérative',
+  'report.export': 'la gestion de la coopérative'
+};
+let state = {
+  role: 'coop_manager', org: 'o1', camp: 'c2', lang: 'fr', offline: false,
+  recos: RECOS, alerts: ALERTS, cmds: CMDS, queue: DIAG_QUEUE, maint: MAINT, pending: {},
+  chat: [{who: 'ai', text: 'Bonjour. Je réponds sur vos parcelles, la météo et l’irrigation, à partir de vos données. Je ne donne pas de dose de produit phytosanitaire : pour cela, je vous mets en relation avec un conseiller.'}]
+};
+function setState(patch, opts) {
+  state = {...state, ...patch};
+  render(opts || {keepFocus: true});
+}
+const can = p => (PERMS[p] || []).includes(state.role);
+
+/* ====================== Outils ====================== */
+const $ = s => document.querySelector(s);
+const NF1 = new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1});
+const nf = v => NF1.format(v);
+const pct = v => Math.round(v * 100) + ' %';
+const SVGNS = 'http://www.w3.org/2000/svg';
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  setProps(el, props);
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+  return el;
+}
+function s(tag, props, ...kids) {
+  const el = document.createElementNS(SVGNS, tag);
+  setProps(el, props);
+  for (const c of kids.flat()) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+  return el;
+}
+function setProps(el, props) {
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'text') el.textContent = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+}
+function icon(name, cls) {
+  const el = s('svg', {class: 'i ' + (cls || ''), 'aria-hidden': 'true'});
+  el.append(s('use', {href: '#i-' + name}));
+  return el;
+}
+const STATUS = {ok: ['check', 'Bon'], warn: ['alert', 'Attention'], bad: ['stop', 'Critique'], off: ['wifioff', 'Hors ligne'], plain: ['info', 'Info']};
+const tag = (kind, text) => h('span', {class: 'tag ' + kind}, icon(STATUS[kind][0], 'sm'), text || STATUS[kind][1]);
+const fieldOf = code => FIELDS.find(f => f.code === code);
+const farmOf = id => FARMS.find(f => f.id === id);
+function scopeFields() { return state.role === 'farmer' ? FIELDS.filter(f => f.farm === 'F1') : FIELDS; }
+function scopeFarms() { return state.role === 'farmer' ? FARMS.filter(f => f.id === 'F1') : FARMS; }
+function inScope(code) { return scopeFields().some(f => f.code === code); }
+function verdict(f) {
+  if (!f.online) return {kind: 'off', text: 'Kit muet'};
+  if (f.pump === 'fault') return {kind: 'bad', text: 'Pompe en défaut'};
+  if (f.disease) return {kind: 'warn', text: 'Maladie suspectée'};
+  if (f.moist < f.start && f.pump === 'on') return {kind: 'ok', text: 'Arrosage en cours'};
+  if (f.moist < f.start) return {kind: 'warn', text: 'Sol sec'};
+  return {kind: 'ok', text: 'Bon'};
+}
+const bin = m => (m < 20 ? 1 : m < 30 ? 2 : m < 40 ? 3 : m < 50 ? 4 : 5);
+const BINS = ['< 20 %', '20–30', '30–40', '40–50', '≥ 50 %'];
+function gate(btn, perm) {
+  if (can(perm)) return btn;
+  btn.disabled = true;
+  btn.title = 'Réservé à ' + PERM_WHO[perm];
+  return btn;
+}
+function roleNote(perm) {
+  return can(perm) ? null : h('p', {class: 'hint'}, icon('info', 'sm'), ' Votre rôle (' + ROLE_LABEL[state.role] + ') est en lecture ici. Action réservée à ' + PERM_WHO[perm] + '.');
+}
+function announce(msg) { const a = $('#announce'); a.textContent = ''; setTimeout(() => { a.textContent = msg; }, 30); }
+function pageHead(title, sub, extra, crumb) {
+  return h('div', {class: 'head'},
+    h('div', null, crumb ? h('div', {class: 'crumb'}, crumb) : null, h('h1', {tabindex: '-1', text: title}), sub ? h('p', {class: 'sub', text: sub}) : null),
+    extra ? h('div', {class: 'btns', style: 'margin:0'}, extra) : null);
+}
+function kpi(label, iconName, value, unit, sub) {
+  return h('div', {class: 'card kpi'}, h('div', {class: 'lab'}, icon(iconName), label),
+    h('div', {class: 'val num'}, value, unit ? h('small', null, ' ' + unit) : null), sub ? h('div', {class: 'sub'}, sub) : null);
+}
+function table(cols, rows, opts) {
+  const o = opts || {};
+  const thead = h('thead', null, h('tr', null, cols.map(c => h('th', {class: c.n ? 'n' : null, scope: 'col', text: c.label}))));
+  const tbody = h('tbody', null, rows.map(r => {
+    const tr = h('tr', {class: [o.onRow ? 'clk' : '', o.sel && o.sel(r) ? 'sel' : ''].join(' ').trim() || null},
+      cols.map(c => { const v = c.get(r); return h('td', {class: c.n ? 'n' : null}, v instanceof Node ? v : String(v ?? '—')); }));
+    if (o.onRow) {
+      tr.tabIndex = 0;
+      tr.addEventListener('click', () => o.onRow(r));
+      tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); o.onRow(r); } });
+    }
+    return tr;
+  }));
+  return h('div', {class: 'tscroll'}, h('table', {class: 'tbl'}, o.caption ? h('caption', {class: 'sr', text: o.caption}) : null, thead, tbody));
+}
+function seg(label, options, value, onPick) {
+  return h('div', {class: 'seg', role: 'group', 'aria-label': label},
+    options.map(([v, t]) => h('button', {type: 'button', 'aria-pressed': String(v === value), onclick: () => onPick(v)}, t)));
+}
+function field(id, label, control, hint) {
+  control.id = id;
+  return h('div', {class: 'fld'}, h('label', {for: id, text: label}), control, hint ? h('span', {class: 'hint', id: id + '-h', text: hint}) : null);
+}
+function select(options, value) {
+  return h('select', null, options.map(([v, t]) => h('option', {value: v, selected: v === value}, t)));
+}
+function openDialog(title, body, confirmLabel, onConfirm) {
+  const err = h('p', {class: 'err', 'aria-live': 'polite'});
+  const dlg = h('dialog', {'aria-labelledby': 'dlg-t'},
+    h('form', {method: 'dialog', class: 'form'},
+      h('h2', {id: 'dlg-t', text: title}), body, err,
+      h('div', {class: 'btns'},
+        h('button', {class: 'btn', value: 'cancel', type: 'submit', formnovalidate: true}, 'Annuler'),
+        h('button', {class: 'btn primary', value: 'ok', type: 'submit'}, confirmLabel))));
+  dlg.addEventListener('close', () => dlg.remove());
+  dlg.querySelector('form').addEventListener('submit', e => {
+    if (e.submitter && e.submitter.value === 'ok') {
+      const problem = onConfirm(dlg);
+      if (problem) { e.preventDefault(); err.textContent = problem; }
+    }
+  });
+  document.body.append(dlg);
+  dlg.showModal();
+}
+function rng(seed) { // mulberry32, pour des données fictives reproductibles
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const DTF = {
+  hour: new Intl.DateTimeFormat('fr-FR', {timeZone: 'UTC', hour: '2-digit', minute: '2-digit'}),
+  long: new Intl.DateTimeFormat('fr-FR', {timeZone: 'UTC', weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}),
+  day: new Intl.DateTimeFormat('fr-FR', {timeZone: 'UTC', day: '2-digit', month: '2-digit'}),
+  wday: new Intl.DateTimeFormat('fr-FR', {timeZone: 'UTC', weekday: 'short', day: 'numeric'})
+};
+/* Humidité horaire sur 30 jours, simulée à rebours depuis la valeur actuelle : l'air sèche le sol, l'arrosage le remonte. */
+const seriesCache = new Map();
+function moistureSeries(f) {
+  if (seriesCache.has(f.code)) return seriesCache.get(f.code);
+  const r = rng(f.code.charCodeAt(2) * 97 + f.code.charCodeAt(3));
+  const H = 720, out = new Array(H);
+  const silent = f.online ? 0 : 7;
+  let v = f.moist == null ? 36 : f.moist;
+  for (let k = 0; k < H; k++) {
+    const idx = H - 1 - k, hour = (9 - k + 24 * 40) % 24;
+    out[idx] = k < silent ? null : Math.round(v * 10) / 10;
+    const evap = (hour >= 9 && hour < 18 ? 1.05 : 0.25) + (r() - 0.5) * 0.3;
+    let prev = v + evap;
+    if (prev >= f.stop - 1 + r() * 3) prev = f.start - 1 - r() * 3;
+    v = Math.max(5, Math.min(95, prev));
+  }
+  const res = out.map((y, i) => ({t: NOW - (H - 1 - i) * 3600e3, y}));
+  seriesCache.set(f.code, res);
+  return res;
+}
+
+/* ====================== Graphiques (SVG) ====================== */
+let observers = [];
+function mount(host, draw) {
+  // Redessin à la frame suivante : dessiner dans le rappel changerait la mise en page observée (boucle ResizeObserver).
+  const ro = new ResizeObserver(() => requestAnimationFrame(() => {
+    const w = Math.floor(host.clientWidth);
+    if (w > 0 && w !== host._w) { host._w = w; host.replaceChildren(); draw(host, w); }
+  }));
+  ro.observe(host);
+  observers.push(ro);
+}
+function chartCard(o) {
+  const host = h('div', {class: 'chart', tabindex: '0', role: 'group', 'aria-label': o.title + '. ' + o.summary + ' Flèches gauche et droite pour lire les valeurs.'});
+  const legend = o.legend && o.legend.length > 1
+    ? h('div', {class: 'legend'}, o.legend.map(l => h('span', null, h('i', {class: 'sw ' + (l.kind || ''), style: 'background:var(--' + l.color + ')'}), l.name)))
+    : null;
+  const tbl = h('div', {hidden: true}, table(o.table.cols, o.table.rows, {caption: o.title}));
+  const btn = h('button', {class: 'btn', type: 'button', 'aria-pressed': 'false'}, icon('table'), h('span', {text: 'Tableau'}));
+  btn.addEventListener('click', () => {
+    const on = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', String(on));
+    btn.lastChild.textContent = on ? 'Graphique' : 'Tableau';
+    host.hidden = on; tbl.hidden = !on; if (legend) legend.hidden = on;
+  });
+  mount(host, o.draw);
+  return h('section', {class: 'card'},
+    h('div', {class: 'card-h'}, h('h2', {text: o.title}), h('div', {class: 'acts'}, o.actions || null, btn)),
+    h('p', {class: 'sum', text: o.summary}), legend, host, tbl);
+}
+function niceTicks(min, max, count) {
+  const span = max - min, raw = span / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(st => span / st <= count) || 10 * mag;
+  const ticks = [];
+  for (let t = Math.ceil(min / step) * step; t <= max + 1e-9; t += step) ticks.push(Math.round(t * 100) / 100);
+  return ticks;
+}
+function barPath(x, y, w, hgt, r) {
+  const rr = Math.max(0, Math.min(r, w / 2, hgt));
+  return 'M' + x + ',' + (y + hgt) + 'V' + (y + rr) + 'Q' + x + ',' + y + ' ' + (x + rr) + ',' + y + 'H' + (x + w - rr) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + rr) + 'V' + (y + hgt) + 'Z';
+}
+function txt(x, y, str, anchor, cls) { return s('text', {x, y, 'text-anchor': anchor, class: cls}, str); }
+/*
+ * Graphique cartésien : courbes (2 px), barres (≤ 24 px, bout arrondi 4 px, 2 px entre barres voisines),
+ * bande p10–p90 (lavis 12 %), lignes de référence nommées, réticule et info-bulle, clavier.
+ * o = {labels, long?, series:[{name,values,color,type,unit}], band?, refs?, yMin, yMax, unit, height, endLabel}
+ */
+function xyChart(host, W, o) {
+  const H = o.height || 240, m = {l: 42, r: 14, t: 16, b: 28};
+  const pw = W - m.l - m.r, ph = H - m.t - m.b, n = o.labels.length, bw = pw / n;
+  const y0 = o.yMin || 0, y1 = o.yMax;
+  const X = i => m.l + bw * (i + 0.5), Y = v => m.t + ph * (1 - (v - y0) / (y1 - y0));
+  const svg = s('svg', {viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, 'aria-hidden': 'true'});
+  for (const t of niceTicks(y0, y1, 4)) {
+    svg.append(s('line', {x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), class: t === y0 ? 'ax' : 'gl'}), txt(m.l - 6, Y(t) + 4, nf(t), 'end', 'tk'));
+  }
+  const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / (o.labelW || 58)))));
+  o.labels.forEach((lb, i) => { if (lb && (o.labelAt ? o.labelAt(i) : i % every === 0)) svg.append(txt(X(i), H - 8, lb, 'middle', 'tk')); });
+  if (o.band) {
+    const up = o.band.hi.map((v, i) => X(i) + ',' + Y(v)), down = o.band.lo.map((v, i) => X(i) + ',' + Y(v)).reverse();
+    svg.append(s('polygon', {points: up.concat(down).join(' '), class: 'bandp'}));
+  }
+  const bars = o.series.filter(x => x.type === 'bar'), lines = o.series.filter(x => x.type !== 'bar');
+  const barEls = [];
+  if (bars.length) {
+    const g = bars.length, gap = 2, wb = Math.max(2, Math.min(24, (bw * 0.7 - gap * (g - 1)) / g));
+    bars.forEach((se, k) => se.values.forEach((v, i) => {
+      if (v == null) return;
+      const x = X(i) - (g * wb + gap * (g - 1)) / 2 + k * (wb + gap);
+      const el = s('path', {d: barPath(x, Y(v), wb, Y(y0) - Y(v), 4), class: 'bar', style: 'fill:var(--' + se.color + ')'});
+      el.dataset.i = i;
+      barEls.push(el); svg.append(el);
+    }));
+  }
+  for (const r of o.refs || []) svg.append(s('line', {x1: m.l, x2: W - m.r, y1: Y(r.y), y2: Y(r.y), class: 'ref'}), txt(m.l + 6, Y(r.y) - 6, r.label, 'start', 'rl'));
+  for (const se of lines) {
+    let d = '', pen = false;
+    se.values.forEach((v, i) => { if (v == null) { pen = false; return; } d += (pen ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(v).toFixed(1); pen = true; });
+    svg.append(s('path', {d, class: 'ln', style: 'stroke:var(--' + se.color + ')'}));
+  }
+  if (o.endLabel) {
+    const se = o.series[0];
+    let i = se.values.length - 1; while (i > 0 && se.values[i] == null) i--;
+    const v = se.values[i];
+    const lab = nf(v) + (se.unit === '%' ? ' %' : ' ' + se.unit);
+    if (v != null && se.type === 'bar') svg.append(txt(X(i), Y(v) - 8, lab, 'middle', 'el'));
+    else if (v != null) svg.append(txt(Math.min(X(i), W - m.r - 2), Y(v) - 10, lab, 'end', 'el'));
+  }
+  const cross = s('line', {class: 'cross', y1: m.t, y2: m.t + ph, visibility: 'hidden'});
+  const mks = lines.map(se => s('circle', {r: 4, class: 'mk', style: 'fill:var(--' + se.color + ')', visibility: 'hidden'}));
+  const hit = s('rect', {x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent'});
+  svg.append(cross, ...mks, hit);
+  const tip = h('div', {class: 'tip', hidden: true});
+  host.append(svg, tip);
+  const unitOf = se => (se.unit === '%' ? ' %' : ' ' + (se.unit || o.unit || ''));
+  function show(i) {
+    host._idx = i;
+    if (lines.length) {
+      cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i)); cross.setAttribute('visibility', 'visible');
+      lines.forEach((se, k) => {
+        const v = se.values[i];
+        mks[k].setAttribute('visibility', v == null ? 'hidden' : 'visible');
+        if (v != null) { mks[k].setAttribute('cx', X(i)); mks[k].setAttribute('cy', Y(v)); }
+      });
+    }
+    svg.classList.toggle('hov', barEls.length > 0);
+    barEls.forEach(b => b.classList.toggle('on', +b.dataset.i === i));
+    const rows = o.series.map(se => h('div', {class: 'r'},
+      h('span', null, h('i', {class: 'sw' + (se.type === 'bar' ? '' : ' ln'), style: 'background:var(--' + se.color + ')'}), se.name),
+      h('b', {class: 'num'}, se.values[i] == null ? 'pas de mesure' : nf(se.values[i]) + unitOf(se))));
+    if (o.band) rows.push(h('div', {class: 'r'}, h('span', null, h('i', {class: 'sw band', style: 'background:var(--s1)'}), o.band.name),
+      h('b', {class: 'num'}, nf(o.band.lo[i]) + ' – ' + nf(o.band.hi[i]) + ' ' + o.unit)));
+    tip.replaceChildren(h('strong', {text: (o.long || o.labels)[i]}), ...rows, ...(o.tipExtra ? [o.tipExtra(i)] : []));
+    tip.hidden = false;
+    const scale = host.clientWidth / W, px = X(i) * scale, tw = tip.offsetWidth;
+    tip.style.left = (px + 14 + tw > host.clientWidth ? Math.max(0, px - tw - 14) : px + 14) + 'px';
+  }
+  function hide() { tip.hidden = true; cross.setAttribute('visibility', 'hidden'); mks.forEach(mk => mk.setAttribute('visibility', 'hidden')); svg.classList.remove('hov'); }
+  hit.addEventListener('pointermove', e => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * (W / r.width);
+    show(Math.max(0, Math.min(n - 1, Math.floor((px - m.l) / bw))));
+  });
+  hit.addEventListener('pointerleave', () => { if (document.activeElement !== host) hide(); });
+  host.onkeydown = e => {
+    const keys = {ArrowRight: 1, ArrowLeft: -1, Home: -n, End: n};
+    if (e.key in keys) { e.preventDefault(); show(Math.max(0, Math.min(n - 1, (host._idx ?? n - 1) + keys[e.key]))); }
+    else if (e.key === 'Escape') hide();
+  };
+  host.onfocus = () => show(host._idx ?? n - 1);
+  host.onblur = hide;
+}
+
+/* Carte des parcelles : classes d'humidité en une seule teinte, alertes en icônes, hachures sans mesure. */
+const MAP_COMPACT_PX = 440; // en dessous, une étiquette de 15 unités ferait moins de 11 px à l'écran
+function fieldMap(o) {
+  const fields = o.fields, alertsOn = o.alerts !== false;
+  const host = h('div', {class: 'chart map'});
+  const tip = h('div', {class: 'tip', hidden: true});
+  const svg = s('svg', {viewBox: '0 0 600 370', width: '100%', role: 'group', 'aria-label': 'Carte des parcelles, ' + fields.length + ' parcelles. Tabulation pour parcourir, Entrée pour ouvrir.'});
+  svg.append(s('path', {d: 'M6,195 C150,186 300,204 450,193 S560,190 594,196', class: 'road'}), txt(300, 199, 'piste', 'middle', 'roadlab'));
+  const alertOf = code => state.alerts.find(a => a.field === code);
+  for (const f of fields) {
+    const pts = POLYS[f.code].split(' ').map(p => p.split(',').map(Number));
+    const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+    const al = alertOf(f.code);
+    const fill = f.moist == null || !f.online ? 'url(#hatch)' : 'var(--m' + bin(f.moist) + ')';
+    const desc = f.code + ' ' + f.name + ', ' + f.crop + '. ' + (f.moist == null ? 'Pas de mesure récente' : 'Humidité ' + f.moist + ' %, classe ' + BINS[bin(f.moist) - 1]) + (al ? '. Alerte : ' + STATUS[al.kind][1] : '');
+    const poly = s('polygon', {points: POLYS[f.code], class: 'fld-p', style: 'fill:' + fill, tabindex: '0', role: 'link', 'aria-label': desc});
+    const open = () => { location.hash = '#/parcelles/' + f.code; };
+    const showTip = () => {
+      tip.replaceChildren(h('strong', {text: f.code + ' · ' + f.name}),
+        h('div', {class: 'r'}, h('span', {text: 'Culture'}), h('b', {text: f.crop + ', ' + f.stage})),
+        h('div', {class: 'r'}, h('span', {text: 'Humidité du sol'}), h('b', {class: 'num', text: f.moist == null ? 'pas de mesure' : f.moist + ' %'})),
+        h('div', {class: 'r'}, h('span', {text: 'Mesure'}), h('b', {text: f.seen})),
+        al ? h('div', {style: 'margin-top:6px'}, tag(al.kind)) : null);
+      tip.hidden = false;
+      const sc = host.clientWidth / 600, left = cx * sc + 16;
+      tip.style.left = (left + tip.offsetWidth > host.clientWidth ? Math.max(0, cx * sc - tip.offsetWidth - 16) : left) + 'px';
+      tip.style.top = Math.max(0, cy * sc - 40) + 'px';
+    };
+    poly.addEventListener('click', open);
+    poly.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    poly.addEventListener('pointerenter', showTip); poly.addEventListener('focus', showTip);
+    poly.addEventListener('pointerleave', () => { tip.hidden = true; }); poly.addEventListener('blur', () => { tip.hidden = true; });
+    const labs = [txt(cx, cy - 2, f.code, 'middle', 'lab'), txt(cx, cy + 16, f.moist == null ? '—' : f.moist + ' %', 'middle', 'lab lab2')];
+    if (f.moist != null && f.online) { const k = bin(f.moist); labs.forEach(t => t.setAttribute('style', 'fill:var(--l' + k + ');stroke:var(--h' + k + ')')); }
+    svg.append(poly, ...labs);
+    if (al && alertsOn) {
+      const bx = Math.max(...pts.map(p => p[0])) - 18, by = Math.min(...pts.map(p => p[1])) + 18;
+      const ink = al.kind === 'bad' ? '--bad-ink' : al.kind === 'warn' ? '--warn-ink' : '--off-ink';
+      const ring = al.kind === 'bad' ? '--st-bad' : al.kind === 'warn' ? '--st-warn' : '--mute';
+      const g = s('g', {'aria-hidden': 'true', style: 'color:var(' + ink + ');pointer-events:none'});
+      g.append(s('circle', {cx: bx, cy: by, r: 12, class: 'badge', style: 'stroke:var(' + ring + ')'}));
+      const u = s('svg', {x: bx - 8, y: by - 8, width: 16, height: 16, viewBox: '0 0 24 24', class: 'i'});
+      u.append(s('use', {href: '#i-' + STATUS[al.kind][0]}));
+      g.append(u); svg.append(g);
+    }
+  }
+  host.append(svg, tip);
+  // Carte étroite (téléphone, vignette du tableau de bord) : code seul, en plus gros, pour rester lisible à l'échelle réduite.
+  const ro = new ResizeObserver(() => requestAnimationFrame(() => host.classList.toggle('compact', host.clientWidth < MAP_COMPACT_PX)));
+  ro.observe(host); observers.push(ro);
+  return host;
+}
+function mapLegend(stamp) {
+  return h('div', {class: 'mlegend'},
+    h('span', null, h('b', {text: 'Humidité du sol'}), ' ', stamp || ''),
+    h('span', {class: 'ramp', role: 'img', 'aria-label': 'Cinq classes, du plus sec au plus humide : ' + BINS.join(', ')},
+      BINS.map((b, i) => h('span', null, h('b', {style: 'background:var(--m' + (i + 1) + ')'}), b))),
+    h('span', null, h('i', {class: 'hatch'}), ' Pas de mesure récente'),
+    h('span', null, icon('stop', 'sm'), ' Critique'), h('span', null, icon('alert', 'sm'), ' Attention'), h('span', null, icon('wifioff', 'sm'), ' Kit muet'));
+}
+
+/* ====================== Vues ====================== */
+function alertRow(a) {
+  const f = fieldOf(a.field);
+  return h('li', {class: 'arow'}, tag(a.kind), h('div', {class: 'grow'}, h('b', {text: f.code + ' · ' + f.name}), h('div', {class: 'small mute', text: a.text})),
+    h('span', {class: 'small mute at', text: a.at}), h('div', {class: 'acts'}, h('a', {class: 'btn', href: '#/parcelles/' + f.code}, 'Voir')));
+}
+function viewDashboard() {
+  const fl = scopeFields(), att = fl.filter(f => verdict(f).kind !== 'ok');
+  const al = state.alerts.filter(a => inScope(a.field));
+  const online = fl.filter(f => f.online).length;
+  const water = state.role === 'farmer' ? WATER7.map(v => Math.round(v * 0.24)) : WATER7;
+  const total = water.reduce((a, b) => a + b, 0);
+  const bad = al.filter(a => a.kind === 'bad').length;
+  return h('div', null,
+    pageHead('Tableau de bord', att.length ? 'Bonjour. ' + att.length + ' parcelle' + (att.length > 1 ? 's demandent' : ' demande') + ' votre attention.' : 'Bonjour. Tout va bien sur vos parcelles.'),
+    h('div', {class: 'grid'},
+      kpi('Kits en ligne', 'wifi', online + ' / ' + fl.length, null, 'Dernier relais à 09:00'),
+      kpi('Eau apportée (7 jours)', 'drop', nf(total), 'm³', 'Estimation par le temps de pompe'),
+      kpi('Recommandations suivies', 'spark', '71', '%', 'Sur 30 jours'),
+      kpi('Alertes ouvertes', 'bell', String(al.length), null, h('span', null, bad + ' critique, ' + (al.length - bad) + ' attention'))),
+    h('div', {class: 'g2', style: 'margin-top:16px'},
+      h('section', {class: 'card', id: 'atraiter'}, h('div', {class: 'card-h'}, h('h2', {text: 'À traiter'}), h('a', {class: 'btn', href: '#/alertes'}, 'Toutes les alertes')),
+        al.length ? h('ul', {class: 'list'}, al.map(alertRow)) : h('p', {class: 'mute', text: 'Aucune alerte ouverte.'})),
+      h('section', {class: 'card'}, h('div', {class: 'card-h'}, h('h2', {text: 'Carte des parcelles'}), h('a', {class: 'btn', href: '#/carte'}, icon('map'), 'Ouvrir')),
+        fieldMap({fields: fl}), mapLegend('(mesures de 02:04 à 09:00)'))),
+    h('div', {class: 'g2', style: 'margin-top:16px'},
+      chartCard({
+        title: 'Eau apportée par jour', summary: 'Sur 7 jours : ' + nf(total) + ' m³, entre ' + Math.min(...water) + ' et ' + Math.max(...water) + ' m³ par jour.',
+        legend: [{name: 'Eau apportée', color: 's1'}],
+        draw: (el, w) => xyChart(el, w, {labels: ['mar. 20', 'mer. 21', 'jeu. 22', 'ven. 23', 'sam. 24', 'dim. 25', 'lun. 26'], series: [{name: 'Eau apportée', values: water, color: 's1', type: 'bar', unit: 'm³'}], yMax: Math.ceil(Math.max(...water) / 10) * 10 + 10, unit: 'm³', endLabel: true, height: 220}),
+        table: {cols: [{label: 'Jour', get: r => r[0]}, {label: 'Eau (m³)', n: true, get: r => r[1]}], rows: ['mar. 20', 'mer. 21', 'jeu. 22', 'ven. 23', 'sam. 24', 'dim. 25', 'lun. 26'].map((d, i) => [d, water[i]])}
+      }),
+      h('section', {class: 'stack'},
+        h('div', {class: 'card'}, h('div', {class: 'card-h'}, h('h2', {text: 'Météo du jour · Thiès'}), h('a', {class: 'btn', href: '#/meteo'}, 'Détail')),
+          h('div', {class: 'row', style: 'align-items:center'}, icon('sun', 'lg'), h('span', {class: 'big num', text: '33 °C'}),
+            h('div', null, h('div', {text: 'Pluie 0 mm · ET0 6,1 mm'}), h('div', {class: 'small mute', text: 'Jeudi : 8 mm de pluie prévus (70 %)'})))),
+        h('div', {class: 'card'}, h('h2', {text: 'Activité récente'}),
+          h('ul', {class: 'list small'},
+            [['09:00', 'Mesures relayées par les téléphones de 3 exploitations'], ['08:41', 'Alerte critique : pompe en défaut sur P-02'], ['08:12', 'Recommandation acceptée sur P-01 : arroser 18 min'], ['hier 18:02', 'Seuils 30 / 60 % appliqués par le kit de P-02']]
+              .map(([t, x]) => h('li', null, h('span', {class: 'mute num', style: 'min-width:76px', text: t}), h('span', {class: 'grow', text: x}))))))));
+}
+function viewAlerts() {
+  const al = state.alerts.filter(a => inScope(a.field));
+  return h('div', null, pageHead('Alertes ouvertes', al.length + ' alerte' + (al.length > 1 ? 's' : '') + '. Une alerte disparaît quand la cause est réglée ou quand elle est acquittée.'),
+    h('section', {class: 'card'}, al.length ? h('ul', {class: 'list'}, al.map(a => {
+      const li = alertRow(a);
+      li.querySelector('.acts').append(h('button', {class: 'btn', type: 'button', onclick: () => { setState({alerts: state.alerts.filter(x => x.id !== a.id)}); announce('Alerte acquittée.'); }}, 'Acquitter'));
+      return li;
+    })) : h('p', {class: 'empty', text: 'Aucune alerte ouverte.'})));
+}
+function viewFarms(param) {
+  const farms = scopeFarms();
+  const cur = farmOf(param) && farms.some(f => f.id === param) ? farmOf(param) : farms[0];
+  const worst = id => {
+    const ks = FIELDS.filter(f => f.farm === id).map(f => verdict(f).kind);
+    return ks.includes('bad') ? 'bad' : ks.includes('off') ? 'off' : ks.includes('warn') ? 'warn' : 'ok';
+  };
+  const fieldsOf = id => FIELDS.filter(f => f.farm === id);
+  const phone = h('input', {type: 'tel', inputmode: 'tel', placeholder: '+221 77 123 45 67', autocomplete: 'off'});
+  const role = select([['member', 'Membre'], ['relay', 'Membre, téléphone relais'], ['owner', 'Responsable']], 'member');
+  const msg = h('p', {class: 'err', 'aria-live': 'polite'});
+  const invite = gate(h('button', {class: 'btn primary', type: 'submit'}, 'Préparer l’invitation'), 'farm.manage');
+  const form = h('form', {class: 'form', novalidate: true, onsubmit: e => {
+    e.preventDefault();
+    const v = phone.value.replace(/[\s.-]/g, '');
+    const ok = /^\+221(7[05678])\d{7}$/.test(v);
+    phone.setAttribute('aria-invalid', String(!ok));
+    msg.className = ok ? 'okmsg' : 'err';
+    msg.textContent = ok ? 'Invitation préparée. Maquette : aucun SMS n’est envoyé.' : 'Numéro attendu au format +221 7X XXX XX XX (opérateurs 70, 75, 76, 77, 78).';
+  }}, h('div', {class: 'row'}, field('inv-phone', 'Téléphone du membre', phone), field('inv-role', 'Rôle', role)), msg, h('div', null, invite), roleNote('farm.manage'));
+  return h('div', null,
+    pageHead('Exploitations', farms.length + ' exploitation' + (farms.length > 1 ? 's' : '') + ' · ' + nf(farms.reduce((a, f) => a + f.ha, 0)) + ' ha équipés'),
+    h('section', {class: 'card'}, table([
+      {label: 'Exploitation', get: f => f.name}, {label: 'Localité', get: f => f.place}, {label: 'Surface (ha)', n: true, get: f => nf(f.ha)},
+      {label: 'Membres', n: true, get: f => f.members.length}, {label: 'Parcelles', n: true, get: f => fieldsOf(f.id).length},
+      {label: 'Kits en ligne', n: true, get: f => fieldsOf(f.id).filter(x => x.online).length + ' / ' + fieldsOf(f.id).length},
+      {label: 'État', get: f => tag(worst(f.id))}
+    ], farms, {onRow: f => { location.hash = '#/exploitations/' + f.id; }, sel: f => f.id === cur.id, caption: 'Exploitations'})),
+    h('div', {class: 'g2', style: 'margin-top:16px'},
+      h('section', {class: 'card'}, h('h2', {text: cur.name}), h('p', {class: 'mute', text: cur.place + ' · ' + nf(cur.ha) + ' ha'}),
+        h('h3', {style: 'margin-top:10px', text: 'Membres'}),
+        h('ul', {class: 'list'}, cur.members.map(([r, p]) => h('li', null, icon('user'), h('span', {class: 'grow', text: r}), h('span', {class: 'mute num', text: p})))),
+        h('p', {class: 'hint', text: 'Numéros masqués : seuls les responsables de l’exploitation voient le numéro complet (données personnelles, loi sénégalaise 2008-12).'})),
+      h('section', {class: 'card'}, h('h2', {text: 'Parcelles et kits'}),
+        h('ul', {class: 'list'}, fieldsOf(cur.id).map(f => h('li', null, tag(verdict(f).kind, verdict(f).text), h('a', {class: 'grow', href: '#/parcelles/' + f.code, text: f.code + ' · ' + f.name}), h('span', {class: 'mute small', text: f.kit})))),
+        h('h3', {style: 'margin-top:14px', text: 'Inviter un membre'}), form)));
+}
+function fieldCard(f) {
+  const v = verdict(f);
+  return h('a', {class: 'card', href: '#/parcelles/' + f.code, style: 'text-decoration:none;display:block'},
+    h('div', {class: 'card-h'}, h('h2', {text: f.code + ' · ' + f.name}), tag(v.kind, v.text)),
+    h('div', {class: 'mute small', text: f.crop + ', ' + f.stage + ' (jour ' + f.day + ') · ' + farmOf(f.farm).name}),
+    h('div', {class: 'row', style: 'align-items:baseline;margin-top:8px'}, h('span', {class: 'big num', text: f.moist == null ? '—' : f.moist + ' %'}), h('span', {class: 'mute small', text: 'humidité du sol · mesure de ' + f.seen})),
+    f.moist == null ? null : h('div', {class: 'meter', role: 'img', 'aria-label': 'Humidité ' + f.moist + ' %, seuils ' + f.start + ' et ' + f.stop + ' %'},
+      h('div', {class: 'fill', style: 'width:' + f.moist + '%'}), h('div', {class: 'mark', style: 'left:' + f.start + '%'}), h('div', {class: 'mark', style: 'left:' + f.stop + '%'})));
+}
+function viewFields(param) {
+  if (param) {
+    const f = fieldOf(param);
+    if (!f || !inScope(f.code)) return h('div', null, pageHead('Parcelle introuvable', 'Cette parcelle n’existe pas ou ne fait pas partie de votre périmètre.'), h('a', {class: 'btn', href: '#/parcelles'}, 'Toutes les parcelles'));
+    return viewField(f);
+  }
+  const fl = scopeFields();
+  return h('div', null, pageHead('Parcelles', fl.length + ' parcelles · triées par urgence'),
+    h('div', {class: 'grid'}, [...fl].sort((a, b) => rank(verdict(a).kind) - rank(verdict(b).kind)).map(fieldCard)));
+}
+const rank = k => ({bad: 0, off: 1, warn: 2, ok: 3})[k];
+let fieldTab = 'jour';
+function viewField(f) {
+  const v = verdict(f), reco = state.recos.find(r => r.field === f.code && r.status === 'todo');
+  const pumpTxt = {off: 'Arrêtée', on: 'En marche depuis 06:52', fault: 'En défaut : arrêt de sécurité'}[f.pump];
+  return h('div', null,
+    pageHead(f.code + ' · ' + f.name, f.crop + ', stade ' + f.stage + ' (jour ' + f.day + ') · ' + farmOf(f.farm).name + ' · ' + nf(f.ha) + ' ha',
+      [f.online ? tag('ok', 'Kit ' + f.kit + ' · relayé à ' + f.seen) : tag('off', 'Kit ' + f.kit + ' muet depuis ' + f.seen)],
+      h('a', {href: '#/parcelles', text: 'Parcelles'})),
+    h('div', {class: 'grid'},
+      h('section', {class: 'card'}, h('div', {class: 'card-h'}, h('h2', {text: 'Humidité du sol'}), tag(v.kind, v.text)),
+        h('div', {class: 'big num', text: f.moist == null ? '—' : f.moist + ' %'}),
+        f.moist == null ? h('p', {class: 'mute', text: 'Pas de mesure depuis ' + f.seen + '.'}) : h('div', {class: 'meter', role: 'img', 'aria-label': 'Humidité ' + f.moist + ' %'},
+          h('div', {class: 'fill', style: 'width:' + f.moist + '%'}), h('div', {class: 'mark', style: 'left:' + f.start + '%'}), h('div', {class: 'mark', style: 'left:' + f.stop + '%'})),
+        h('p', {class: 'small mute', text: 'Démarrage sous ' + f.start + ' % · arrêt à ' + f.stop + ' %'})),
+      h('section', {class: 'card'}, h('div', {class: 'card-h'}, h('h2', {text: 'Pompe'}), f.pump === 'fault' ? tag('bad', 'Défaut') : f.pump === 'on' ? tag('ok', 'En marche') : tag('plain', 'Arrêtée')),
+        h('p', {text: pumpTxt}),
+        f.pump === 'fault' ? h('p', {class: 'small', text: 'Le kit coupe la pompe après 10 min et la bloque 30 min. Reprise possible dans 18 min.'}) : null,
+        h('button', {class: 'btn', type: 'button', disabled: true, title: 'Disponible en V2 pour les kits reliés en MQTT'}, icon('power'), 'Arroser maintenant'),
+        h('p', {class: 'hint', text: 'Depuis le web, en V2 seulement (kits reliés en MQTT), 10 min au plus. Au MVP, la commande manuelle se fait dans l’application mobile, à portée du kit.'})),
+      h('section', {class: 'card'}, h('h2', {text: 'Air et nutriments'}),
+        f.air ? [h('div', {class: 'pair'}, h('span', {class: 'mute', text: 'Température'}), h('b', {class: 'num', text: nf(f.air[0]) + ' °C'})),
+          h('div', {class: 'pair'}, h('span', {class: 'mute', text: 'Humidité de l’air'}), h('b', {class: 'num', text: f.air[1] + ' %'})),
+          h('div', {class: 'pair'}, h('span', {class: 'mute', text: 'Pression'}), h('b', {class: 'num', text: f.air[2] + ' hPa'}))]
+          : h('p', {class: 'mute', text: 'Capteur d’air absent ou en panne : valeurs « -- ».'}),
+        f.npk ? [['Azote (N)', f.npk[0], 50], ['Phosphore (P)', f.npk[1], 20], ['Potassium (K)', f.npk[2], 100]].map(([l, val, min]) =>
+          h('div', {class: 'pair'}, h('span', {class: 'mute', text: l}), h('span', null, h('b', {class: 'num', text: val + ' mg/kg '}), val < min ? tag('warn', 'Bas') : tag('ok', 'Correct'))))
+          : h('p', {class: 'mute', text: 'NPK : pas de mesure.'}),
+        h('p', {class: 'hint', text: 'Capteur NPK non étalonné : valeurs indicatives (étalonnage prévu, cas IA-6).'}))),
+    reco ? h('section', {class: 'card', style: 'margin-top:16px'}, h('div', {class: 'card-h'}, h('h2', {text: 'Recommandation'}), h('span', {class: 'chip', text: reco.src})),
+      h('p', null, h('b', {text: reco.action})), h('p', {class: 'mute', text: reco.why}),
+      h('p', {class: 'small', text: 'Confiance ' + (reco.conf == null ? 'non calculée (règle)' : pct(reco.conf))}), recoButtons(reco)) : null,
+    h('div', {style: 'margin-top:16px'}, moistureCard(f)),
+    h('div', {class: 'g2', style: 'margin-top:16px'}, thresholdsCard(f), commandsCard(f)));
+}
+function moistureCard(f) {
+  const all = moistureSeries(f);
+  const tabs = seg('Période', [['jour', 'Jour'], ['semaine', 'Semaine'], ['mois', 'Mois'], ['annee', 'Année']], fieldTab, t => { fieldTab = t; render({keepFocus: true}); });
+  if (fieldTab === 'annee') {
+    return h('section', {class: 'card'}, h('div', {class: 'card-h'}, h('h2', {text: 'Humidité du sol'}), tabs),
+      h('p', {class: 'empty', text: 'Pas encore d’historique annuel : kit installé le 02/09/2026. La vue Année apparaît après 3 mois de mesures.'}));
+  }
+  let pts, labels, long, labelAt;
+  if (fieldTab === 'jour') {
+    pts = all.slice(-24); long = pts.map(p => DTF.long.format(p.t)); labels = pts.map(p => DTF.hour.format(p.t));
+    labelAt = i => i % 4 === 1;
+  } else if (fieldTab === 'semaine') {
+    pts = all.slice(-168); long = pts.map(p => DTF.long.format(p.t)); labels = pts.map(p => DTF.wday.format(p.t));
+    labelAt = i => new Date(pts[i].t).getUTCHours() === 12;
+  } else {
+    pts = [];
+    for (let d = 0; d < 30; d++) {
+      const day = all.slice(d * 24, d * 24 + 24).filter(p => p.y != null);
+      pts.push({t: all[d * 24].t, y: day.length ? Math.round(day.reduce((a, p) => a + p.y, 0) / day.length) : null});
+    }
+    long = pts.map(p => 'Moyenne du ' + DTF.day.format(p.t)); labels = pts.map(p => DTF.day.format(p.t)); labelAt = i => i % 5 === 4;
+  }
+  const vals = pts.map(p => p.y), known = vals.filter(x => x != null);
+  const below = known.filter(x => x < f.start).length;
+  const summary = known.length
+    ? 'De ' + nf(known[0]) + ' % à ' + nf(known[known.length - 1]) + ' %, minimum ' + nf(Math.min(...known)) + ' %, maximum ' + nf(Math.max(...known)) + ' %. ' + below + ' point' + (below > 1 ? 's' : '') + ' sous le seuil de démarrage.'
+    : 'Aucune mesure sur la période.';
+  return chartCard({
+    title: 'Humidité du sol', summary, actions: tabs, legend: [{name: 'Humidité', color: 's1', kind: 'ln'}],
+    draw: (el, w) => xyChart(el, w, {labels, long, labelAt, labelW: 40, series: [{name: 'Humidité du sol', values: vals, color: 's1', unit: '%'}],
+      refs: [{y: f.stop, label: 'Arrêt ' + f.stop + ' %'}, {y: f.start, label: 'Démarrage ' + f.start + ' %'}], yMin: 0, yMax: 80, unit: '%', endLabel: true, height: 260}),
+    table: {cols: [{label: 'Moment', get: r => r[0]}, {label: 'Humidité (%)', n: true, get: r => (r[1] == null ? 'pas de mesure' : nf(r[1]))}], rows: pts.map((p, i) => [long[i], p.y])}
+  });
+}
+/* Même règle que le firmware v1.1 : entiers, 0 ≤ démarrage, démarrage + 5 ≤ arrêt ≤ 100 (corrige le défaut D1 du prototype). */
+function checkThresholds(a, b) {
+  if (!/^\d{1,3}$/.test(a) || !/^\d{1,3}$/.test(b)) return 'Saisissez deux nombres entiers.';
+  const start = +a, stop = +b;
+  if (stop > 100) return 'L’arrêt ne peut pas dépasser 100 %.';
+  if (start + 5 > stop) return 'L’arrêt doit dépasser le démarrage d’au moins 5 points (ex. 30 et 60).';
+  return null;
+}
+function thresholdsCard(f) {
+  const pend = state.pending[f.code];
+  const a = h('input', {type: 'number', inputmode: 'numeric', min: '0', max: '95', step: '1', value: String(pend ? pend.start : f.start), 'aria-describedby': 'th-err th-a-h'});
+  const b = h('input', {type: 'number', inputmode: 'numeric', min: '5', max: '100', step: '1', value: String(pend ? pend.stop : f.stop), 'aria-describedby': 'th-err th-b-h'});
+  const err = h('p', {class: 'err', id: 'th-err', 'aria-live': 'polite'});
+  const save = gate(h('button', {class: 'btn primary', type: 'submit'}, 'Enregistrer'), 'thresholds.edit');
+  if (!f.online && can('thresholds.edit')) save.title = 'Le kit est muet : la commande partira à son retour';
+  return h('section', {class: 'card'}, h('h2', {text: 'Seuils d’arrosage'}),
+    h('form', {class: 'form', novalidate: true, onsubmit: e => {
+      e.preventDefault();
+      const problem = checkThresholds(a.value.trim(), b.value.trim());
+      a.setAttribute('aria-invalid', String(!!problem)); b.setAttribute('aria-invalid', String(!!problem));
+      if (problem) { err.textContent = problem; return; }
+      const at = state.offline ? 'en file (hors ligne)' : 'à l’instant';
+      setState({pending: {...state.pending, [f.code]: {start: +a.value, stop: +b.value}},
+        cmds: [{field: f.code, at, what: 'Seuils ' + (+a.value) + ' / ' + (+b.value) + ' %', from: 'Plateforme', st: 'warn', stl: 'En attente du kit'}, ...state.cmds]});
+      announce('Seuils enregistrés. En attente de transmission au kit.');
+    }},
+      h('div', {class: 'row'}, field('th-a', 'Démarrer sous (%)', a, 'Entier de 0 à 95'), field('th-b', 'Arrêter à (%)', b, 'Entier de 5 à 100')),
+      err, h('p', {class: 'hint', text: 'Règle du kit : écart d’au moins 5 points, arrêt au plus 100 %. Le kit refuse toute autre valeur (erreur 400).'}),
+      pend ? h('div', {class: 'banner warn'}, icon('clock'), h('p', {text: 'En attente : ' + pend.start + ' / ' + pend.stop + ' %. Le téléphone relais de l’exploitation transmettra la commande au prochain passage à portée du kit (relais différé, MVP).'})) : null,
+      h('div', null, save), roleNote('thresholds.edit')));
+}
+function commandsCard(f) {
+  const rows = state.cmds.filter(c => c.field === f.code);
+  return h('section', {class: 'card'}, h('h2', {text: 'Historique des commandes'}),
+    rows.length ? table([{label: 'Date', get: c => c.at}, {label: 'Commande', get: c => c.what}, {label: 'Origine', get: c => c.from}, {label: 'État', get: c => tag(c.st, c.stl)}], rows, {caption: 'Commandes envoyées au kit'})
+      : h('p', {class: 'mute', text: 'Aucune commande récente.'}));
+}
+function viewMap() {
+  const fl = scopeFields();
+  const showAlerts = state.mapAlerts !== false;
+  const toggle = h('label', {class: 'chip', style: 'min-height:40px;cursor:pointer'},
+    h('input', {type: 'checkbox', checked: showAlerts, onchange: e => setState({mapAlerts: e.target.checked})}), 'Afficher les alertes');
+  return h('div', null,
+    pageHead('Cartographie des parcelles', 'Contours fictifs. En production : MapLibre, fond satellite et contours GeoJSON (PostGIS).',
+      [h('label', {class: 'sr', for: 'layer', text: 'Couche'}), h('select', {id: 'layer', class: 'btn'}, h('option', null, 'Humidité du sol'), h('option', {disabled: true}, 'NDVI satellite (V2)')),
+        toggle, h('button', {class: 'btn', type: 'button', disabled: true, title: 'Prévu en V2'}, 'Dessiner une parcelle (V2)')]),
+    h('section', {class: 'card'}, fieldMap({fields: fl, alerts: showAlerts}), mapLegend('(relais de 02:04 à 09:00)')),
+    h('section', {class: 'card', style: 'margin-top:16px'}, h('h2', {text: 'Parcelles de la carte'}),
+      table([{label: 'Parcelle', get: f => h('a', {href: '#/parcelles/' + f.code, text: f.code + ' · ' + f.name})}, {label: 'Exploitation', get: f => farmOf(f.farm).name},
+        {label: 'Culture', get: f => f.crop}, {label: 'Humidité', n: true, get: f => (f.moist == null ? '—' : f.moist + ' %')},
+        {label: 'Classe', get: f => (f.moist == null ? 'Pas de mesure' : BINS[bin(f.moist) - 1])}, {label: 'État', get: f => tag(verdict(f).kind, verdict(f).text)}], fl, {caption: 'Parcelles de la carte'})));
+}
+function viewWeather() {
+  const W = WEATHER, adv = W.rain.findIndex(r => r >= 5);
+  return h('div', null,
+    pageHead('Météo', 'Thiès et alentours · prévision à 7 jours, corrigée du biais local (modèle local_weather_bias)',
+      [h('label', {class: 'fld', style: 'min-width:200px'}, h('span', {text: 'Exploitation'}), select(scopeFarms().map(f => [f.id, f.name]), scopeFarms()[0].id))]),
+    adv >= 0 ? h('div', {class: 'banner'}, icon('rain'), h('p', null, h('b', {text: 'Conseil : '}), 'pluie prévue ' + W.days[adv] + ' (' + W.rain[adv] + ' mm, probabilité ' + W.p[adv] + ' %). Arrosage réduit proposé ce jour-là sur les parcelles concernées.')) : null,
+    h('div', {class: 'tscroll'}, h('div', {style: 'display:grid;grid-template-columns:repeat(7,minmax(112px,1fr));gap:10px;min-width:820px'},
+      W.days.map((d, i) => h('div', {class: 'card', style: 'padding:12px;text-align:center'},
+        h('div', {style: 'font-weight:700', text: d}), h('div', {style: 'margin:6px 0'}, icon(W.rain[i] >= 5 ? 'rain' : W.rain[i] > 0 ? 'cloud' : 'sun', 'lg')),
+        h('div', {class: 'num'}, h('b', {text: W.tmax[i] + '°'}), h('span', {class: 'mute', text: ' / ' + W.tmin[i] + '°'})),
+        h('div', {class: 'small num', text: 'Pluie ' + W.rain[i] + ' mm (' + W.p[i] + ' %)'}), h('div', {class: 'small num mute', text: 'ET0 ' + nf(W.et0[i]) + ' mm'}))))),
+    h('div', {class: 'g2', style: 'margin-top:16px'},
+      chartCard({title: 'Pluie prévue', summary: 'Pluie surtout jeudi (8 mm) et vendredi (2 mm). Aucun autre jour.',
+        draw: (el, w) => xyChart(el, w, {labels: W.days, series: [{name: 'Pluie', values: W.rain, color: 's1', type: 'bar', unit: 'mm'}], yMax: 10, unit: 'mm', height: 210,
+          tipExtra: i => h('div', {class: 'r'}, h('span', {text: 'Probabilité'}), h('b', {class: 'num', text: W.p[i] + ' %'}))}),
+        table: {cols: [{label: 'Jour', get: r => r[0]}, {label: 'Pluie (mm)', n: true, get: r => r[1]}, {label: 'Probabilité', n: true, get: r => r[2] + ' %'}], rows: W.days.map((d, i) => [d, W.rain[i], W.p[i]])}}),
+      chartCard({title: 'Évapotranspiration de référence (ET0)', summary: 'ET0 entre ' + nf(Math.min(...W.et0)) + ' et ' + nf(Math.max(...W.et0)) + ' mm par jour, au plus bas jeudi avec la pluie.',
+        draw: (el, w) => xyChart(el, w, {labels: W.days, series: [{name: 'ET0', values: W.et0, color: 's1', unit: 'mm'}], yMin: 0, yMax: 8, unit: 'mm', endLabel: true, height: 210}),
+        table: {cols: [{label: 'Jour', get: r => r[0]}, {label: 'ET0 (mm)', n: true, get: r => nf(r[1])}], rows: W.days.map((d, i) => [d, W.et0[i]])}})),
+    h('section', {class: 'card', style: 'margin-top:16px'}, h('h2', {text: 'Prévision et capteur du kit, ce matin'}),
+      table([{label: 'Grandeur', get: r => r[0]}, {label: 'Prévision brute', n: true, get: r => r[1]}, {label: 'Prévision corrigée', n: true, get: r => r[2]}, {label: 'Capteur du kit', n: true, get: r => r[3]}],
+        [['Température à 09:00', '31,6 °C', '32,7 °C', '32,8 °C'], ['Humidité de l’air', '49 %', '44 %', '43 %']], {caption: 'Écart prévision et capteur'}),
+      h('p', {class: 'hint', text: 'Les deux graphiques sont séparés : pluie et ET0 n’ont pas la même échelle (pas de double axe).'})));
+}
+function viewCrops() {
+  const fl = scopeFields();
+  const pick = state.cropField && inScope(state.cropField) ? state.cropField : fl[0].code;
+  const sel = select(fl.map(f => [f.code, f.code + ' · ' + f.name]), pick);
+  sel.addEventListener('change', e => setState({cropField: e.target.value}));
+  const f = fieldOf(pick), scale = f.ha / 0.9;
+  const need = ETC.need.map(v => Math.round(v * scale)), given = ETC.given.map(v => Math.round(v * scale));
+  const gap = need.reduce((a, v, i) => a + v - given[i], 0);
+  return h('div', null,
+    h('div', {class: 'banner'}, icon('info'), h('p', {text: 'Module prévu en V1.1. La maquette montre le contenu visé.'})),
+    pageHead('Analyse des cultures', 'Cycles, besoins en eau et nutrition, par parcelle'),
+    h('section', {class: 'card'}, table([
+      {label: 'Parcelle', get: x => h('a', {href: '#/parcelles/' + x.code, text: x.code + ' · ' + x.name})}, {label: 'Culture', get: x => x.crop}, {label: 'Stade', get: x => x.stage + ' (j ' + x.day + ')'},
+      {label: 'Kc', n: true, get: x => nf(x.kc)}, {label: 'Semis', get: x => x.sow.split('-').reverse().join('/')}, {label: 'Récolte prévue', get: x => x.harvest.split('-').reverse().join('/')},
+      {label: 'Azote', get: x => (x.npk ? (x.npk[0] < 50 ? tag('warn', 'Bas') : tag('ok', 'Correct')) : tag('off', 'Pas de mesure'))}
+    ], fl, {caption: 'Cultures en place'})),
+    h('div', {style: 'margin-top:16px'}, chartCard({
+      title: 'Besoin en eau et eau apportée · ' + f.code, actions: [h('label', {class: 'sr', for: 'cropsel', text: 'Parcelle'}), Object.assign(sel, {id: 'cropsel'})],
+      summary: 'Sur 6 semaines, l’eau apportée couvre ' + Math.round(100 * given.reduce((a, b) => a + b, 0) / need.reduce((a, b) => a + b, 0)) + ' % du besoin (ETc = ET0 × Kc). Déficit cumulé : ' + gap + ' mm.',
+      legend: [{name: 'Besoin (ETc)', color: 's1'}, {name: 'Eau apportée', color: 's2'}],
+      draw: (el, w) => xyChart(el, w, {labels: ETC.weeks, series: [{name: 'Besoin (ETc)', values: need, color: 's1', type: 'bar', unit: 'mm'}, {name: 'Eau apportée', values: given, color: 's2', type: 'bar', unit: 'mm'}], yMax: 50, unit: 'mm', height: 230}),
+      table: {cols: [{label: 'Semaine', get: r => r[0]}, {label: 'Besoin (mm)', n: true, get: r => r[1]}, {label: 'Apporté (mm)', n: true, get: r => r[2]}], rows: ETC.weeks.map((wk, i) => [wk, need[i], given[i]])}
+    })));
+}
+function recoButtons(r) {
+  if (r.status !== 'todo') return null;
+  const setStatus = (status, extra) => { setState({recos: state.recos.map(x => (x.id === r.id ? {...x, status, ...extra} : x))}); announce('Recommandation mise à jour.'); };
+  const refuse = () => {
+    const reason = select([['rain', 'Pluie constatée'], ['pump', 'Pompe indisponible'], ['disagree', 'Pas d’accord avec le conseil'], ['other', 'Autre raison']], 'rain');
+    const note = h('textarea', {rows: '3', maxlength: '300'});
+    openDialog('Refuser la recommandation', [field('ref-reason', 'Raison', reason), field('ref-note', 'Précision (facultatif)', note, '300 caractères au plus')], 'Refuser',
+      () => { setStatus('refused', {reason: reason.selectedOptions[0].textContent}); return null; });
+  };
+  return h('div', null, h('div', {class: 'btns'},
+    gate(h('button', {class: 'btn primary', type: 'button', onclick: () => setStatus('done')}, 'Accepter'), 'reco.decide'),
+    gate(h('button', {class: 'btn', type: 'button', onclick: () => setStatus('later')}, 'Plus tard'), 'reco.decide'),
+    gate(h('button', {class: 'btn', type: 'button', onclick: refuse}, 'Refuser'), 'reco.decide')), roleNote('reco.decide'));
+}
+function viewRecos() {
+  const filt = state.recoFilter || 'todo';
+  const list = state.recos.filter(r => inScope(r.field)).filter(r => filt === 'all' || r.status === filt || (filt === 'todo' && r.status === 'none'));
+  const write = () => {
+    const fsel = select(scopeFields().map(f => [f.code, f.code + ' · ' + f.name]), scopeFields()[0].code);
+    const act = h('input', {type: 'text', maxlength: '140', required: true});
+    openDialog('Rédiger une recommandation', [field('w-f', 'Parcelle', fsel), field('w-a', 'Action conseillée', act, '140 caractères au plus')], 'Publier', () => {
+      if (act.value.trim().length < 5) return 'Décrivez l’action en quelques mots.';
+      setState({recos: [{id: 'r' + Date.now(), field: fsel.value, action: act.value.trim(), why: 'Conseil rédigé par le conseil agricole.', factors: [], conf: null, src: 'Conseil agricole', status: 'todo', until: ''}, ...state.recos]});
+      return null;
+    });
+  };
+  const label = {todo: 'À décider', done: 'Acceptée', later: 'Reportée', refused: 'Refusée', none: 'Aucune'};
+  return h('div', null,
+    pageHead('Recommandations IA', 'Chaque conseil dit quoi faire, pourquoi, avec quelle confiance et d’où il vient.',
+      [seg('Filtre', [['todo', 'À décider'], ['done', 'Acceptées'], ['refused', 'Refusées'], ['all', 'Toutes']], filt, v => setState({recoFilter: v})),
+        gate(h('button', {class: 'btn', type: 'button', onclick: write}, 'Rédiger'), 'reco.write')]),
+    h('div', {class: 'banner'}, icon('info'), h('p', {text: 'Source, dans l’ordre : modèle champion servi par la plateforme, sinon règles agronomiques (FAO-56), sinon aucune recommandation. Une recommandation n’est jamais une commande : le kit garde ses seuils et ses sécurités.'})),
+    list.length ? h('div', {class: 'g2'}, list.map(r => {
+      const f = fieldOf(r.field);
+      return h('section', {class: 'card'},
+        h('div', {class: 'card-h'}, h('a', {href: '#/parcelles/' + f.code, text: f.code + ' · ' + f.name}),
+          r.status === 'none' ? tag('off', 'Pas de données') : tag(r.status === 'done' ? 'ok' : r.status === 'refused' ? 'bad' : 'plain', label[r.status])),
+        h('p', null, h('b', {text: r.action})), h('p', {class: 'mute', text: r.why}),
+        r.factors.length ? h('details', null, h('summary', {text: 'Facteurs principaux'}), h('ul', {class: 'small'}, r.factors.map(x => h('li', {text: x})))) : null,
+        h('p', {class: 'small'}, 'Confiance : ', h('b', {text: r.conf == null ? 'non calculée (règle ou conseil)' : pct(r.conf) + (r.conf >= 0.8 ? ' (élevée)' : r.conf >= 0.65 ? ' (moyenne)' : ' (faible)')}),
+          r.until ? ' · échéance : ' + r.until : '', r.reason ? ' · motif : ' + r.reason : ''),
+        h('span', {class: 'chip', text: r.src}), recoButtons(r));
+    })) : h('p', {class: 'empty', text: 'Aucune recommandation dans ce filtre.'}));
+}
+function viewDisease() {
+  const out = h('div', {'aria-live': 'polite'});
+  const img = h('img', {class: 'photo', alt: 'Aperçu de la photo choisie', hidden: true});
+  const file = h('input', {type: 'file', accept: 'image/*', capture: 'environment'});
+  const fsel = select(scopeFields().map(f => [f.code, f.code + ' · ' + f.name]), scopeFields()[0].code);
+  file.addEventListener('change', () => {
+    const fl = file.files && file.files[0];
+    if (!fl) return;
+    if (!/^image\//.test(fl.type) || fl.size > 8e6) { out.replaceChildren(h('p', {class: 'err', text: 'Choisissez une image de moins de 8 Mo.'})); return; }
+    if (img.src) URL.revokeObjectURL(img.src);
+    img.src = URL.createObjectURL(fl); img.hidden = false;
+  });
+  const analyse = gate(h('button', {class: 'btn primary', type: 'button', onclick: () => {
+    out.replaceChildren(h('p', {class: 'mute', text: 'Analyse en cours…'}));
+    setTimeout(() => {
+      const res = [['Mildiou (Peronospora destructor)', 71], ['Brûlure des feuilles (Stemphylium)', 18], ['Feuille saine', 11]];
+      out.replaceChildren(h('h3', {text: 'Résultat (fictif)'}),
+        ...res.map(([l, v]) => h('div', {class: 'hbar'}, h('span', {text: l}), h('div', {class: 'tr', role: 'img', 'aria-label': l + ' ' + v + ' %'}, h('i', {style: 'width:' + v + '%'})), h('b', {class: 'num', text: v + ' %'}))),
+        h('div', {class: 'banner warn', style: 'margin-top:10px'}, icon('alert'), h('p', {text: 'Confiance moyenne (71 %) : un conseiller va vérifier. En attendant : retirez les feuilles très atteintes et évitez d’arroser le feuillage le soir. Aucun produit n’est conseillé sans avis d’un conseiller.'})),
+        h('button', {class: 'btn primary', type: 'button', onclick: () => announce('Demande transmise au conseil agricole (maquette).')}, 'Demander à un conseiller'));
+    }, 500);
+  }}, 'Analyser la photo'), 'diag.send');
+  const decide = (id, st) => setState({queue: state.queue.map(q => (q.id === id ? {...q, st} : q))});
+  const stTag = st => (st === 'todo' ? tag('warn', 'À valider') : st === 'done' ? tag('ok', 'Validé') : tag('plain', 'Corrigé'));
+  return h('div', null,
+    h('div', {class: 'banner'}, icon('info'), h('p', {text: 'Diagnostic automatique en V2. Dès le MVP, les photos sont collectées (avec accord) pour constituer le jeu disease_images.'})),
+    pageHead('Détection des maladies', 'Photo d’une feuille, résultat en quelques secondes, validation par un conseiller si la confiance est faible.'),
+    h('div', {class: 'g2'},
+      h('section', {class: 'card'}, h('h2', {text: 'Nouvelle photo'}),
+        h('div', {class: 'form'}, field('dz-file', 'Photo (feuille entière, en lumière naturelle)', file), field('dz-field', 'Parcelle', fsel), img, h('div', null, analyse), roleNote('diag.send'),
+          h('p', {class: 'hint', text: 'Maquette : la photo reste sur votre appareil. En production, elle est envoyée chiffrée, sans données de localisation EXIF.'}), out)),
+      h('section', {class: 'card'}, h('h2', {text: 'File de validation'}),
+        table([{label: 'Date', get: q => q.at}, {label: 'Parcelle', get: q => q.field}, {label: 'Résultat IA', get: q => q.res}, {label: 'Confiance', n: true, get: q => pct(q.conf)}, {label: 'État', get: q => stTag(q.st)},
+          {label: 'Action', get: q => (q.st !== 'todo' ? '—' : h('span', {class: 'btns', style: 'margin:0'},
+            gate(h('button', {class: 'btn', type: 'button', onclick: () => decide(q.id, 'done')}, 'Valider'), 'diag.validate'),
+            gate(h('button', {class: 'btn', type: 'button', onclick: () => decide(q.id, 'fixed')}, 'Corriger'), 'diag.validate')))}],
+        state.queue.filter(q => inScope(q.field)), {caption: 'Diagnostics à valider'}), roleNote('diag.validate'))));
+}
+function viewYield() {
+  const Y = YIELD, i = Y.dates.length - 1;
+  return h('div', null,
+    h('div', {class: 'banner warn'}, icon('alert'), h('p', {text: 'Expérimental (V3). Modèle calibré sur peu de saisons : ne pas utiliser pour un contrat, un crédit ou une assurance.'})),
+    pageHead('Prévision des rendements', 'P-02 · Keur Mbaye 2 · Oignon · récolte prévue le 12/01/2027'),
+    h('div', {class: 'grid'}, kpi('Médiane prévue', 'trend', nf(Y.p50[i]), 't/ha', 'Prévision du 26/10'), kpi('Intervalle p10–p90', 'info', nf(Y.p10[i]) + '–' + nf(Y.p90[i]), 't/ha', '8 chances sur 10 dans cet intervalle'),
+      kpi('Saison précédente', 'cal', nf(Y.last), 't/ha', 'Rendement réel pesé')),
+    h('div', {style: 'margin-top:16px'}, chartCard({
+      title: 'Évolution de la prévision', summary: 'La médiane monte de ' + nf(Y.p50[0]) + ' à ' + nf(Y.p50[i]) + ' t/ha ; l’intervalle se resserre de ' + nf(Y.p90[0] - Y.p10[0]) + ' à ' + nf(Y.p90[i] - Y.p10[i]) + ' t/ha à mesure que la saison avance.',
+      legend: [{name: 'Médiane prévue', color: 's1', kind: 'ln'}, {name: 'Intervalle p10–p90', color: 's1', kind: 'band'}],
+      draw: (el, w) => xyChart(el, w, {labels: Y.dates, series: [{name: 'Médiane', values: Y.p50, color: 's1', unit: 't/ha'}], band: {lo: Y.p10, hi: Y.p90, name: 'p10–p90'},
+        refs: [{y: Y.last, label: 'Saison précédente ' + nf(Y.last) + ' t/ha'}], yMin: 0, yMax: 25, unit: 't/ha', endLabel: true, height: 250}),
+      table: {cols: [{label: 'Prévision du', get: r => r[0]}, {label: 'p10', n: true, get: r => nf(r[1])}, {label: 'Médiane', n: true, get: r => nf(r[2])}, {label: 'p90', n: true, get: r => nf(r[3])}],
+        rows: Y.dates.map((d, k) => [d, Y.p10[k], Y.p50[k], Y.p90[k]])}
+    })),
+    h('section', {class: 'card', style: 'margin-top:16px'}, h('h2', {text: 'Facteurs principaux'}),
+      h('ul', {class: 'list'}, [['Humidité moyenne en bulbaison au-dessus de 35 %', 'tire la prévision vers le haut'], ['Somme des températures depuis le semis', 'dans la normale'], ['Azote mesuré bas (42 mg/kg)', 'tire la prévision vers le bas'], ['Arrêts de pompe depuis hier', 'risque si la panne dure']]
+        .map(([a, b]) => h('li', null, h('span', {class: 'grow', text: a}), h('span', {class: 'mute small', text: b}))))));
+}
+function viewEquipment() {
+  const fl = scopeFields();
+  const items = [
+    ...fl.map(f => ({id: f.kit, type: 'kit', name: 'Kit ESP32-S3', field: f.code, kind: f.online ? 'ok' : 'off', st: f.online ? 'En ligne' : 'Muet depuis ' + f.seen, detail: 'Firmware v1.1 (non validé sur banc)', last: '02/09', next: '02/12'})),
+    ...fl.map(f => ({id: 'POMPE-' + f.code, type: 'pompe', name: 'Pompe solaire 12 V', field: f.code, kind: f.pump === 'fault' ? 'bad' : 'ok', st: f.pump === 'fault' ? 'Défaut' : 'Bon', detail: f.pump === 'fault' ? '3 arrêts de sécurité' : '—', last: '02/09', next: '02/01'})),
+    ...FARMS.filter(fm => fl.some(f => f.farm === fm.id)).map(fm => ({id: 'PV-' + fm.id, type: 'energie', name: 'Panneau 50 W et batterie 12 V', field: fm.name, kind: fm.id === 'F4' ? 'warn' : 'ok', st: fm.id === 'F4' ? 'Batterie faible' : 'Bon', detail: fm.id === 'F4' ? '11,6 V au dernier relais' : '12,8 V', last: '15/10', next: '15/01'})),
+    ...['P-02', 'P-04', 'P-09'].filter(inScope).map(c => ({id: 'CAM-' + c, type: 'camera', name: 'ESP32-CAM', field: c, kind: 'ok', st: 'Bon', detail: '1 photo par jour', last: '02/09', next: '02/12'}))
+  ];
+  const t = state.eqType || 'kit';
+  const shown = items.filter(x => t === 'all' || x.type === t);
+  const cur = items.find(x => x.id === state.eqSel) || shown[0] || items[0];
+  const date = h('input', {type: 'date', value: '2026-10-26'});
+  const kind = select([['Contrôle', 'Contrôle'], ['Réparation', 'Réparation'], ['Remplacement', 'Remplacement'], ['Nettoyage', 'Nettoyage']], 'Contrôle');
+  const cost = h('input', {type: 'number', inputmode: 'numeric', min: '0', step: '500', value: '0'});
+  const note = h('input', {type: 'text', maxlength: '120'});
+  const err = h('p', {class: 'err', 'aria-live': 'polite'});
+  const add = gate(h('button', {class: 'btn primary', type: 'submit'}, 'Ajouter'), 'equip.manage');
+  return h('div', null,
+    h('div', {class: 'banner'}, icon('info'), h('p', {text: 'Module prévu en V1.1. Le firmware v1.1 n’a pas encore été compilé ni testé sur le matériel (porte G0).'})),
+    pageHead('Équipements', items.length + ' équipements suivis', [seg('Type', [['kit', 'Kits'], ['pompe', 'Pompes'], ['energie', 'Énergie'], ['camera', 'Caméras'], ['all', 'Tous']], t, v => setState({eqType: v, eqSel: null}))]),
+    h('section', {class: 'card'}, table([{label: 'Équipement', get: x => x.name}, {label: 'Identifiant', get: x => x.id}, {label: 'Parcelle ou site', get: x => x.field},
+      {label: 'État', get: x => tag(x.kind, x.st)}, {label: 'Détail', get: x => x.detail}, {label: 'Dernier entretien', get: x => x.last}, {label: 'Prochain', get: x => x.next}],
+    shown, {onRow: x => setState({eqSel: x.id}), sel: x => x.id === cur.id, caption: 'Équipements'})),
+    h('div', {class: 'g2', style: 'margin-top:16px'},
+      h('section', {class: 'card'}, h('h2', {text: 'Journal · ' + cur.id}),
+        (() => { const rows = state.maint.filter(m => m.eq === cur.id); return rows.length ? table([{label: 'Date', get: m => m.at}, {label: 'Intervention', get: m => m.type}, {label: 'Coût (FCFA)', n: true, get: m => m.cost.toLocaleString('fr-FR')}, {label: 'Note', get: m => m.note}], rows, {caption: 'Journal de maintenance'}) : h('p', {class: 'mute', text: 'Aucune intervention enregistrée.'}); })()),
+      h('section', {class: 'card'}, h('h2', {text: 'Ajouter une intervention'}),
+        h('form', {class: 'form', novalidate: true, onsubmit: e => {
+          e.preventDefault();
+          const c = cost.value.trim();
+          if (!/^\d{1,7}$/.test(c)) { cost.setAttribute('aria-invalid', 'true'); err.textContent = 'Coût en FCFA : nombre entier positif.'; return; }
+          setState({maint: [{eq: cur.id, at: date.value.split('-').reverse().slice(0, 2).join('/'), type: kind.value, cost: +c, note: note.value.trim() || '—'}, ...state.maint]});
+          announce('Intervention ajoutée.');
+        }}, h('div', {class: 'row'}, field('mt-date', 'Date', date), field('mt-kind', 'Type', kind)), h('div', {class: 'row'}, field('mt-cost', 'Coût (FCFA)', cost), field('mt-note', 'Note', note)), err, h('div', null, add), roleNote('equip.manage')))));
+}
+function viewCampaigns() {
+  const camp = CAMPAIGNS.find(c => c.id === state.camp);
+  const fl = scopeFields();
+  return h('div', null,
+    h('div', {class: 'banner'}, icon('info'), h('p', {text: 'Module prévu en V1.1. La campagne choisie en haut de page filtre tous les modules.'})),
+    pageHead('Campagnes agricoles', camp.name + (camp.active ? ' · en cours' : ' · clôturée'), [gate(h('button', {class: 'btn', type: 'button', onclick: () => announce('Création de campagne : formulaire prévu en V1.1.')}, 'Nouvelle campagne'), 'campaign.manage')]),
+    h('div', {class: 'grid'}, camp.active
+      ? [kpi('Parcelles engagées', 'fields', String(fl.length)), kpi('Eau apportée à date', 'drop', state.role === 'farmer' ? '298' : '1 240', 'm³'), kpi('Alertes sur la campagne', 'bell', '9', null, '6 réglées, 3 ouvertes'), kpi('Rendement oignon prévu', 'trend', '17–21', 't/ha', 'Expérimental')]
+      : [kpi('Parcelles engagées', 'fields', '8'), kpi('Eau apportée', 'drop', '410', 'm³', 'Saison des pluies'), kpi('Rendement réel moyen', 'trend', '11,2', 't/ha', 'Gombo et arachide de bouche')]),
+    camp.active ? h('div', {style: 'margin-top:16px'}, ganttCard(fl)) : h('p', {class: 'empty', text: 'Campagne clôturée : bilan disponible dans le centre de rapports.'}));
+}
+function ganttCard(fl) {
+  const t0 = Date.UTC(2026, 7, 15), t1 = Date.UTC(2027, 2, 15), today = NOW;
+  const months = []; for (let mth = 8; mth <= 14; mth++) months.push(Date.UTC(2026, mth, 1));
+  const MF = new Intl.DateTimeFormat('fr-FR', {timeZone: 'UTC', month: 'short'});
+  const host = h('div', {class: 'chart'});
+  mount(host, (el, W) => {
+    const rowH = 30, m = {l: 150, r: 12, t: 24, b: 8}, H = m.t + m.b + rowH * fl.length, pw = W - m.l - m.r;
+    const X = t => m.l + pw * (t - t0) / (t1 - t0);
+    const svg = s('svg', {viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': 'Calendrier des cultures : semis et récolte prévue de chaque parcelle. Le tableau donne les mêmes dates.'});
+    months.forEach(t => svg.append(s('line', {x1: X(t), x2: X(t), y1: m.t - 6, y2: H - m.b, class: 'gl'}), txt(X(t) + 4, 14, MF.format(t), 'start', 'tk')));
+    fl.forEach((f, i) => {
+      const y = m.t + i * rowH, a = X(Date.parse(f.sow)), b = X(Date.parse(f.harvest));
+      svg.append(txt(m.l - 8, y + 19, f.code + ' · ' + f.crop, 'end', 'tk'),
+        s('rect', {x: a, y: y + 7, width: Math.max(4, b - a), height: 16, rx: 4, class: 'gbar', style: 'fill:var(--s1)'}));
+    });
+    svg.append(s('line', {x1: X(today), x2: X(today), y1: m.t - 6, y2: H, class: 'ref'}), txt(X(today) + 4, H - 2, 'aujourd’hui', 'start', 'rl'));
+    el.append(svg);
+  });
+  const tbl = h('details', {style: 'margin-top:8px'}, h('summary', {text: 'Voir les dates en tableau'}),
+    table([{label: 'Parcelle', get: f => f.code + ' · ' + f.name}, {label: 'Culture', get: f => f.crop}, {label: 'Semis', get: f => f.sow.split('-').reverse().join('/')}, {label: 'Récolte prévue', get: f => f.harvest.split('-').reverse().join('/')}], fl, {caption: 'Calendrier des cultures'}));
+  return h('section', {class: 'card'}, h('h2', {text: 'Calendrier des cultures'}), h('p', {class: 'sum', text: 'Du semis à la récolte prévue. Les plus précoces se récoltent en décembre (chou), les plus tardives en mars (oignon semé en octobre).'}), host, tbl);
+}
+const CANNED = [
+  [/arros|eau|keur mbaye 2|p-02/i, 'Pour Keur Mbaye 2 (P-02), oui, mais pas tout de suite : le sol est à 24 %, sous votre seuil de 30 %, et la pompe est en arrêt de sécurité depuis 08:41. Faites d’abord vérifier la cuve et la crépine. Une fois la pompe réparée, arrosez environ 22 min ce soir après 18 h : ET0 de 6,1 mm et pas de pluie avant jeudi.', 'Mesures du kit SA92-000102 (09:00) · Prévision Thiès corrigée · Fiche « Irrigation de l’oignon » (FAO-56)', 'get_field_status(P-02), get_weather(P-02, 7 j), get_recommendations(P-02)'],
+  [/notto|muet|alerte/i, 'Le kit de Notto 2 (P-11) n’a rien envoyé depuis 02:04. Causes les plus fréquentes : batterie faible (la batterie de Notto était à 11,6 V au dernier relais) ou téléphone relais resté hors de portée. Je n’ai donc pas de recommandation pour cette parcelle.', 'Journal des relais · Équipements de l’exploitation Notto', 'get_device_status(SA92-000111), list_alerts(org)'],
+  [/seuil|bulbaison|oignon/i, 'Pour l’oignon en bulbaison sur sol sableux des Niayes, la plupart des fiches visent un démarrage vers 30 % et un arrêt vers 60 % avec votre capteur. Ces valeurs restent à ajuster parcelle par parcelle : le capteur capacitif n’est pas étalonné en humidité volumique.', 'Fiche « Irrigation de l’oignon » · Seuils actuels de vos parcelles', 'search_knowledge("oignon bulbaison seuils")'],
+  [/semaine|combien/i, 'Cette semaine, vos exploitations ont apporté environ 312 m³ d’eau, estimés à partir du temps de marche des pompes. C’est 4 % de plus que la semaine précédente, à cause de la chaleur de vendredi et samedi.', 'Rapport KPI hebdomadaire', 'get_kpis(org, 7 j)']
+];
+function assistantReply(q) {
+  if (/dose|pesticide|traitement|insecticide|fongicide|produit/i.test(q)) {
+    return {text: 'Je ne donne pas de dose de produit phytosanitaire : une erreur peut nuire à votre santé, à la culture et à l’eau. Je peux transmettre votre question à un conseiller agricole, avec la photo et les mesures de la parcelle.', src: 'Règle de l’assistant', tools: 'aucun'};
+  }
+  const hit = CANNED.find(([re]) => re.test(q));
+  return hit ? {text: hit[1], src: hit[2], tools: hit[3]} : {text: 'Dans cette maquette, je ne sais répondre qu’aux exemples proposés. En production, je réponds à partir des données de vos parcelles et des fiches techniques, et je le dis quand je ne sais pas.', src: '—', tools: 'aucun'};
+}
+function viewAssistant() {
+  const log = h('div', {class: 'chat', role: 'log', 'aria-live': 'polite', 'aria-label': 'Conversation'},
+    state.chat.map(m => h('div', {class: 'msg ' + m.who}, m.text,
+      m.src ? h('div', {class: 'meta'}, h('div', {text: 'Sources : ' + m.src}), h('details', null, h('summary', {text: 'Outils appelés'}), h('code', {text: m.tools}))) : null)));
+  const input = h('input', {type: 'text', maxlength: '500', autocomplete: 'off'});
+  const ask = q => {
+    const clean = q.trim().slice(0, 500);
+    if (!clean) return;
+    const r = assistantReply(clean);
+    setState({chat: [...state.chat, {who: 'me', text: clean}, {who: 'ai', text: r.text, src: r.src, tools: r.tools}]});
+    setTimeout(() => { const c = $('.chat'); if (c) c.scrollTop = c.scrollHeight; const i = $('#as-q'); if (i) i.focus(); }, 0);
+  };
+  return h('div', null,
+    pageHead('Assistant IA', 'Questions en langage naturel sur vos parcelles. Réponses simulées dans cette maquette.', [h('button', {class: 'btn', type: 'button', onclick: () => announce('Conversation transmise à un conseiller (maquette).')}, icon('user'), 'Parler à un conseiller')]),
+    h('section', {class: 'card'}, log,
+      h('div', {class: 'chips'}, ['Dois-je arroser Keur Mbaye 2 ce soir ?', 'Pourquoi l’alerte sur Notto 2 ?', 'Quels seuils pour l’oignon en bulbaison ?', 'Combien d’eau cette semaine ?', 'Quelle dose de fongicide ?']
+        .map(q => h('button', {type: 'button', onclick: () => ask(q)}, q))),
+      h('form', {class: 'row', onsubmit: e => { e.preventDefault(); ask(input.value); }}, field('as-q', 'Votre question', input), h('button', {class: 'btn primary', type: 'submit'}, icon('send'), 'Envoyer')),
+      h('p', {class: 'hint', text: 'L’assistant n’utilise que les données de votre périmètre. Il cite ses sources, affiche les outils appelés et ne pilote jamais la pompe. Saisie vocale en wolof prévue en V2 (application mobile).'})));
+}
+function csvDownload() {
+  const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const lines = [['Indicateur', 'Valeur', 'Cible', 'État'], ...KPIS.map(k => [k[0], k[1], k[2], k[4]]), [], ['Semaine', 'Eau apportée (m³)'], ...WATER8W.map((v, i) => ['S' + (36 + i), v])];
+  const blob = new Blob(['﻿' + lines.map(r => r.map(esc).join(';')).join('\r\n')], {type: 'text/csv;charset=utf-8'});
+  const a = h('a', {href: URL.createObjectURL(blob), download: 'smartagri92_kpi_maquette.csv'});
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  announce('Fichier CSV généré sur votre appareil.');
+}
+function viewReports() {
+  const wk = WATER8W.map((_, i) => 'S' + (36 + i));
+  return h('div', null,
+    pageHead('Centre de rapports', 'Indicateurs de succès du pilote (docs/01_analyse_metier.md §8). Valeurs fictives.',
+      [gate(h('button', {class: 'btn primary', type: 'button', onclick: csvDownload}, icon('download'), 'Exporter en CSV'), 'report.export'),
+        h('button', {class: 'btn', type: 'button', disabled: true, title: 'Prévu en V2'}, 'Rapport PDF (V2)')]),
+    h('div', {class: 'row', style: 'margin-bottom:16px'},
+      field('rp-scope', 'Périmètre', select(state.role === 'farmer' ? [['F1', 'Exploitation Keur Mbaye']] : [['org', 'Toute l’organisation'], ...FARMS.map(f => [f.id, f.name])], state.role === 'farmer' ? 'F1' : 'org')),
+      field('rp-period', 'Période', select([['8w', '8 dernières semaines'], ['camp', 'Campagne en cours']], '8w')), roleNote('report.export')),
+    h('section', {class: 'card'}, h('h2', {text: 'Indicateurs'}),
+      table([{label: 'Indicateur', get: k => k[0]}, {label: 'Valeur', n: true, get: k => k[1]}, {label: 'Cible', get: k => k[2]}, {label: 'État', get: k => tag(k[3], k[4])}], KPIS, {caption: 'Indicateurs du pilote'}),
+      h('p', {class: 'hint', text: 'Les cibles sont des hypothèses à valider avec les partenaires.'})),
+    h('div', {style: 'margin-top:16px'}, chartCard({
+      title: 'Eau apportée par semaine', summary: 'De ' + WATER8W[0] + ' à ' + WATER8W[7] + ' m³ par semaine, en hausse avec la chaleur et le développement des cultures.',
+      draw: (el, w) => xyChart(el, w, {labels: wk, series: [{name: 'Eau apportée', values: WATER8W, color: 's1', type: 'bar', unit: 'm³'}], yMax: 350, unit: 'm³', endLabel: true, height: 230}),
+      table: {cols: [{label: 'Semaine', get: r => r[0]}, {label: 'Eau (m³)', n: true, get: r => r[1]}], rows: wk.map((x, i) => [x, WATER8W[i]])}
+    })));
+}
+function viewEmptyOrg(route) {
+  return h('div', null, pageHead(route.title, ORGS[1].name),
+    h('section', {class: 'card empty'}, icon('farm', 'lg'), h('p', {text: 'Aucune exploitation dans cette organisation.'}),
+      gate(h('button', {class: 'btn primary', type: 'button', onclick: () => announce('Création d’exploitation : maquette.')}, 'Ajouter une exploitation'), 'farm.manage')));
+}
+
+/* ====================== Navigation ====================== */
+const ROUTES = {
+  tableau: {title: 'Tableau de bord', icon: 'home', group: 'Pilotage', view: viewDashboard},
+  rapports: {title: 'Rapports et KPI', icon: 'report', group: 'Pilotage', view: viewReports},
+  exploitations: {title: 'Exploitations', icon: 'farm', group: 'Terrain', view: viewFarms},
+  parcelles: {title: 'Parcelles', icon: 'fields', group: 'Terrain', view: viewFields},
+  carte: {title: 'Carte', icon: 'map', group: 'Terrain', view: viewMap},
+  meteo: {title: 'Météo', icon: 'cloud', group: 'Terrain', view: viewWeather},
+  cultures: {title: 'Analyse des cultures', icon: 'sprout', group: 'Cultures', view: viewCrops, ver: 'V1.1'},
+  campagnes: {title: 'Campagnes', icon: 'cal', group: 'Cultures', view: viewCampaigns, ver: 'V1.1'},
+  rendement: {title: 'Rendement', icon: 'trend', group: 'Cultures', view: viewYield, ver: 'V3'},
+  recommandations: {title: 'Recommandations', icon: 'spark', group: 'IA', view: viewRecos},
+  maladies: {title: 'Maladies', icon: 'leaf', group: 'IA', view: viewDisease, ver: 'V2'},
+  assistant: {title: 'Assistant', icon: 'chat', group: 'IA', view: viewAssistant},
+  equipements: {title: 'Équipements', icon: 'tool', group: 'Matériel', view: viewEquipment, ver: 'V1.1'},
+  alertes: {title: 'Alertes', icon: 'bell', view: viewAlerts, hidden: true}
+};
+function parseHash() {
+  const parts = location.hash.replace(/^#\/?/, '').split('/');
+  return {name: ROUTES[parts[0]] ? parts[0] : 'tableau', param: parts[1] ? decodeURIComponent(parts[1]) : null};
+}
+function navLinks(container) {
+  let grp = null;
+  for (const [k, r] of Object.entries(ROUTES)) {
+    if (r.hidden) continue;
+    if (r.group !== grp) { grp = r.group; container.append(h('div', {class: 'grp', text: grp})); }
+    container.append(h('a', {class: 'navlink', href: '#/' + k, 'data-route': k}, icon(r.icon), h('span', {text: r.title}), r.ver ? h('span', {class: 'ver', text: r.ver}) : null));
+  }
+}
+/* Commandes propres à la maquette (rôle simulé, coupure réseau) : hors de l'en-tête, qui ne montre que ce que l'application aura. */
+let demoSeq = 0;
+function demoControls() {
+  const id = 'demo-role-' + (++demoSeq);
+  const role = select(Object.keys(ROLE_LABEL).map(k => [k, ROLE_LABEL[k]]), state.role);
+  role.id = id; role.className = 'demo-role';
+  role.addEventListener('change', e => setState({role: e.target.value}));
+  return h('div', {class: 'demo'}, h('b', {text: 'Démonstration'}),
+    h('label', {for: id, style: 'min-height:0', text: 'Voir la plateforme en tant que'}), role,
+    h('label', null, h('input', {type: 'checkbox', class: 'demo-offline', checked: state.offline, onchange: e => setState({offline: e.target.checked})}), 'Simuler une coupure réseau'));
+}
+function buildChrome() {
+  const side = $('#side');
+  navLinks(side);
+  side.append(h('div', {class: 'sidefoot'}, demoControls(), h('span', {text: 'Maquette · données fictives · confidentiel'})));
+  const more = () => {
+    const box = h('nav', {'aria-label': 'Tous les modules'});
+    navLinks(box);
+    box.addEventListener('click', e => { if (e.target.closest('a')) box.closest('dialog').close(); });
+    const cur = parseHash().name;
+    box.querySelectorAll('[data-route]').forEach(a => { if (a.dataset.route === cur) a.setAttribute('aria-current', 'page'); });
+    openDialog('Modules', [box, h('div', {style: 'margin-top:12px'}, demoControls())], 'Fermer', () => null);
+  };
+  $('#bottom').append(
+    ...[['tableau', 'home', 'Accueil'], ['carte', 'map', 'Carte'], ['alertes', 'bell', 'Alertes'], ['assistant', 'chat', 'Assistant']]
+      .map(([k, ic, t]) => h('a', {href: '#/' + k, 'data-route': k}, icon(ic), t)),
+    h('button', {type: 'button', onclick: more}, icon('menu'), 'Plus'));
+  const org = $('#org'), camp = $('#camp');
+  ORGS.forEach(o => org.append(h('option', {value: o.id, text: o.name})));
+  CAMPAIGNS.forEach(c => camp.append(h('option', {value: c.id, text: c.name})));
+  org.addEventListener('change', e => setState({org: e.target.value}));
+  camp.addEventListener('change', e => setState({camp: e.target.value}));
+  $('#lang').addEventListener('change', e => setState({lang: e.target.value}));
+  FIELDS.forEach(f => { $('#qlist').append(h('option', {value: f.code + ' ' + f.name}), h('option', {value: f.kit})); });
+  $('#search').addEventListener('submit', e => {
+    e.preventDefault();
+    const q = $('#q').value.trim().toLowerCase();
+    const f = q && scopeFields().find(x => (x.code + ' ' + x.name + ' ' + x.kit).toLowerCase().includes(q));
+    if (f) { location.hash = '#/parcelles/' + f.code; $('#q').value = ''; } else announce('Aucune parcelle ni aucun kit ne correspond dans votre périmètre.');
+  });
+  $('#theme').addEventListener('click', () => {
+    const dark = getComputedStyle(document.documentElement).colorScheme.includes('dark');
+    const next = dark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('sa92-theme', next); } catch (err) { /* stockage indisponible : le thème vaut pour la session */ }
+    syncThemeIcon();
+  });
+  new ResizeObserver(() => document.documentElement.style.setProperty('--hdr', $('#top').offsetHeight + 'px')).observe($('#top'));
+}
+function syncThemeIcon() {
+  const dark = getComputedStyle(document.documentElement).colorScheme.includes('dark');
+  $('#theme use').setAttribute('href', dark ? '#i-sun' : '#i-moon');
+  $('#theme').setAttribute('aria-label', dark ? 'Passer au thème clair' : 'Passer au thème sombre');
+}
+function render(opts) {
+  observers.forEach(o => o.disconnect()); observers = [];
+  const {name, param} = parseHash();
+  const route = ROUTES[name];
+  document.querySelectorAll('[data-route]').forEach(a => { if (a.dataset.route === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  document.querySelectorAll('.demo-role').forEach(s => { s.value = state.role; });
+  document.querySelectorAll('.demo-offline').forEach(c => { c.checked = state.offline; });
+  const al = state.alerts.filter(a => inScope(a.field)).length;
+  $('#bellcount').textContent = String(al);
+  $('#bell').setAttribute('aria-label', al + ' alertes ouvertes');
+  const sync = $('#sync');
+  sync.replaceChildren(icon(state.offline ? 'wifioff' : 'sync', 'sm'), state.offline ? 'Hors ligne · données de 09:00' : 'À jour · il y a 3 min');
+  const banners = [];
+  if (state.lang !== 'fr') banners.push(h('div', {class: 'banner'}, icon('info'), h('p', {text: 'Traduction en ' + (state.lang === 'wo' ? 'wolof' : 'pulaar') + ' en attente de relecture par des locuteurs natifs : la maquette reste en français.'})));
+  if (state.offline) banners.push(h('div', {class: 'banner warn'}, icon('wifioff'), h('p', {text: 'Hors ligne. Vous voyez les données de 09:00. Vos actions sont mises en file et partiront au retour du réseau.'})));
+  if (state.role !== 'coop_manager') banners.push(h('div', {class: 'banner'}, icon('user'), h('p', {text: 'Vue de démonstration : ' + ROLE_LABEL[state.role] + '.'})));
+  const main = $('#main');
+  const scroll = window.scrollY;
+  main.replaceChildren(...banners, state.org === 'o2' ? viewEmptyOrg(route) : route.view(param));
+  document.title = route.title + ' — SmartAgri92 (maquette)';
+  if (opts && opts.keepFocus) { window.scrollTo(0, scroll); return; }
+  window.scrollTo(0, 0);
+  if (opts && opts.focus) { const t = main.querySelector('h1'); if (t) t.focus(); }
+}
+window.addEventListener('error', e => {
+  if (/ResizeObserver loop/.test(e.message)) return; // avertissement bénin du navigateur, pas une erreur de la maquette
+  const m = $('#main');
+  if (m) m.prepend(h('div', {class: 'banner bad', role: 'alert'}, icon('stop'), h('p', {text: 'Erreur dans la maquette : ' + e.message})));
+});
+try { const th = localStorage.getItem('sa92-theme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (err) { /* stockage indisponible */ }
+buildChrome();
+syncThemeIcon();
+window.addEventListener('hashchange', () => render({focus: true}));
+render({});
+</script>
+</body>
+</html>

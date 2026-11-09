@@ -1,0 +1,8 @@
+# Paramètres du pipeline DVC (dvc.yaml). Les hyperparamètres des modèles restent dans configs/<exp>.yaml,
+# déclarés comme dépendances : toute modification relance l'étape concernée.
+data:
+  seed: 42
+  out: data/synthetic          # remplacer par l'extraction curated (jamais de données privées dans Git)
+
+export:
+  out_root: bundles

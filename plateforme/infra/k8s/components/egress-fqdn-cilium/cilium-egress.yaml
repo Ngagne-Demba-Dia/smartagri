@@ -1,0 +1,95 @@
+# Règles toFQDNs. La règle DNS (proxy DNS de Cilium) est nécessaire pour que Cilium apprenne les IP
+# des noms autorisés. Les politiques Cilium et Kubernetes s'additionnent : ces règles n'ouvrent que
+# le 443 vers les domaines listés.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: octopus-egress
+  namespace: smartagri92-ml
+spec:
+  description: "OctOpus (octopus.ml:443) uniquement pour les pods smartagri92.io/octopus=true"
+  endpointSelector:
+    matchLabels:
+      smartagri92.io/octopus: "true"
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toFQDNs:
+        - matchName: octopus.ml
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: aws-egress
+  namespace: smartagri92-ml
+spec:
+  description: "S3 et STS (IRSA) pour les pods ML ayant besoin de HTTPS"
+  endpointSelector:
+    matchLabels:
+      smartagri92.io/egress-https: "true"
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toFQDNs:
+        - matchPattern: "*.s3.eu-west-3.amazonaws.com"
+        - matchName: s3.eu-west-3.amazonaws.com
+        - matchName: sts.eu-west-3.amazonaws.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: app-egress
+  namespace: smartagri92
+spec:
+  description: "S3, STS, Anthropic et météo pour l'API et l'ingestion"
+  endpointSelector:
+    matchLabels:
+      smartagri92.io/egress-https: "true"
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toFQDNs:
+        - matchPattern: "*.s3.eu-west-3.amazonaws.com"
+        - matchName: s3.eu-west-3.amazonaws.com
+        - matchName: sts.eu-west-3.amazonaws.com
+        - matchName: api.anthropic.com
+        - matchName: api.open-meteo.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

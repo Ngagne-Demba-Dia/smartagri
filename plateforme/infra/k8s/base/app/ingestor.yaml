@@ -1,0 +1,89 @@
+# Pont MQTT → base (app.ingestion.mqtt_bridge). Une seule réplique : sans abonnement partagé
+# ($share/...) côté backend, deux répliques recevraient chaque message (l'insertion reste idempotente
+# sur (device_id, ts), mais le travail serait doublé).
+# Sondes : le pont n'expose pas encore de point HTTP ; à ajouter côté backend (voir README).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestor
+  labels:
+    app.kubernetes.io/name: ingestor
+    app.kubernetes.io/component: ingestion
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingestor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingestor
+        app.kubernetes.io/component: ingestion
+        smartagri92.io/egress-https: "true"
+        smartagri92.io/egress-mqtts: "true"
+    spec:
+      serviceAccountName: agri-ingestor
+      automountServiceAccountToken: true # jeton IRSA (S3 raw)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ingestor
+          image: smartagri92/api:unset
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "app.ingestion.mqtt_bridge"]
+          envFrom:
+            - configMapRef:
+                name: agri-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: agri-database
+                  key: DATABASE_URL
+            - name: DEVICE_KEY_PEPPER
+              valueFrom:
+                secretKeyRef:
+                  name: agri-app
+                  key: DEVICE_KEY_PEPPER
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: agri-app
+                  key: JWT_SECRET
+            - name: MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: agri-app
+                  key: MQTT_INGESTOR_USERNAME
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: agri-app
+                  key: MQTT_INGESTOR_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
