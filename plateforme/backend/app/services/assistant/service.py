@@ -22,6 +22,7 @@ from app.core.constants import LOCALES, ROLES
 from app.core.errors import AppError, not_found
 from app.db.models import Conversation, Message
 from app.services import access
+from app.services.provenance import provenance
 from app.services.assistant.gateway import (
     AssistantGateway,
     assistant_unavailable,
@@ -180,6 +181,13 @@ def _persist(session: Session, conversation: Conversation, request: ChatRequest,
     session.flush()
 
 
+def _provenance(result: LoopResult, ctx: ToolContext) -> dict[str, Any]:
+    """Provenance doc 16 § 9.2. L'enum gelée n'a pas de source « LLM externe » : `agriml` (plateforme)
+    est la plus proche ; le modèle réellement utilisé est dans `model_version`. Repli 1 = autre modèle."""
+    return provenance(model_name="assistant_llm", model_version=result.model or ctx.settings.assistant_model,
+                      source="agriml", fallback_step=1 if result.fallback_used else 0, computed_at=ctx.now)
+
+
 def chat(gateway: AssistantGateway | None, ctx: ToolContext, request: ChatRequest,
          default_locale: str = "fr") -> dict[str, Any]:
     """Point d'entrée de POST /v1/assistant/chat (l'appelant valide la transaction)."""
@@ -199,4 +207,5 @@ def chat(gateway: AssistantGateway | None, ctx: ToolContext, request: ChatReques
             "tools_used": list(result.tools_used), "truncated": result.truncated,
             "limit_reached": result.limit_reached, "model": result.model, "fallback_used": result.fallback_used,
             "refusal_category": result.refusal_category,
-            "language_quality_notice": LANGUAGE_QUALITY_NOTICE.get(locale)}
+            "language_quality_notice": LANGUAGE_QUALITY_NOTICE.get(locale),
+            "provenance": _provenance(result, ctx)}

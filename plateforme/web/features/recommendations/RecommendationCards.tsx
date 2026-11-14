@@ -90,9 +90,11 @@ function IrrigationBody({ payload }: { payload: IrrigationPayload }) {
           <span className="text-xl font-bold leading-tight sm:text-2xl">{t(`actions.${advice.action}`)}</span>
         </span>
       </div>
-      <div className="advisor-bubble">
-        <Icon name="chat" size={18} />
-        <p className="m-0 mt-1 text-base font-medium text-ink sm:text-lg">{advice.reason}</p>
+      <div className="advisor-bubble flex items-start gap-2.5">
+        <span className="mt-0.5 shrink-0 text-g" aria-hidden="true">
+          <Icon name="chat" size={18} />
+        </span>
+        <p className="m-0 text-base font-medium text-ink sm:text-lg">{advice.reason}</p>
       </div>
       <div className="step-line">
         <Step title={ta("finding")} icon="activity">
@@ -235,6 +237,7 @@ export function RecommendationCard({
 }) {
   const t = useTranslations("recommendations");
   const ta = useTranslations("recommendations.advisor");
+  const cleanVersion = recommendation.engine_version.replace(/^[^@]+@/, "");
   return (
     <li className="card card-ai flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -249,7 +252,7 @@ export function RecommendationCard({
           </div>
         </div>
         <span className="chip">
-          {t("engine", { version: recommendation.engine_version })} ·{" "}
+          {t("engine", { version: cleanVersion })} ·{" "}
           <TimeAgo value={recommendation.created_at} />
         </span>
       </div>

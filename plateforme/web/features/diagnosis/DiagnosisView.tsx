@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useId, useRef, useState, type ChangeEvent } from "react";
 
 import { FieldPicker } from "@/components/FieldPicker";
+import { PhotoFramingGuide } from "@/components/Illustrations";
 import { ModuleShell } from "@/components/ModuleShell";
 import { ProvenanceNote } from "@/components/Provenance";
 import { QueryState, useErrorMessage } from "@/components/QueryState";
@@ -144,6 +145,14 @@ function Analyzer({ fieldId }: { fieldId: string }) {
         <p id={`${inputId}-hint`} className="text-xs text-mute">
           {t("photoHint")}
         </p>
+        <p className="m-0 text-xs text-mute">{t("photoTips")}</p>
+        {!prepared ? (
+          <PhotoFramingGuide
+            goodLabel="1 feuille nette plein cadre"
+            farLabel="Éviter : plant trop loin"
+            darkLabel="Éviter : contre-jour ou ombre"
+          />
+        ) : null}
       </div>
       <p role="status" className="text-sm text-mute">
         {preparing ? t("preparing") : null}

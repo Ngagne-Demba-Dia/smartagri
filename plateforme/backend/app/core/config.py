@@ -15,6 +15,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from functools import lru_cache
 
+from app.core.service_modes import ServiceModeError, ServiceModes, load_service_modes
+
 logger = logging.getLogger(__name__)
 
 VALID_ENVS = frozenset({"local", "test", "staging", "prod"})
@@ -70,6 +72,8 @@ class Settings:
     disease_consecutive: int = 3
     disease_min_confidence: float = 0.7
     disease_window_hours: float = 48.0
+    # Mode hybride par service (voir app/core/service_modes.py)
+    service_modes: ServiceModes = ServiceModes()
 
     @property
     def is_strict(self) -> bool:
@@ -118,6 +122,13 @@ def _csv(env: Mapping[str, str], key: str, default: tuple[str, ...]) -> tuple[st
     return tuple(item.strip() for item in raw.split(",") if item.strip())
 
 
+def _service_modes(env: Mapping[str, str]) -> ServiceModes:
+    try:
+        return load_service_modes(env)
+    except ServiceModeError as exc:
+        raise ConfigError(str(exc)) from exc
+
+
 def _read_env(env: Mapping[str, str]) -> Settings:
     app_env = _get(env, "APP_ENV", "local") or "local"
     database_url = _get(env, "DATABASE_URL")
@@ -156,6 +167,7 @@ def _read_env(env: Mapping[str, str]) -> Settings:
         disease_consecutive=_int(env, "DISEASE_CONSECUTIVE", 3),
         disease_min_confidence=_float(env, "DISEASE_MIN_CONFIDENCE", 0.7),
         disease_window_hours=_float(env, "DISEASE_WINDOW_HOURS", 48.0),
+        service_modes=_service_modes(env),
     )
 
 

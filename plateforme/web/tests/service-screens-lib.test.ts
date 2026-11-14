@@ -155,6 +155,7 @@ describe("prices", () => {
     expect(sorted.map((h) => h.weeks)).toEqual([1, 3]);
     expect(changePct(200, 210)).toBe(5);
     expect(changePct(200, 180)).toBe(-10);
+    expect(Object.is(changePct(336, 335), 0)).toBe(true);
     expect(changePct(null, 180)).toBeNull();
     expect(changePct(0, 180)).toBeNull();
   });

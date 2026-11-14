@@ -27,6 +27,7 @@ function Reading({ need }: { need: IrrigationNeed }) {
       <h3 className="font-semibold">{t("readingTitle")}</h3>
       <p className="m-0">{text}</p>
       {isDegraded(need) ? <p className="m-0 text-sm text-warn-ink">{t("readingDegraded")}</p> : null}
+      <p className="m-0 text-xs text-mute">{t("unitEquivalence")}</p>
       <p className="m-0 text-xs text-mute">{t("readingNote")}</p>
     </div>
   );

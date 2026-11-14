@@ -25,3 +25,8 @@ class DeviceIn(InputModel):
 class ThresholdsIn(InputModel):
     start: Any = None
     stop: Any = None
+
+
+class ParametersAckIn(InputModel):
+    version: int | None = Field(default=None, ge=1)
+    applied: bool = True

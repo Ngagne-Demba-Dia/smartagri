@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { KitMastDiagram } from "@/components/Illustrations";
 import { ProvenanceNote } from "@/components/Provenance";
 import { QueryState } from "@/components/QueryState";
 import { StatusTag } from "@/components/StatusTag";
@@ -32,11 +33,14 @@ function HealthCards({ health }: { health: DeviceHealth }) {
   const worst = worstState(health.sensors);
   return (
     <div className="flex flex-col gap-3">
-      {worst ? (
-        <div role="status">
-          <StatusTag tone={sensorTone(worst)} label={t(`overall.${worst}`)} />
-        </div>
-      ) : null}
+      <div className="flex items-center gap-3">
+        <KitMastDiagram size={72} />
+        {worst ? (
+          <div role="status">
+            <StatusTag tone={sensorTone(worst)} label={t(`overall.${worst}`)} />
+          </div>
+        ) : null}
+      </div>
       <ul className="flex flex-col gap-2">
         {health.sensors.map((s) => (
           <li key={s.sensor} className="card flex flex-wrap items-center justify-between gap-2">

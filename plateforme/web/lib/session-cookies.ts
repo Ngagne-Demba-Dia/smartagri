@@ -23,11 +23,11 @@ export interface CookieOptions {
   maxAge: number;
 }
 
-/** `secure` n'est désactivé qu'en développement local (http://localhost). */
+/** `secure` n'est désactivé qu'en développement local (http://localhost) ou en banc simulé local (AGRI_MOCK=1). */
 export function cookieOptions(maxAge: number, path = "/"): CookieOptions {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
+    secure: process.env.NODE_ENV !== "development" && process.env.AGRI_MOCK !== "1",
     sameSite: "strict",
     path,
     maxAge,

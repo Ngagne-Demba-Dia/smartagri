@@ -5,7 +5,18 @@
 
 import { useId } from "react";
 
-type CropKind = "onion" | "millet" | "maize" | "tomato" | "rice" | "groundnut" | "seedling";
+type CropKind =
+  | "onion"
+  | "millet"
+  | "maize"
+  | "tomato"
+  | "rice"
+  | "groundnut"
+  | "cabbage"
+  | "carrot"
+  | "potato"
+  | "cassava"
+  | "seedling";
 
 const CROP_PATTERNS: ReadonlyArray<readonly [RegExp, CropKind]> = [
   [/oignon|onion|echalote|échalote/i, "onion"],
@@ -14,6 +25,10 @@ const CROP_PATTERNS: ReadonlyArray<readonly [RegExp, CropKind]> = [
   [/tomate|tomato|poivron|piment/i, "tomato"],
   [/\briz\b|rice|paddy/i, "rice"],
   [/arachide|groundnut|peanut|ni[ée]b[ée]|haricot|bean/i, "groundnut"],
+  [/chou|cabbage|salade|laitue/i, "cabbage"],
+  [/carotte|carrot|navet|radis/i, "carrot"],
+  [/pomme de terre|potato|patate/i, "potato"],
+  [/manioc|cassava|igname/i, "cassava"],
 ];
 
 export function cropKind(crop: string | null | undefined): CropKind {
@@ -82,6 +97,49 @@ function CropShape({ kind }: { kind: CropKind }) {
             <ellipse cx="40" cy="38" rx="7" ry="4.5" transform="rotate(15 40 38)" />
           </g>
           <ellipse cx="32" cy="58" rx="6" ry="3.4" fill="#c99a5b" />
+        </g>
+      );
+    case "cabbage":
+      return (
+        <g>
+          <ellipse cx="32" cy="40" rx="18" ry="13" fill={LEAF} />
+          <circle cx="32" cy="38" r="12" fill="#81c784" />
+          <path
+            d="M20 38c3-7 9-11 12-11s9 4 12 11M25 43c2-4 5-6 7-6s5 2 7 6M32 27v19"
+            stroke={LEAF_DARK}
+            strokeWidth="1.8"
+            fill="none"
+            strokeLinecap="round"
+          />
+        </g>
+      );
+    case "carrot":
+      return (
+        <g>
+          <path d="M32 28c-2-8-7-12-11-14M32 28V12M32 28c2-8 7-12 11-14" stroke={STEM} strokeWidth="2.8" fill="none" strokeLinecap="round" />
+          <path d="M24 28h16l-6 27c-1 2-3 2-4 0z" fill="#eb6834" />
+          <path d="M27 34h8M28 40h6M29 46h4" stroke="#b84318" strokeWidth="1.5" strokeLinecap="round" />
+        </g>
+      );
+    case "potato":
+      return (
+        <g>
+          <path d="M32 40V20M32 30c-6-2-10-6-11-11 6 0 10 4 11 11zM32 26c6-2 10-6 11-11-6 0-10 4-11 11z" fill={LEAF} stroke={STEM} strokeWidth="2.2" strokeLinecap="round" />
+          <ellipse cx="25" cy="47" rx="9" ry="6.5" fill="#d9a441" />
+          <ellipse cx="39" cy="49" rx="8.5" ry="6" fill="#c79132" />
+          <circle cx="23" cy="46" r="1" fill="#7a5230" />
+          <circle cx="28" cy="49" r="1" fill="#7a5230" />
+          <circle cx="38" cy="48" r="1" fill="#7a5230" />
+          <circle cx="42" cy="51" r="1" fill="#7a5230" />
+        </g>
+      );
+    case "cassava":
+      return (
+        <g>
+          <path d="M32 52V24" stroke="#7a5230" strokeWidth="3.2" strokeLinecap="round" />
+          <path d="M32 24l-12-6M32 24l-6-12M32 24V10M32 24l6-12M32 24l12-6" stroke={LEAF} strokeWidth="3.4" strokeLinecap="round" />
+          <ellipse cx="26" cy="54" rx="6" ry="3" fill="#8d623d" />
+          <ellipse cx="38" cy="54" rx="6" ry="3" fill="#8d623d" />
         </g>
       );
     default:
@@ -221,6 +279,97 @@ export function AdvisorAvatar({ size = 56 }: { size?: number }) {
       <circle cx="35.5" cy="31" r="1.1" fill="#3b2a1a" />
       <path d="M29 34.6c1.8 1.5 4.2 1.5 6 0" stroke="#3b2a1a" strokeWidth="1.2" fill="none" strokeLinecap="round" />
       <path d="M49 44c3-7 8-9 11-9-1 5-5 9-11 9z" fill="#c9f0a8" />
+    </svg>
+  );
+}
+
+/**
+ * Triptyque illustratif de prise de vue (Maladies — Groupe B1) :
+ * 1) Bon cadrage : 1 feuille nette plein cadre ; 2) Trop loin ; 3) Contre-jour / ombre.
+ */
+export function PhotoFramingGuide({
+  goodLabel,
+  farLabel,
+  darkLabel,
+}: {
+  goodLabel: string;
+  farLabel: string;
+  darkLabel: string;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" aria-hidden="true">
+      <div className="tile flex flex-row items-center gap-3 sm:flex-col sm:items-start">
+        <svg width="56" height="56" viewBox="0 0 64 64" fill="none" focusable="false" className="shrink-0">
+          <rect x="4" y="4" width="56" height="56" rx="10" fill="#e4f2e1" stroke="#2f8a3e" strokeWidth="2" />
+          <path d="M18 46c4-18 16-28 28-28 0 14-10 26-28 28z" fill="#58b25f" stroke="#1f6b2c" strokeWidth="2" />
+          <path d="M18 46l24-24M26 38l8-2M32 32l8-2" stroke="#1f6b2c" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="50" cy="14" r="7" fill="#1b5e20" />
+          <path d="M46.5 14l2.3 2.3 4.5-4.5" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="text-xs font-semibold text-ok-ink">{goodLabel}</span>
+      </div>
+      <div className="tile flex flex-row items-center gap-3 sm:flex-col sm:items-start">
+        <svg width="56" height="56" viewBox="0 0 64 64" fill="none" focusable="false" className="shrink-0">
+          <rect x="4" y="4" width="56" height="56" rx="10" fill="#fff1d9" stroke="#e9a92f" strokeWidth="2" />
+          <path d="M32 50V34" stroke="#7a5230" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="28" cy="34" r="3.5" fill="#58b25f" />
+          <circle cx="36" cy="34" r="3.5" fill="#58b25f" />
+          <circle cx="32" cy="29" r="3.5" fill="#58b25f" />
+          <circle cx="50" cy="14" r="7" fill="#b3261e" />
+          <path d="M47 11l6 6M53 11l-6 6" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span className="text-xs font-medium text-mute">{farLabel}</span>
+      </div>
+      <div className="tile flex flex-row items-center gap-3 sm:flex-col sm:items-start">
+        <svg width="56" height="56" viewBox="0 0 64 64" fill="none" focusable="false" className="shrink-0">
+          <rect x="4" y="4" width="56" height="56" rx="10" fill="#283737" stroke="#7a4a00" strokeWidth="2" />
+          <path d="M18 46c4-18 16-28 28-28 0 14-10 26-28 28z" fill="#172620" stroke="#3b4e41" strokeWidth="1.5" />
+          <circle cx="50" cy="14" r="7" fill="#b3261e" />
+          <path d="M47 11l6 6M53 11l-6 6" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span className="text-xs font-medium text-mute">{darkLabel}</span>
+      </div>
+    </div>
+  );
+}
+
+/** Vignette de plaque engluée jaune quadrillée posée au champ (Pièges — Groupe B2). */
+export function StickyTrapArt({ size = 64 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true" focusable="false" className="shrink-0">
+      <ellipse cx="32" cy="58" rx="20" ry="4" fill={SOIL} opacity="0.55" />
+      <path d="M32 58V10" stroke="#7a5230" strokeWidth="3" strokeLinecap="round" />
+      <rect x="16" y="14" width="32" height="26" rx="3" fill="#ffd54f" stroke="#c79132" strokeWidth="2" />
+      <path d="M24 14v26M32 14v26M40 14v26M16 22h32M16 31h32" stroke="#e9a92f" strokeWidth="1" />
+      <circle cx="22" cy="19" r="1.6" fill="#3b2a1a" />
+      <circle cx="36" cy="26" r="1.8" fill="#3b2a1a" />
+      <circle cx="28" cy="35" r="1.5" fill="#3b2a1a" />
+      <circle cx="43" cy="20" r="1.4" fill="#3b2a1a" />
+      <path d="M16 52c3-6 8-9 13-9M48 52c-3-6-8-9-13-9" stroke={LEAF} strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Schéma vectoriel du mât terrain SmartAgri et de ses 6 capteurs (État du kit — Groupe B3). */
+export function KitMastDiagram({ size = 88 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 96 96" fill="none" aria-hidden="true" focusable="false" className="shrink-0">
+      <rect x="8" y="68" width="80" height="20" rx="4" fill="#7a5230" opacity="0.28" />
+      <path d="M8 68h80" stroke="#7a5230" strokeWidth="2" />
+      <path d="M48 82V18" stroke="#3b4e41" strokeWidth="3.5" strokeLinecap="round" />
+      {/* Panneau solaire + batterie (haut) */}
+      <polygon points="30,12 66,8 62,22 26,26" fill="#1c5cab" stroke="#86b6ef" strokeWidth="1.5" />
+      {/* Abri météo BME280 + boîtier ESP32-S3 (milieu) */}
+      <rect x="39" y="32" width="18" height="16" rx="3" fill="#eef4ec" stroke="#2f8a3e" strokeWidth="2" />
+      <circle cx="48" cy="40" r="2.5" fill="#3aa655" />
+      {/* Conduite, pompe et débitmètre (surface) */}
+      <path d="M14 62h68" stroke="#2a78d6" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="26" cy="62" r="5" fill="#2a78d6" />
+      <rect x="64" y="58" width="10" height="8" rx="2" fill="#0f5aa6" />
+      {/* Sondes humidité et NPK dans le sol (bas) */}
+      <path d="M42 48l-10 30M54 48l10 30" stroke="#1f6b2c" strokeWidth="2" strokeDasharray="3 2" />
+      <rect x="28" y="74" width="8" height="10" rx="2" fill="#2a78d6" />
+      <rect x="60" y="74" width="8" height="10" rx="2" fill="#e9a92f" />
     </svg>
   );
 }

@@ -85,9 +85,11 @@ export function AppShell({ children, banner }: { children: ReactNode; banner?: R
     window.location.assign(localePath(locale, `/${LOGIN_SLUG}`));
   };
 
+  const scene = sceneForPath(pathname);
+
   return (
-    <div data-scene={sceneForPath(pathname)} className="relative isolate min-h-screen md:flex">
-      <Scene />
+    <div data-scene={scene} className="relative isolate min-h-screen md:flex">
+      <Scene scene={scene} />
       <a
         href="#contenu"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-30 focus:rounded-btn focus:bg-card focus:p-3"

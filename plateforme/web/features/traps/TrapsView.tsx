@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import { AiCard } from "@/components/AiCard";
 import { Chart } from "@/components/chart/Chart";
+import { StickyTrapArt } from "@/components/Illustrations";
 import { KpiCard } from "@/components/KpiCard";
 import { ModuleShell } from "@/components/ModuleShell";
 import { QueryState } from "@/components/QueryState";
@@ -41,7 +42,10 @@ function Result({ counts }: { counts: TrapCounts }) {
   return (
     <AiCard title={t("cardTitle")} provenance={counts.provenance}>
       <div className="flex flex-col gap-4">
-        <p className="text-sm text-mute">{t("organism", { name })}</p>
+        <div className="flex items-center gap-3">
+          <StickyTrapArt size={56} />
+          <p className="text-sm text-mute">{t("organism", { name })}</p>
+        </div>
         <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <KpiCard label={t("kpiTotal")} value={formatNumber(total)} />
           <KpiCard

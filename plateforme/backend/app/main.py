@@ -78,6 +78,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health_router)
     app.include_router(api_router)
     logger.info("API prête (env=%s, base=%s)", settings.app_env, engine.dialect.name)
+    logger.info("Modes des services (défaut=%s) : %s", settings.service_modes.default,
+                ", ".join(f"{k}={v}" for k, v in settings.service_modes.as_dict().items()))
     return app
 
 

@@ -74,6 +74,7 @@ function CountTable({
 
 function Report({ reportWindow }: { reportWindow: ReportWindow }) {
   const t = useTranslations("reports");
+  const ta = useTranslations("alerts");
   const tf = useTranslations("recommendations.feedback");
   const kpis = useKpis(reportWindow);
   const data = kpis.data?.kpis;
@@ -89,7 +90,7 @@ function Report({ reportWindow }: { reportWindow: ReportWindow }) {
             caption={t("alertsCaption")}
             labelHeader={t("columns.rule")}
             counts={data.alerts_by_rule}
-            label={(k) => k}
+            label={(k) => (ta.has(`rules.${k}`) ? ta(`rules.${k}`) : k)}
           />
           <CountTable
             caption={t("feedbackCaption")}

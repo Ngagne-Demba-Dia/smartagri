@@ -24,7 +24,9 @@ from app.db.base import Base
 from app.db.models import Campaign, CropCycle, Equipment, Farm, Field, Membership, Organization, User
 from app.db.session import build_engine, build_session_factory, set_tenant_scope
 from app.services import devices, farms
+from app.services.access import DEMO_SLUG_TO_UUID
 
+DEMO_IDS = DEMO_SLUG_TO_UUID
 DEMO_ORG = "Coopérative démo des Niayes"
 DEMO_ADMIN_EMAIL = "admin@demo.smartagri92.invalid"
 DEMO_SERIAL = "SA92-000001"
@@ -49,7 +51,7 @@ class SeedSecrets:
 
 
 def _org_and_admin(session: Session) -> tuple[Organization, User, str]:
-    org = Organization(name=DEMO_ORG, kind="cooperative", region="Thiès")
+    org = Organization(id=DEMO_IDS["org-demo-niayes"], name=DEMO_ORG, kind="cooperative", region="Thiès")
     password = secrets.token_urlsafe(18)
     admin = User(email=DEMO_ADMIN_EMAIL, full_name="Administrateur démo", password_hash=hash_password(password),
                  locale="fr")
@@ -62,15 +64,16 @@ def _org_and_admin(session: Session) -> tuple[Organization, User, str]:
 
 
 def _farm_and_cycle(session: Session, org: Organization) -> tuple[Farm, Field]:
-    farm = farms.create_farm(session, org.id, dict(DEMO_FARM))
-    field = farms.create_field(session, farm, dict(DEMO_FIELD))
-    campaign = Campaign(organization_id=org.id, name="Saison sèche 2026-2027", season="dry",
+    farm = farms.create_farm(session, org.id, {"id": DEMO_IDS["farm-mboro"], **DEMO_FARM})
+    field = farms.create_field(session, farm, {"id": DEMO_IDS["fld-mboro-1"], **DEMO_FIELD})
+    campaign = Campaign(id=DEMO_IDS["cmp-contre-saison"], organization_id=org.id,
+                        name="Saison sèche 2026-2027", season="dry",
                         start_date=date(2026, 10, 1), end_date=date(2027, 3, 31), status="active")
     session.add(campaign)
     session.flush()
-    session.add(CropCycle(organization_id=org.id, field_id=field.id, campaign_id=campaign.id, crop="onion",
-                          variety="Violet de Galmi", planted_on=date(2026, 10, 15),
-                          expected_harvest_on=date(2027, 2, 15), status="active"))
+    session.add(CropCycle(id=DEMO_IDS["cyc-fld-mboro-1"], organization_id=org.id, field_id=field.id,
+                          campaign_id=campaign.id, crop="onion", variety="Violet de Galmi",
+                          planted_on=date(2026, 10, 15), expected_harvest_on=date(2027, 2, 15), status="active"))
     return farm, field
 
 
@@ -80,9 +83,11 @@ def seed(session: Session, settings: Settings) -> SeedSecrets | None:
         return None
     org, _admin, password = _org_and_admin(session)
     farm, field = _farm_and_cycle(session, org)
-    device, key = devices.register_device(session, settings, org.id, DEMO_SERIAL, "Kit démo", field.id)
-    session.add(Equipment(organization_id=org.id, farm_id=farm.id, kind="pump", label="Pompe solaire de surface",
-                          installed_at=date(2026, 10, 10), status="ok", device_id=device.id, flow_m3h=3.0))
+    device, key = devices.register_device(session, settings, org.id, DEMO_SERIAL, "Kit démo", field.id,
+                                          device_id=DEMO_IDS["dev-0001"], firmware_version="1.1.0")
+    session.add(Equipment(id=DEMO_IDS["eq-mboro-pump"], organization_id=org.id, farm_id=farm.id, kind="pump",
+                          label="Pompe solaire de surface", installed_at=date(2026, 10, 10), status="ok",
+                          device_id=device.id, flow_m3h=3.0))
     session.flush()
     return SeedSecrets(DEMO_ADMIN_EMAIL, password, DEMO_SERIAL, key)
 

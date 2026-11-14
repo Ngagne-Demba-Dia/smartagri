@@ -48,12 +48,26 @@ class Principal:
         return self.roles_by_org.get(org_id) in roles
 
 
+DEMO_SLUG_TO_UUID: dict[str, uuid.UUID] = {
+    "org-demo-niayes": uuid.UUID("00000000-0000-4000-8000-000000000001"),
+    "farm-mboro": uuid.UUID("00000000-0000-4000-8000-000000000101"),
+    "fld-mboro-1": uuid.UUID("00000000-0000-4000-8000-000000000201"),
+    "dev-0001": uuid.UUID("00000000-0000-4000-8000-000000000301"),
+    "cmp-contre-saison": uuid.UUID("00000000-0000-4000-8000-000000000401"),
+    "cyc-fld-mboro-1": uuid.UUID("00000000-0000-4000-8000-000000000501"),
+    "eq-mboro-pump": uuid.UUID("00000000-0000-4000-8000-000000000601"),
+}
+
+
 def parse_uuid(value: str | uuid.UUID, resource: str = "Ressource") -> uuid.UUID:
     """Un identifiant mal formé est traité comme introuvable (même réponse qu'un identifiant étranger)."""
     if isinstance(value, uuid.UUID):
         return value
+    text = str(value).strip()
+    if text in DEMO_SLUG_TO_UUID:
+        return DEMO_SLUG_TO_UUID[text]
     try:
-        return uuid.UUID(str(value))
+        return uuid.UUID(text)
     except ValueError as exc:
         raise not_found(resource) from exc
 

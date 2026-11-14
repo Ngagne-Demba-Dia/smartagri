@@ -213,6 +213,7 @@ function irrigationReco(seed: FieldSeed, scenario: MockScenario, now: Date): Rec
 type NutrientLevel = "bas" | "moyen" | "eleve";
 const LEVELS: Readonly<Record<"N" | "P" | "K", readonly [number, number]>> = { N: [20, 50], P: [10, 25], K: [80, 150] };
 const NUTRIENT_LABEL = { N: "Azote", P: "Phosphore", K: "Potassium" } as const;
+const LEVEL_TEXT: Readonly<Record<NutrientLevel, string>> = { bas: "bas", moyen: "moyen", eleve: "élevé" };
 
 const levelOf = (nutrient: "N" | "P" | "K", value: number): NutrientLevel => {
   const [low, high] = LEVELS[nutrient];
@@ -231,7 +232,7 @@ function fertilizationReco(seed: FieldSeed, scenario: MockScenario, now: Date): 
       nutrient: key,
       value: values[key],
       level: abstain ? null : level,
-      message: level === "bas" ? `${NUTRIENT_LABEL[key]} indicatif bas : à confirmer avant tout apport.` : `${NUTRIENT_LABEL[key]} indicatif ${level}.`,
+      message: level === "bas" ? `${NUTRIENT_LABEL[key]} indicatif bas : à confirmer avant tout apport.` : `${NUTRIENT_LABEL[key]} indicatif ${LEVEL_TEXT[level]}.`,
     };
   });
   const anyLow = nutrients.some((n) => levelOf(n.nutrient as "N" | "P" | "K", n.value ?? 0) === "bas");
@@ -365,7 +366,7 @@ export function latestNdvi(seed: FieldSeed, now: Date): number | null {
 
 const BASE_YIELD_T_HA: Readonly<Record<string, number>> = { oignon: 25, tomate: 30, chou: 35, carotte: 28, "pomme de terre": 22 };
 const YIELD_CAVEAT =
-  "Prévision expérimentale : validation leave-one-season-out sur peu de saisons ; ne pas l'utiliser pour un engagement commercial.";
+  "Prévision expérimentale : validation croisée par saison sur peu de campagnes ; ne pas l'utiliser pour un engagement commercial.";
 
 /** null : pas de cycle actif (404 NO_ACTIVE_CYCLE). */
 export function yieldForecast(seed: FieldSeed, scenario: MockScenario, now: Date): YieldForecast | null {

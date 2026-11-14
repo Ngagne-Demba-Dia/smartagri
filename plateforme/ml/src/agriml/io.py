@@ -17,8 +17,18 @@ logger = logging.getLogger(__name__)
 HASH_CHUNK_BYTES = 1 << 20
 
 
+def _parquet_engine() -> str | None:
+    try:
+        import pyarrow.parquet  # noqa: F401
+        return "pyarrow"
+    except Exception:
+        if is_available("fastparquet"):
+            return "fastparquet"
+    return None
+
+
 def parquet_available() -> bool:
-    return is_available("pyarrow") or is_available("fastparquet")
+    return _parquet_engine() is not None
 
 
 def read_table(path: str | Path) -> pd.DataFrame:
@@ -30,7 +40,8 @@ def read_table(path: str | Path) -> pd.DataFrame:
             raise FileNotFoundError(f"Fichier introuvable : {p}")
         p = alt
     if p.suffix == ".parquet":
-        return pd.read_parquet(p)
+        eng = _parquet_engine()
+        return pd.read_parquet(p, engine=eng) if eng else pd.read_parquet(p)
     if p.suffix == ".csv":
         return pd.read_csv(p)
     raise ValueError(f"Format non pris en charge : {p.suffix} (attendu .parquet ou .csv)")
@@ -41,10 +52,11 @@ def write_table(df: pd.DataFrame, path: str | Path) -> Path:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     if p.suffix == ".parquet":
-        if parquet_available():
-            df.to_parquet(p, index=False)
+        eng = _parquet_engine()
+        if eng is not None:
+            df.to_parquet(p, index=False, engine=eng)
             return p
-        logger.warning("pyarrow absent : %s écrit en CSV.", p.name)
+        logger.warning("pyarrow/fastparquet absent : %s écrit en CSV.", p.name)
         p = p.with_suffix(".csv")
     df.to_csv(p, index=False)
     return p

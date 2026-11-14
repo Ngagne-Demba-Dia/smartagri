@@ -3,6 +3,7 @@
  * du fleuve), sept parcelles, cinq kits. Noms explicitement « démo » : aucune organisation ni personne réelle.
  * Les dates relatives (campagnes, cycles) sont calculées à partir de `now` à chaque requête.
  */
+import { toMockId } from "@/lib/service-mode";
 import type { Campaign, CropCycle, Device, Equipment, Farm, Field, GeoJsonPolygon, IrrigationType } from "@/lib/types";
 
 import { DAY_MS, HOUR_MS, iso, isoDay } from "../base";
@@ -127,11 +128,11 @@ export function lastSeen(d: DeviceSeed, now: Date): Date {
   return new Date(now.getTime() - minutes * 60_000);
 }
 
-export const farmById = (id: string) => FARMS.find((f) => f.id === id) ?? null;
-export const fieldSeedById = (id: string) => FIELD_SEEDS.find((f) => f.id === id) ?? null;
-export const deviceSeedById = (id: string) => DEVICE_SEEDS.find((d) => d.id === id) ?? null;
-export const fieldSeedsOfFarm = (farmId: string) => FIELD_SEEDS.filter((f) => f.farmId === farmId);
-export const deviceSeedOfField = (fieldId: string) => DEVICE_SEEDS.find((d) => d.fieldId === fieldId) ?? null;
+export const farmById = (id: string) => FARMS.find((f) => f.id === toMockId(id)) ?? null;
+export const fieldSeedById = (id: string) => FIELD_SEEDS.find((f) => f.id === toMockId(id)) ?? null;
+export const deviceSeedById = (id: string) => DEVICE_SEEDS.find((d) => d.id === toMockId(id)) ?? null;
+export const fieldSeedsOfFarm = (farmId: string) => FIELD_SEEDS.filter((f) => f.farmId === toMockId(farmId));
+export const deviceSeedOfField = (fieldId: string) => DEVICE_SEEDS.find((d) => d.fieldId === toMockId(fieldId)) ?? null;
 
 /* ---------- Campagnes, cycles, équipements ---------- */
 
@@ -195,13 +196,13 @@ export function cropCycles(s: FieldSeed, now: Date): CropCycle[] {
 }
 
 export const EQUIPMENT: readonly Equipment[] = [
-  equipment("eq-mboro-pump", ORG_A, "farm-mboro", "pump", "Pompe solaire Mboro", "PMP-DEMO-01", "ok", "dev-0001", 2.5),
+  equipment("eq-mboro-pump", ORG_A, "farm-mboro", "pump", "Pompe solaire Mboro", "PMP-DEMO-01", "ok", "dev-0001", 10),
   equipment("eq-mboro-tank", ORG_A, "farm-mboro", "tank", "Réservoir 10 m³", null, "ok", null, null),
   equipment("eq-mboro-solar", ORG_A, "farm-mboro", "solar_panel", "Champ solaire 1,2 kWc", "PV-DEMO-01", "ok", null, null),
-  equipment("eq-potou-pump", ORG_A, "farm-potou", "pump", "Pompe solaire Potou", "PMP-DEMO-02", "ok", "dev-0003", 3),
+  equipment("eq-potou-pump", ORG_A, "farm-potou", "pump", "Pompe solaire Potou", "PMP-DEMO-02", "ok", "dev-0003", 12),
   equipment("eq-potou-tank", ORG_A, "farm-potou", "tank", "Bassin 20 m³", null, "ok", null, null),
   equipment("eq-potou-solar", ORG_A, "farm-potou", "solar_panel", "Champ solaire 1,5 kWc", "PV-DEMO-02", "maintenance", null, null),
-  equipment("eq-ndiol-pump", ORG_B, "farm-ndiol", "pump", "Pompe solaire Ndiol", "PMP-DEMO-03", "maintenance", "dev-0101", 2),
+  equipment("eq-ndiol-pump", ORG_B, "farm-ndiol", "pump", "Pompe solaire Ndiol", "PMP-DEMO-03", "maintenance", "dev-0101", 10),
   equipment("eq-ndiol-solar", ORG_B, "farm-ndiol", "solar_panel", "Champ solaire 1 kWc", "PV-DEMO-03", "ok", null, null),
 ];
 

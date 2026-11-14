@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import (
@@ -22,7 +22,18 @@ from app.core.constants import CROP_CYCLE_WRITERS
 from app.core.envelope import ok
 from app.core.errors import AppError
 from app.schemas.planning import CropCycleIn, CropCyclePatch
-from app.services import access, crop_cycles, farms, recommendations, weather, yield_forecast
+from app.services import (
+    access,
+    crop_cycles,
+    farms,
+    fertilization,
+    field_weather as weather_signal,
+    irrigation_need,
+    pest_risk,
+    recommendations,
+    weather,
+    yield_forecast,
+)
 from app.services.access import Principal
 from app.services.audit import RequestMeta, record_audit
 from app.services.inference.base import ModelBackend
@@ -41,12 +52,50 @@ def get_field(field_id: str, principal: Principal = Depends(get_principal),
 
 @router.get("/fields/{field_id}/recommendations")
 def field_recommendations(field_id: str, principal: Principal = Depends(get_principal),
-                          session: Session = Depends(get_session),
+                          session: Session = Depends(get_session), settings: Settings = Depends(get_settings),
+                          provider: weather.WeatherProvider = Depends(get_weather_provider),
                           now: datetime = Depends(get_now)) -> dict[str, Any]:
     field = access.get_field_for(session, principal, field_id)
-    items = recommendations.field_recommendations(session, field, now)
+    items = recommendations.field_recommendations(
+        session, field, now, lambda: weather_signal.field_forecast(session, field, provider, settings, now))
     session.commit()
     return ok(items)
+
+
+@router.get("/fields/{field_id}/irrigation-need")
+def field_irrigation_need(field_id: str, principal: Principal = Depends(get_principal),
+                          session: Session = Depends(get_session), settings: Settings = Depends(get_settings),
+                          provider: weather.WeatherProvider = Depends(get_weather_provider),
+                          now: datetime = Depends(get_now)) -> dict[str, Any]:
+    """Besoin en eau net des 24 h à venir (FAO-56 moins la pluie annoncée) ; météo absente = pas de report."""
+    field = access.get_field_for(session, principal, field_id)
+    forecast = weather_signal.field_forecast(session, field, provider, settings, now)
+    ctx = recommendations.load_context(session, field)
+    result = irrigation_need.irrigation_need(session, ctx, forecast, now)
+    session.commit()  # la prévision récupérée est mise en cache
+    return ok(result)
+
+
+@router.get("/fields/{field_id}/fertilization")
+def get_field_fertilization(field_id: str, request: Request, principal: Principal = Depends(get_principal),
+                            session: Session = Depends(get_session),
+                            now: datetime = Depends(get_now)) -> dict[str, Any]:
+    field = access.get_field_for(session, principal, field_id)
+    reference = getattr(request.app.state, "fertilization_reference", None)
+    return ok(fertilization.field_fertilization(session, field, now, reference=reference))
+
+
+@router.get("/fields/{field_id}/pest-risk")
+def get_field_pest_risk(field_id: str, request: Request, principal: Principal = Depends(get_principal),
+                        session: Session = Depends(get_session), settings: Settings = Depends(get_settings),
+                        provider: weather.WeatherProvider = Depends(get_weather_provider),
+                        now: datetime = Depends(get_now)) -> dict[str, Any]:
+    field = access.get_field_for(session, principal, field_id)
+    forecast = weather_signal.field_forecast(session, field, provider, settings, now)
+    reference = getattr(request.app.state, "pest_reference", None)
+    result = pest_risk.field_pest_risk(session, field, forecast, now, reference=reference)
+    session.commit()
+    return ok(result)
 
 
 @router.get("/fields/{field_id}/weather")
@@ -61,7 +110,8 @@ def field_weather(field_id: str, days: int = Query(7), principal: Principal = De
     ttl = timedelta(minutes=settings.weather_cache_minutes)
     forecast = weather.forecast_with_cache(session, provider, location.latitude, location.longitude, days, now, ttl)
     session.commit()
-    return ok({"field_id": str(field.id), "location_source": location.source, **forecast.as_dict()})
+    return ok({"field_id": str(field.id), "location_source": location.source, **forecast.as_dict(),
+               "provenance": weather.weather_provenance(forecast, now)})
 
 
 @router.get("/fields/{field_id}/yield-forecast")

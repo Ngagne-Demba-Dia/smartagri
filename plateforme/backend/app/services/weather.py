@@ -18,6 +18,7 @@ from typing import Any, Protocol
 
 import httpx
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
@@ -25,6 +26,7 @@ from app.core.errors import AppError
 from app.db.base import as_utc
 from app.db.models import WeatherCache
 from app.services import agronomy
+from app.services.provenance import rules_provenance
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +63,13 @@ class Forecast:
         return {"provider": self.provider, "latitude": self.latitude, "longitude": self.longitude,
                 "fetched_at": self.fetched_at.isoformat(), "source": self.source,
                 "days": [asdict(day) for day in self.days]}
+
+
+def weather_provenance(forecast: Forecast, now: datetime) -> dict[str, Any]:
+    """Provenance doc 16 § 9.2. Une prévision brute d'un fournisseur n'est pas un modèle AgriML : la source
+    la plus proche de l'enum gelée est `rules` (repli 2). `stale` = servie depuis un cache périmé."""
+    return rules_provenance(forecast.provider or "weather-provider", "v1", now,
+                            data_as_of=forecast.fetched_at, stale=forecast.source == "stale_cache")
 
 
 class WeatherProvider(Protocol):
@@ -153,14 +162,23 @@ def _cache_row(session: Session, provider: str, lat: float, lon: float, days: in
 
 def _store(session: Session, cached: WeatherCache | None, key: tuple[str, float, float, int],
            rows: list[dict[str, Any]], now: datetime) -> None:
-    if cached is None:
-        provider, lat, lon, days = key
-        session.add(WeatherCache(provider=provider, latitude=lat, longitude=lon, days=days, fetched_at=now,
-                                 payload={"rows": rows}))
-    else:
+    if cached is not None:
         cached.fetched_at = now
         cached.payload = {"rows": rows}
-    session.flush()
+        session.flush()
+        return
+    provider, lat, lon, days = key
+    try:
+        with session.begin_nested():
+            session.add(WeatherCache(provider=provider, latitude=lat, longitude=lon, days=days, fetched_at=now,
+                                     payload={"rows": rows}))
+            session.flush()
+    except IntegrityError:
+        existing = _cache_row(session, provider, lat, lon, days)
+        if existing is not None:
+            existing.fetched_at = now
+            existing.payload = {"rows": rows}
+            session.flush()
 
 
 def forecast_with_cache(session: Session, provider: WeatherProvider, latitude: float, longitude: float,

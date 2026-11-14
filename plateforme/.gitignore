@@ -77,3 +77,6 @@ mobile/ios/Flutter/Generated.xcconfig
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Pile live D1 (contient des identifiants de démo)
+web/.live-stack.json

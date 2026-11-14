@@ -77,4 +77,50 @@ test.describe("accessibilité", () => {
     }
     expect(missing, missing.join("\n")).toEqual([]);
   });
+
+  test("dialogue mobile, formulaires, téléversement photo et assistant accessibles au clavier et aux lecteurs d'écran", async ({
+    page,
+  }) => {
+    await login(page);
+
+    // 1. Tiroir <dialog> mobile : ouverture, aria-label, fermeture par Échap
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto("/fr/tableau", { waitUntil: "networkidle" });
+    const menuBtn = page.getByRole("button", { name: "Menu" });
+    await expect(menuBtn).toBeVisible();
+    await menuBtn.click();
+    const dialog = page.getByRole("dialog", { name: "Menu" });
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+
+    // Retour en taille bureau pour la suite
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    // 2. Formulaire de seuils sur Détail Parcelle : étiquettes et validation accessible
+    await page.goto("/fr/parcelles/fld-ndiol-1", { waitUntil: "networkidle" });
+    await page.getByText(/^Chargement/).first().waitFor({ state: "hidden", timeout: LOADING_WAIT_MS });
+    await expect(page.getByLabel("Démarrage (%)")).toBeVisible();
+    await expect(page.getByLabel("Arrêt (%)")).toBeVisible();
+
+    // 3. Téléversement Maladies : champ relié à son aide par aria-describedby + conseil prise de vue
+    await page.goto("/fr/maladies", { waitUntil: "networkidle" });
+    await page.getByText(/^Chargement/).first().waitFor({ state: "hidden", timeout: LOADING_WAIT_MS });
+    const fileInput = page.getByLabel("Photo de la plante");
+    await expect(fileInput).toBeVisible();
+    const describedBy = await fileInput.getAttribute("aria-describedby");
+    expect(describedBy).toBeTruthy();
+    await expect(page.getByText(/Conseil prise de vue/)).toBeVisible();
+
+    // 4. Assistant IA : suggestions rapides au clavier, compteur aria-describedby et journal role=log
+    await page.goto("/fr/assistant", { waitUntil: "networkidle" });
+    const suggestion = page.getByRole("button", { name: "Dois-je arroser demain ?" });
+    await expect(suggestion).toBeVisible();
+    await suggestion.focus();
+    await page.keyboard.press("Enter");
+    const questionInput = page.getByLabel("Votre question");
+    await expect(questionInput).toHaveValue("Dois-je arroser demain ?");
+    await expect(page.getByText("24 / 2000 caractères")).toBeVisible();
+    await expect(page.getByRole("log", { name: "Conversation avec l’assistant" })).toBeVisible();
+  });
 });

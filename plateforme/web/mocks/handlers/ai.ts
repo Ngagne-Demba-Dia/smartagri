@@ -166,6 +166,14 @@ const deviceHandlers: HttpHandler[] = [
       ? answer(parameters, scenario)
       : fail("NOT_FOUND", "Aucun jeu de paramètres publié pour ce kit.", 404, { scenario });
   }),
+  aiRoute("kit_parameters", "post", "/v1/devices/:id/parameters/ack", ({ user, params, scenario, now }) => {
+    const seed = visibleDevice(user, params.id ?? "");
+    if (!seed) return notFound(scenario);
+    const parameters = kitParameters(seed, scenario, now);
+    return parameters
+      ? answer({ ...parameters, applied: true }, scenario)
+      : fail("NOT_FOUND", "Aucun jeu de paramètres publié pour ce kit.", 404, { scenario });
+  }),
   aiRoute("trap_counts", "get", "/v1/devices/:id/trap-counts", ({ user, params, query, scenario, now }) => {
     const seed = visibleDevice(user, params.id ?? "");
     if (!seed) return notFound(scenario);

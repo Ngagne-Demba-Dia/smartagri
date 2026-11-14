@@ -7,6 +7,7 @@ la latitude de l'exploitation. Une recommandation de même nature datant de moin
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from typing import Any
@@ -17,7 +18,10 @@ from sqlalchemy.orm import Session
 from app.db.base import as_utc
 from app.db.models import CropCycle, Device, DeviceThreshold, Farm, Field, Measurement, Recommendation
 from app.services import agronomy
+from app.services.field_weather import today_row
 from app.services.measurements import latest_measurement
+from app.services.provenance import rules_provenance
+from app.services.weather import Forecast
 
 ENGINE_VERSION = "regles-fao56-v1"
 REUSE_WINDOW = timedelta(minutes=30)
@@ -84,12 +88,17 @@ def thresholds_for(session: Session, device: Device | None, latest: Measurement 
     return DEFAULT_THRESHOLDS[0], DEFAULT_THRESHOLDS[1], "defaut"
 
 
-def irrigation_payload(session: Session, ctx: FieldContext, now: datetime) -> dict[str, Any]:
+def irrigation_payload(session: Session, ctx: FieldContext, now: datetime,
+                       forecast: Forecast | None = None) -> dict[str, Any]:
     crop = crop_state(ctx.cycle, now)
     start, stop, source = thresholds_for(session, ctx.device, ctx.latest)
     latitude = ctx.farm.latitude if ctx.farm else None
     et0 = estimate_et0(session, ctx.device.id, latitude, now) if ctx.device else None
     latest = ctx.latest
+    today = today_row(forecast, now)
+    if et0 is None and today is not None:
+        et0 = today.et0_hargreaves_mm if today.et0_hargreaves_mm is not None else today.et0_mm
+    rain = today.precipitation_mm if today else None  # E2 : pluie annoncée sous 24 h (None si météo absente)
     advice = agronomy.recommend_irrigation(agronomy.IrrigationInput(
         soil_moisture_pct=latest.soil_moisture_pct if latest else None,
         soil_sensor_ok=bool(latest and latest.soil_sensor_ok is not False),
@@ -97,11 +106,15 @@ def irrigation_payload(session: Session, ctx: FieldContext, now: datetime) -> di
         threshold_stop_pct=stop,
         et0_mm=et0,
         kc=crop["kc"] if crop else None,
+        rain_forecast_mm=rain,
         irrigation_type=ctx.field.irrigation_type,
         area_ha=ctx.field.area_ha,
     ))
     measured_at = as_utc(latest.ts) if latest else None
-    return {"advice": asdict(advice), "crop": crop, "et0_mm": et0, "et0_method": "hargreaves" if et0 else None,
+    # `crop` est le code de la culture (chaîne, contrat doc 16 / Frontend) ; le détail est dans `crop_state`.
+    return {"advice": asdict(advice), "crop": crop["crop"] if crop else None, "crop_state": crop,
+            "et0_mm": et0, "et0_method": "hargreaves" if et0 else None,
+            "rain_expected_mm": rain,
             "thresholds": {"start_pct": start, "stop_pct": stop, "source": source},
             "measured_at": measured_at.isoformat() if measured_at else None,
             "device_serial": ctx.device.serial if ctx.device else None}
@@ -127,21 +140,55 @@ def _recent(session: Session, field_id: Any, kind: str, now: datetime) -> Recomm
     ).first()
 
 
+def _normalized_payload(row: Recommendation) -> dict[str, Any]:
+    """Payload sans mutation de la ligne ; répare les lignes d'avant E1 où `crop` était un objet."""
+    payload = dict(row.payload)
+    crop = payload.get("crop")
+    if isinstance(crop, dict):
+        payload["crop_state"] = crop
+        payload["crop"] = crop.get("crop")
+    return payload
+
+
+def _parse_instant(value: Any) -> datetime | None:
+    try:
+        return datetime.fromisoformat(value) if isinstance(value, str) else None
+    except ValueError:
+        return None
+
+
+def recommendation_provenance(row: Recommendation, payload: dict[str, Any]) -> dict[str, Any]:
+    """Provenance doc 16 § 9.2 : moteur à règles (`rules`, repli 2), sans confiance chiffrée."""
+    model_name = "irrigation_fao56" if row.kind == "irrigation" else "fertility_rules"
+    return rules_provenance(model_name, row.engine_version, row.created_at,
+                            data_as_of=_parse_instant(payload.get("measured_at")))
+
+
 def recommendation_view(row: Recommendation) -> dict[str, Any]:
     created = as_utc(row.created_at)
+    payload = _normalized_payload(row)
     return {"id": str(row.id), "kind": row.kind, "engine_version": row.engine_version,
-            "created_at": created.isoformat() if created else None, "payload": row.payload}
+            "created_at": created.isoformat() if created else None, "payload": payload,
+            "provenance": recommendation_provenance(row, payload)}
 
 
-def field_recommendations(session: Session, field: Field, now: datetime) -> list[dict[str, Any]]:
-    """Calcule (ou réutilise) les recommandations de la parcelle ; l'appelant valide la transaction."""
+def field_recommendations(session: Session, field: Field, now: datetime,
+                          forecast_source: Callable[[], Forecast | None] | None = None) -> list[dict[str, Any]]:
+    """Calcule (ou réutilise) les recommandations de la parcelle ; l'appelant valide la transaction.
+
+    `forecast_source` fournit la prévision météo (appelée seulement si l'irrigation doit être recalculée) ;
+    sans elle, la pluie annoncée est inconnue et ne retient pas l'arrosage.
+    """
     ctx: FieldContext | None = None
     views = []
     for kind in ("irrigation", "fertilization"):
         row = _recent(session, field.id, kind, now)
         if row is None:
             ctx = ctx or load_context(session, field)
-            payload = irrigation_payload(session, ctx, now) if kind == "irrigation" else fertilization_payload(ctx)
+            if kind == "irrigation":
+                payload = irrigation_payload(session, ctx, now, forecast_source() if forecast_source else None)
+            else:
+                payload = fertilization_payload(ctx)
             row = Recommendation(organization_id=field.organization_id, field_id=field.id, kind=kind,
                                  payload=payload, engine_version=ENGINE_VERSION, created_at=now)
             session.add(row)

@@ -2,7 +2,7 @@
 
 from app.db.models.assets import Equipment, MaintenanceEvent
 from app.db.models.assistant import Conversation, Message
-from app.db.models.device import Device, DeviceThreshold
+from app.db.models.device import Device, DeviceParameterSet, DeviceThreshold
 from app.db.models.farm import CropCycle, Farm, Field
 from app.db.models.identity import AuditLog, Membership, Organization, RefreshToken, User
 from app.db.models.ml import ModelRegistry
@@ -17,6 +17,7 @@ __all__ = [
     "Conversation",
     "CropCycle",
     "Device",
+    "DeviceParameterSet",
     "DeviceThreshold",
     "Diagnosis",
     "Equipment",

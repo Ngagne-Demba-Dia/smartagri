@@ -17,3 +17,10 @@ class ChatIn(InputModel):
     conversation_id: uuid.UUID | None = None
     organization_id: uuid.UUID | None = None
     locale: Literal["fr", "wo", "ff"] | None = None
+
+
+class TranscribeIn(InputModel):
+    audio_base64: str = Field(min_length=1)
+    content_type: str = Field(pattern=r"^(?i)audio/[a-z0-9.+-]+(;.*)?$", max_length=128)
+    duration_s: float = Field(gt=0, le=60.0)
+    language_hint: Literal["wo", "ff", "fr"] | None = None

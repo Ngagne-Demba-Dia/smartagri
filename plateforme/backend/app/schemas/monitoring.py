@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import AwareDatetime, Field
+from pydantic import AwareDatetime, Field, model_validator
 
 from app.schemas.common import InputModel
 
@@ -34,3 +34,17 @@ class DiagnosisIn(InputModel):
 
 class FeedbackIn(InputModel):
     feedback: Literal["followed", "partially_followed", "ignored", "not_applicable"]
+
+
+class DiagnosisAnalyzeIn(InputModel):
+    image_base64: str = Field(min_length=1)
+    content_type: Literal["image/jpeg", "image/png", "image/webp"]
+    field_id: str | None = Field(default=None, min_length=1, max_length=64)
+    device_id: str | None = Field(default=None, min_length=1, max_length=64)
+    captured_at: AwareDatetime
+
+    @model_validator(mode="after")
+    def _require_scope(self) -> DiagnosisAnalyzeIn:
+        if self.field_id is None and self.device_id is None:
+            raise ValueError("field_id ou device_id obligatoire.")
+        return self

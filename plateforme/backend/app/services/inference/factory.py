@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Sequence
 
 import httpx
@@ -11,15 +10,12 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.services.inference.base import (
     FeatureRow,
-    InferenceError,
     ModelBackend,
     Prediction,
-    model_unavailable,
 )
+from app.services.inference.fallback import predict_with_fallback
 from app.services.inference.local import LocalBundleBackend
 from app.services.inference.octopus import OctopusBatchBackend
-
-logger = logging.getLogger(__name__)
 
 
 def build_backend(settings: Settings, session: Session, client: httpx.Client | None = None) -> ModelBackend | None:
@@ -33,11 +29,8 @@ def build_backend(settings: Settings, session: Session, client: httpx.Client | N
 
 
 def predict_or_503(backend: ModelBackend | None, model_name: str, rows: Sequence[FeatureRow]) -> list[Prediction]:
-    """Prédit ou lève 503 MODEL_UNAVAILABLE ; le détail technique reste dans les journaux."""
-    if backend is None:
-        raise model_unavailable()
-    try:
-        return backend.predict(model_name, rows)
-    except InferenceError as exc:
-        logger.warning("Inférence %s via %s impossible : %s", model_name, backend.name, exc)
-        raise model_unavailable() from exc
+    """Prédit ou lève 503 MODEL_UNAVAILABLE ; le détail technique reste dans les journaux.
+
+    Cas particulier (un seul moteur, pas de règles) de `fallback.predict_with_fallback`.
+    """
+    return predict_with_fallback([backend], model_name, rows).predictions

@@ -51,7 +51,8 @@ async function proxy(request: NextRequest, { params }: Params): Promise<NextResp
     }
   }
 
-  const target = `${upstreamBase()}/v1/${path.join("/")}${request.nextUrl.search}`;
+  const apiPath = `/v1/${path.join("/")}`;
+  const target = `${upstreamBase(apiPath)}${apiPath}${request.nextUrl.search}`;
   const slow = root === "assistant" || path.join("/").endsWith(".csv");
 
   let upstream: Response;

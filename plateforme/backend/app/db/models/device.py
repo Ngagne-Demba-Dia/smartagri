@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Any
 
-from sqlalchemy import CheckConstraint, ForeignKey, String
+from sqlalchemy import CheckConstraint, ForeignKey, Index, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.constants import DEVICE_STATUSES, SYNC_STATUSES, sql_in
-from app.db.base import Base, CreatedAt, UUIDPk, utcnow
+from app.db.base import Base, CreatedAt, JSONType, UUIDPk, utcnow
 
 # Même règle que le firmware v1.1 (seuilsValides) et que services/agronomy.validate_thresholds.
 THRESHOLD_RULE = "desired_start_pct >= 0 AND desired_start_pct + 5 <= desired_stop_pct AND desired_stop_pct <= 100"
@@ -46,3 +47,22 @@ class DeviceThreshold(Base):
     command_id: Mapped[uuid.UUID | None] = mapped_column(index=True)
     updated_at: Mapped[datetime] = mapped_column(default=utcnow)
     updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
+
+class DeviceParameterSet(UUIDPk, CreatedAt, Base):
+    """Jeu de paramètres poussé au kit (doc 16 § 6.1 : seuils conseillés, NPK, étalonnage, contexte agro)."""
+
+    __tablename__ = "device_parameter_sets"
+    __table_args__ = (
+        UniqueConstraint("device_id", "version", name="uq_device_parameter_sets_device_version"),
+        CheckConstraint("version >= 1", name="version"),
+        Index("ix_device_parameter_sets_device_version", "device_id", "version"),
+    )
+
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    device_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("devices.id", ondelete="CASCADE"))
+    version: Mapped[int] = mapped_column(default=1)
+    issued_at: Mapped[datetime] = mapped_column(default=utcnow)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONType)
+    applied: Mapped[bool] = mapped_column(default=False)
+    applied_at: Mapped[datetime | None]

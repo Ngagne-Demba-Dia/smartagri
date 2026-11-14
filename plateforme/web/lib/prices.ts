@@ -18,7 +18,8 @@ export function sortedPriceHorizons(horizons: readonly PriceHorizon[]): PriceHor
 /** Variation de la médiane par rapport au dernier prix observé, en %, arrondie à l'unité ; null sans observation. */
 export function changePct(observed: number | null, p50: number): number | null {
   if (observed === null || observed <= 0) return null;
-  return Math.round(((p50 - observed) / observed) * 100);
+  const rounded = Math.round(((p50 - observed) / observed) * 100);
+  return rounded === 0 ? 0 : rounded;
 }
 
 /** Clé de traduction d'une culture : espaces remplacés par « _ » (« pomme de terre » → « pomme_de_terre »). */

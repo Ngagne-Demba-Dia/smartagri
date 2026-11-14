@@ -27,6 +27,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.db.base import as_utc, iso_utc
 from app.db.models import Alert, Device, DeviceThreshold, Diagnosis, Measurement
+from app.services.provenance import rules_provenance
 
 SOIL_SENSOR_FAILURE = "soil_sensor_failure"
 PUMP_FAULT = "pump_fault"
@@ -234,6 +235,7 @@ def sweep_silent_devices(session: Session, settings: Settings, now: datetime) ->
 
 
 def alert_view(alert: Alert) -> dict[str, Any]:
+    created = as_utc(alert.created_at)
     return {
         "id": str(alert.id),
         "organization_id": str(alert.organization_id),
@@ -247,4 +249,8 @@ def alert_view(alert: Alert) -> dict[str, Any]:
         "created_at": iso_utc(alert.created_at),
         "acknowledged_at": iso_utc(alert.acknowledged_at),
         "resolved_at": iso_utc(alert.resolved_at),
+        "provenance": (
+            rules_provenance("anomaly_rules", "anomaly-rules-v1", created, data_as_of=created)
+            if created is not None else None
+        ),
     }

@@ -35,7 +35,11 @@ function PlanResult({ plan, fieldNames }: { plan: IrrigationPlan; fieldNames: Re
       header: t("colField"),
       cell: (s) => fieldNames.get(s.field_id) ?? t("unknownField", { id: s.field_id }),
     },
-    { key: "pump", header: t("colPump"), cell: (s) => s.pump_id },
+    {
+      key: "pump",
+      header: t("colPump"),
+      cell: (s) => (t.has(`pumps.${s.pump_id}`) ? t(`pumps.${s.pump_id}`) : s.pump_id),
+    },
     { key: "duration", header: t("colDuration"), numeric: true, cell: (s) => formatMinutes(slotMinutes(s)) },
     {
       key: "volume",

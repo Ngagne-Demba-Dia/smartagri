@@ -35,6 +35,9 @@ def register_device(
     serial: str,
     name: str | None = None,
     field_id: uuid.UUID | None = None,
+    *,
+    device_id: uuid.UUID | None = None,
+    firmware_version: str | None = None,
 ) -> tuple[Device, str]:
     """Crée un kit et renvoie son secret en clair (affiché une seule fois, seul le HMAC est stocké)."""
     if session.scalars(select(Device.id).where(Device.serial == serial)).first() is not None:
@@ -44,13 +47,18 @@ def register_device(
         if field is None or field.organization_id != organization_id:
             raise not_found("Parcelle")
     key = generate_device_key()
-    device = Device(
-        organization_id=organization_id,
-        field_id=field_id,
-        serial=serial,
-        name=name,
-        key_hash=hash_device_key(settings, key),
-    )
+    kwargs: dict[str, Any] = {
+        "organization_id": organization_id,
+        "field_id": field_id,
+        "serial": serial,
+        "name": name,
+        "key_hash": hash_device_key(settings, key),
+    }
+    if device_id is not None:
+        kwargs["id"] = device_id
+    if firmware_version is not None:
+        kwargs["firmware_version"] = firmware_version
+    device = Device(**kwargs)
     session.add(device)
     session.flush()
     return device, key

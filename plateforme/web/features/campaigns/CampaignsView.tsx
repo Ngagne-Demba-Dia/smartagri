@@ -43,6 +43,7 @@ function Progress({ campaign, now }: { campaign: Campaign; now: Date }) {
 
 function CampaignCard({ campaign, now }: { campaign: Campaign; now: Date }) {
   const t = useTranslations("campaigns");
+  const seasonLabel = t.has(`seasons.${campaign.season}`) ? t(`seasons.${campaign.season}`) : campaign.season;
   return (
     <li className="card flex min-w-0 flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -50,7 +51,7 @@ function CampaignCard({ campaign, now }: { campaign: Campaign; now: Date }) {
         <StatusTag tone={STATUS_TONE[campaign.status]} label={t(`status.${campaign.status}`)} />
       </div>
       <p className="text-sm text-mute">
-        {t("season", { season: campaign.season })} ·{" "}
+        {t("season", { season: seasonLabel })} ·{" "}
         {t("period", { start: formatDate(campaign.start_date), end: formatDate(campaign.end_date) })}
       </p>
       <Progress campaign={campaign} now={now} />

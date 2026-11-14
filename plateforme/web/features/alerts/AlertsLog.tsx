@@ -36,7 +36,8 @@ function AlertItem({ alert, canAck }: { alert: AlertView; canAck: boolean }) {
       {/* Texte produit par le backend, rendu comme texte (jamais interprété en HTML). */}
       <p className="font-semibold">{alert.message}</p>
       <p className="text-sm text-mute">
-        {t("rule", { rule: alert.rule })} · {formatDateTime(alert.created_at)}
+        {t("rule", { rule: t.has(`rules.${alert.rule}`) ? t(`rules.${alert.rule}`) : alert.rule })} ·{" "}
+        {formatDateTime(alert.created_at)}
       </p>
       {alert.acknowledged_at ? (
         <p className="text-sm text-mute">

@@ -22,8 +22,8 @@ from app.core.config import Settings
 from app.core.constants import DEVICE_WRITERS, THRESHOLD_WRITERS
 from app.core.envelope import ok, page_meta
 from app.db.models import Device, DeviceThreshold
-from app.schemas.devices import DeviceIn, ThresholdsIn
-from app.services import access, devices, measurements
+from app.schemas.devices import DeviceIn, ParametersAckIn, ThresholdsIn
+from app.services import access, device_health, devices, kit_parameters, measurements
 from app.services.access import Principal
 from app.services.audit import RequestMeta, record_audit
 
@@ -103,3 +103,38 @@ def get_measurements(device_id: str, bucket: str = Query("raw", max_length=4),
     return ok({"device_id": str(device.id), "bucket": series.bucket, "from": series.start.isoformat(),
                "to": series.end.isoformat(), "rows": series.rows},
               {"count": len(series.rows), "truncated": series.truncated})
+
+
+@router.get("/devices/{device_id}/parameters")
+def get_device_parameters(device_id: str, principal: Principal = Depends(get_principal),
+                          session: Session = Depends(get_session),
+                          now: datetime = Depends(get_now)) -> dict[str, Any]:
+    device = access.get_device_for(session, principal, device_id)
+    row = kit_parameters.ensure_parameter_set(session, device, now)
+    session.commit()
+    return ok(kit_parameters.parameter_set_view(row, now))
+
+
+@router.post("/devices/{device_id}/parameters/ack")
+def ack_device_parameters(device_id: str, body: ParametersAckIn | None = None,
+                          principal: Principal = Depends(get_principal),
+                          session: Session = Depends(get_session), now: datetime = Depends(get_now),
+                          meta: RequestMeta = Depends(get_request_meta)) -> dict[str, Any]:
+    device = access.get_device_for(session, principal, device_id)
+    access.require_role(principal, device.organization_id, THRESHOLD_WRITERS)
+    version = body.version if body is not None else None
+    applied = body.applied if body is not None else True
+    row = kit_parameters.acknowledge_parameters(session, device, version, applied, now)
+    record_audit(session, "device.parameters_ack", actor_user_id=principal.user_id,
+                 organization_id=device.organization_id, target_type="device", target_id=device.id, meta=meta,
+                 details={"version": row.version, "applied": row.applied})
+    session.commit()
+    return ok(kit_parameters.parameter_set_view(row, now))
+
+
+@router.get("/devices/{device_id}/health")
+def get_device_health(device_id: str, principal: Principal = Depends(get_principal),
+                      session: Session = Depends(get_session), settings: Settings = Depends(get_settings),
+                      now: datetime = Depends(get_now)) -> dict[str, Any]:
+    device = access.get_device_for(session, principal, device_id)
+    return ok(device_health.device_health_view(session, settings, device, now))

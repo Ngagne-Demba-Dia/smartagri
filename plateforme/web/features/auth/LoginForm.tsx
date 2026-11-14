@@ -28,14 +28,17 @@ export function LoginForm({ next }: { next: string | null }) {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (username.trim().length < USERNAME_MIN || password.length === 0) {
+    const form = new FormData(event.currentTarget);
+    const rawUser = (username || String(form.get("username") ?? "")).trim();
+    const rawPass = password || String(form.get("password") ?? "");
+    if (rawUser.length < USERNAME_MIN || rawPass.length === 0) {
       setError(t("missing"));
       return;
     }
     setPending(true);
     setError(null);
     try {
-      await api.post("/auth/login", { username: username.trim(), password });
+      await api.post("/auth/login", { username: rawUser, password: rawPass });
     } catch (cause) {
       setError(errorMessage(cause));
       setPending(false);

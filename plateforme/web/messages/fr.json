@@ -13,6 +13,17 @@
       "all": "Toutes"
     },
     "rule": "Règle {rule}",
+    "rules": {
+      "soil_dry": "Sol sec (soil_dry)",
+      "pump_fault": "Défaut de pompe (pump_fault)",
+      "device_offline": "Kit hors ligne (device_offline)",
+      "device_silent": "Kit silencieux (device_silent)",
+      "sensor_fault": "Défaut de capteur (sensor_fault)",
+      "soil_sensor_failure": "Défaut sonde d’humidité (soil_sensor_failure)",
+      "dry_soil_persistent": "Sécheresse prolongée (dry_soil_persistent)",
+      "fertilizer_low": "NPK indicatif bas (fertilizer_low)",
+      "disease_suspected": "Suspicion de maladie (disease_suspected)"
+    },
     "severity": {
       "info": "Information",
       "warning": "Avertissement",
@@ -40,6 +51,12 @@
     "restart": "Nouvelle conversation",
     "send": "Envoyer",
     "sending": "Envoi…",
+    "suggestionsLabel": "Questions fréquentes",
+    "suggestions": {
+      "irrigation": "Dois-je arroser demain ?",
+      "pests": "Quel est le risque de ravageurs sur mes parcelles ?",
+      "npk": "Comment interpréter les niveaux NPK de ma sonde ?"
+    },
     "thinking": "L’assistant rédige sa réponse…",
     "truncated": "Réponse coupée : elle dépassait la longueur maximale.",
     "voiceCheck": "Texte ajouté à votre question : relisez-le avant de l’envoyer.",
@@ -472,7 +489,7 @@
     "confidenceLabel": "Confiance",
     "dataAsOf": "Données",
     "fallback": {
-      "step1": "Étape 1 : résultat du lot OctOpus",
+      "step1": "Étape 1 : précalcul périodique",
       "step2": "Étape 2 : règles agronomiques"
     },
     "fallbackLabel": "Repli",
@@ -480,7 +497,7 @@
     "model": "{name} v{version}",
     "source": {
       "agriml": "Modèle AgriML",
-      "octopus": "Lot OctOpus",
+      "octopus": "Précalcul périodique",
       "rules": "Règles agronomiques"
     },
     "state": {
@@ -687,6 +704,7 @@
       "needed": "Arroser environ {mm} mm sur les 24 prochaines heures."
     },
     "readingDegraded": "Ce résultat n’est pas à jour ou vient d’une valeur de secours : voir la provenance.",
+    "unitEquivalence": "Repère terrain : 1 mm d’eau équivaut à 1 L/m² (soit 10 m³ par hectare).",
     "empty": "Aucun besoin calculé pour cette parcelle.",
     "description": "Combien d’eau la parcelle demande aujourd’hui, s’il vaut mieux attendre la pluie, et la demande de la semaine.",
     "needTitle": "Besoin en eau à 24 h"
@@ -826,6 +844,7 @@
     "intro": "Choisissez ou prenez une photo d’une feuille ou d’un plant. L’analyse indique l’état probable de la plante ; elle ne remplace pas l’avis d’un conseiller agricole.",
     "photoLabel": "Photo de la plante",
     "photoHint": "JPEG, PNG ou WebP, 12 Mo au plus. La photo est réduite et ses informations d’origine (lieu, appareil) sont retirées avant l’envoi.",
+    "photoTips": "Conseil prise de vue : photographiez une feuille bien éclairée, de près et nette, sur fond simple.",
     "preparing": "Préparation de la photo…",
     "previewAlt": "Aperçu de la photo qui sera envoyée",
     "analyze": "Analyser la photo",
@@ -904,7 +923,12 @@
     "colDuration": "Durée",
     "colVolume": "Volume",
     "slot": "{start} – {end}",
-    "unknownField": "Parcelle {id}"
+    "unknownField": "Parcelle {id}",
+    "pumps": {
+      "eq-mboro-pump": "Pompe solaire Mboro",
+      "eq-potou-pump": "Pompe solaire Potou",
+      "eq-ndiol-pump": "Pompe solaire Ndiol"
+    }
   },
   "traps": {
     "description": "Insectes comptés sur les photos du piège collant de chaque kit.",
@@ -1035,6 +1059,11 @@
       "closed": "Close"
     },
     "season": "Saison {season}",
+    "seasons": {
+      "dry": "sèche (contre-saison)",
+      "rainy": "des pluies (hivernage)",
+      "off_season": "de contre-saison"
+    },
     "period": "Du {start} au {end}",
     "progressLabel": "Avancement de la campagne {name}",
     "progressValue": "{pct} % de la période écoulée",

@@ -15,13 +15,14 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
-from app.db.base import iso_utc
-from app.db.models import Campaign, CropCycle, Device, Field, Measurement, YieldForecast
+from app.db.base import as_utc, iso_utc
+from app.db.models import Campaign, CropCycle, Device, Field, Measurement, ModelRegistry, YieldForecast
 from app.services import kpis
 from app.services.campaigns import actual_t_ha
 from app.services.inference.base import InferenceError, ModelBackend, Prediction, model_unavailable
 from app.services.inference.factory import predict_or_503
 from app.services.inference.registry import serving_entry
+from app.services.provenance import confidence, provenance
 
 MODEL_NAME = "yield_t_ha"
 FEATURE_WINDOW = timedelta(days=30)
@@ -102,6 +103,24 @@ def forecast_view(row: YieldForecast) -> dict[str, Any]:
             "created_at": iso_utc(row.created_at)}
 
 
+STALE_AFTER = timedelta(hours=24)  # une prévision stockée plus ancienne n'est pas présentée comme fraîche
+
+
+def forecast_provenance(session: Session, row: YieldForecast, now: datetime, refreshed: bool) -> dict[str, Any]:
+    """Provenance doc 16 § 9.2 : source et étape lues dans le registre (agriml → 0, octopus → 1)."""
+    source = session.scalars(select(ModelRegistry.source).where(
+        ModelRegistry.name == row.model_name, ModelRegistry.version == row.model_version).limit(1)).first()
+    source = source if source in ("agriml", "octopus") else "agriml"
+    has_interval = row.p10 is not None and row.p90 is not None
+    conf = (confidence("interval", p10=row.p10, p90=row.p90, calibrated=False) if has_interval
+            else confidence())
+    created = as_utc(row.created_at)
+    return provenance(model_name=row.model_name, model_version=row.model_version, source=source,
+                      fallback_step=1 if source == "octopus" else 0, computed_at=row.created_at,
+                      data_as_of=row.created_at, conf=conf,
+                      stale=not refreshed and created is not None and now - created > STALE_AFTER)
+
+
 def latest_forecast(session: Session, cycle: CropCycle) -> YieldForecast | None:
     return session.scalars(
         select(YieldForecast).where(YieldForecast.crop_cycle_id == cycle.id)
@@ -136,4 +155,5 @@ def field_forecast(session: Session, backend: ModelBackend | None, field: Field,
                            "planted_on": cycle.planted_on.isoformat() if cycle.planted_on else None},
             "forecast": forecast_view(row) if row else None,
             "actual_t_ha": actual_t_ha(cycle, field.area_ha),
-            "caveat": CAVEAT}
+            "caveat": CAVEAT,
+            "provenance": forecast_provenance(session, row, now, refresh) if row else None}

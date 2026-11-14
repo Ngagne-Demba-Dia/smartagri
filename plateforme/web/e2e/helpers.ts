@@ -40,9 +40,19 @@ export const VIEWPORTS = [
 
 /** Connexion avec le compte de démonstration (mode simulé). */
 export async function login(page: Page, user = DEMO_USER): Promise<void> {
-  await page.goto("/fr/login");
-  await page.getByLabel("Identifiant").fill(user);
-  await page.getByLabel("Mot de passe").fill(DEMO_PASSWORD);
-  await page.getByRole("button", { name: /se connecter/i }).click();
-  await expect(page, "connexion refusée ou page lente").toHaveURL(/\/fr\/tableau/, { timeout: 90_000 });
+  await page.goto("/fr/login", { waitUntil: "networkidle" });
+  const idInput = page.getByLabel("Identifiant");
+  const pwInput = page.getByLabel("Mot de passe");
+  const submitBtn = page.getByRole("button", { name: /se connecter/i });
+  await idInput.fill(user);
+  await pwInput.fill(DEMO_PASSWORD);
+  await submitBtn.click();
+  try {
+    await expect(page).toHaveURL(/\/fr\/tableau/, { timeout: 15_000 });
+  } catch {
+    await idInput.fill(user);
+    await pwInput.fill(DEMO_PASSWORD);
+    await submitBtn.click();
+    await expect(page, "connexion refusée ou page lente").toHaveURL(/\/fr\/tableau/, { timeout: 90_000 });
+  }
 }

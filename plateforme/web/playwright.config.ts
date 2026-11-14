@@ -16,7 +16,15 @@ export default defineConfig({
     trace: "retain-on-failure",
     locale: "fr-FR",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    ...(process.env.PLAYWRIGHT_MULTI === "1"
+      ? [
+          { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+          { name: "webkit", use: { ...devices["Desktop Safari"] } },
+        ]
+      : []),
+  ],
   webServer: {
     command: process.env.E2E_PROD === "1" ? "node scripts/start-mock.mjs" : "node scripts/dev-mock.mjs",
     url: `http://localhost:${PORT}/fr/login`,

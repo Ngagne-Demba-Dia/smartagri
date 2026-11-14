@@ -21,3 +21,7 @@ htmlcov/
 # Secrets : le sel de pseudonymisation et la clé OctOpus restent dans l'environnement
 .env
 .env.*
+
+# Caches et journaux du Data Lake national (IA-REAL-03)
+data/_cache/
+data/_cache_*.log

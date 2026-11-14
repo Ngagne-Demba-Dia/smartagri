@@ -706,33 +706,43 @@ body {
     transform: scale(1.02);
   }
   [data-scene="parcelles"] .scene-photo {
-    object-position: 15% 85%;
-    transform: scale(1.3);
-    transform-origin: 15% 85%;
+    object-position: 50% 50%;
+    transform: scale(1.04);
   }
   [data-scene="irrigation"] .scene-photo {
-    object-position: 85% 30%;
-    transform: scale(1.18);
-    transform-origin: 85% 30%;
+    object-position: 50% 50%;
+    transform: scale(1.04);
   }
   [data-scene="irrigation"] .scene-tint {
     background-color: rgb(40 130 210 / 0.22);
   }
   [data-scene="maladies"] .scene-photo {
-    object-position: 60% 90%;
-    transform: scale(1.55);
-    transform-origin: 60% 90%;
+    object-position: 50% 50%;
+    transform: scale(1.05);
   }
   [data-scene="maladies"] .scene-tint {
     background-color: rgb(230 150 40 / 0.16);
   }
   [data-scene="recommandations"] .scene-photo {
     object-position: 58% 45%;
-    transform: scale(1.12);
-    transform-origin: 58% 45%;
+    transform: scale(1.06);
   }
   [data-scene="recommandations"] .scene-tint {
     background-color: rgb(250 200 80 / 0.16);
+  }
+  [data-scene="kit"] .scene-photo {
+    object-position: 50% 45%;
+    transform: scale(1.04);
+  }
+  [data-scene="kit"] .scene-tint {
+    background-color: rgb(30 110 160 / 0.16);
+  }
+  [data-scene="marches"] .scene-photo {
+    object-position: 50% 50%;
+    transform: scale(1.04);
+  }
+  [data-scene="marches"] .scene-tint {
+    background-color: rgb(210 130 50 / 0.15);
   }
   /* Connexion : la photo est la star, voile sombre à gauche pour porter le texte blanc. */
   [data-scene="login"] .scene-veil {
@@ -742,7 +752,7 @@ body {
     object-position: 60% 50%;
   }
 
-  /* ---------- Bandeau agricole en tête de page : la même photo, recadrée par écran. ---------- */
+  /* ---------- Bandeau agricole en tête de page : photo de domaine métier. ---------- */
   .banner {
     @apply relative isolate overflow-hidden rounded-card border border-glass-edge;
     box-shadow:
@@ -774,16 +784,22 @@ body {
     background: var(--glass-strong);
   }
   [data-scene="parcelles"] .banner-img {
-    object-position: 20% 88%;
+    object-position: 50% 48%;
   }
   [data-scene="irrigation"] .banner-img {
-    object-position: 80% 30%;
+    object-position: 50% 45%;
   }
   [data-scene="maladies"] .banner-img {
-    object-position: 60% 92%;
+    object-position: 50% 50%;
   }
   [data-scene="recommandations"] .banner-img {
     object-position: 58% 42%;
+  }
+  [data-scene="kit"] .banner-img {
+    object-position: 50% 45%;
+  }
+  [data-scene="marches"] .banner-img {
+    object-position: 50% 50%;
   }
   [data-scene="dashboard"] .banner-img {
     object-position: 50% 40%;

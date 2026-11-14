@@ -14,6 +14,7 @@ import type { AppLocale } from "@/lib/types";
 
 /** Longueur maximale d'une question, alignée sur le schéma de l'API. */
 export const CHAT_MAX_CHARS = 2000;
+const SUGGESTION_KEYS = ["irrigation", "pests", "npk"] as const;
 
 interface Turn {
   id: number;
@@ -115,7 +116,31 @@ export function AssistantChat() {
     >
       <p className="text-sm text-mute">{t("intro")}</p>
       <div role="log" aria-live="polite" aria-label={t("logLabel")} className="flex flex-col gap-3">
-        {turns.length === 0 ? <p className="card text-mute">{t("empty")}</p> : null}
+        {turns.length === 0 ? (
+          <div className="card flex flex-col gap-3">
+            <p className="m-0 text-mute">{t("empty")}</p>
+            <div className="flex flex-col gap-1.5">
+              <p className="m-0 text-xs font-semibold uppercase tracking-wide text-mute">
+                {t("suggestionsLabel")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {SUGGESTION_KEYS.map((key) => {
+                  const prompt = t(`suggestions.${key}`);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className="btn-secondary text-sm"
+                      onClick={() => setDraft(prompt)}
+                    >
+                      {prompt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : null}
         {turns.map((turn) => (
           <div
             key={turn.id}
@@ -159,13 +184,15 @@ export function AssistantChat() {
           aria-invalid={tooLong}
           aria-describedby={counterId}
         />
-        <VoiceInput onText={(text) => setDraft((prev) => appendTranscript(prev, text))} />
-        <p
-          id={counterId}
-          className={`text-sm tabular-nums ${tooLong ? "font-semibold text-bad-ink" : "text-mute"}`}
-        >
-          {t("counter", { count: draft.length, max: CHAT_MAX_CHARS })}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <VoiceInput onText={(text) => setDraft((prev) => appendTranscript(prev, text))} />
+          <p
+            id={counterId}
+            className={`m-0 text-sm tabular-nums ${tooLong ? "font-semibold text-bad-ink" : "text-mute"}`}
+          >
+            {t("counter", { count: draft.length, max: CHAT_MAX_CHARS })}
+          </p>
+        </div>
         <button
           type="submit"
           className="btn-primary self-start"

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { SERVICE_IDS } from "@/lib/contracts/registry";
 import { MOCK_SCENARIOS, isMockMode } from "@/lib/mock-config";
+import { allServiceModes, defaultMode } from "@/lib/service-mode";
 import { checkCsrf, envelopeError, envelopeOk } from "@/lib/server/bff";
 import { ACCESS_COOKIE } from "@/lib/session-cookies";
 import { principalFromRequest } from "@/mocks/auth";
@@ -38,6 +39,8 @@ const view = (current: ScenarioSnapshot) => ({
   scenarios: MOCK_SCENARIOS,
   services: SERVICE_IDS,
   latencyFactor: latencyFactor(),
+  defaultMode: defaultMode(),
+  serviceModes: allServiceModes(),
 });
 
 /** Garde commune : mode simulé, puis session simulée valide (jeton du cookie httpOnly). */
