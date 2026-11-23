@@ -1,0 +1,991 @@
+# Catalogue des MODÈLES (phase 2). Confidentiel - réservé aux partenaires de travail.
+# Contrôlé par `python -m agriml.catalog check` (voir ml/catalog/README.md). Champs :
+#   use_case        IA-1 … IA-10 | TRANSVERSE (cas d'usage du doc 04)
+#   kind            nature de la variante « production » : rules | physical | statistics | ml | deep_learning
+#                   | llm | optimisation
+#   version         première version livrée : MVP | V1.1 | V2 | V3
+#   platform        web:N (module web 1–13, doc 10 §3) | mobile | kit | partner
+#   data            jeux curated ou features (jamais raw) : mandatory | recommended | optional ;
+#                   un jeu research_only n'est admis qu'en optional
+#   candidates      les trois variantes : competition | production | compromis
+#   inference.mode  batch | online | edge | stream ; fallback = repli si le modèle est indisponible ou hors seuil
+#   pretrained      sources « pretrained » utilisées en production ; pretrained_research : recherche seulement
+#   depends_on      modèles amont (version <= celle du modèle)
+#   octopus_program programme de agriml/octopus/programs/ ; son jeu doit être obligatoire pour ce modèle
+#   challenge       limite ou risque principal à garder en tête
+
+models:
+  # ================================================================== IA-1 Irrigation
+  - id: irr_et0
+    use_case: IA-1
+    name: "Évapotranspiration de référence ET0"
+    kind: physical
+    version: MVP
+    platform: [web:5, web:7, mobile]
+    data:
+      mandatory: [meteo.forecast_asof, meteo.grid_daily]
+      recommended: [features.local_weather_bias]
+      optional: [iot.telemetry_hourly]
+    features: ["Tmin, Tmax", "humidité relative", "vent à 2 m", "rayonnement Rs", "altitude, latitude, jour julien"]
+    candidates:
+      competition: "Penman-Monteith FAO-56 sur prévision multi-modèles corrigée du biais local, Rs CM SAF"
+      production: "Penman-Monteith FAO-56 sur IFS (ECMWF Open Data), repli Hargreaves-Samani"
+      compromis: "Penman-Monteith FAO-56 sur IFS + biais moyen glissant 30 j par maille"
+    metrics:
+      primary: "MAE ET0 journalière vs station de référence (mm/j)"
+      secondary: ["biais moyen", "MAE par saison (sèche, hivernage)"]
+      threshold: "MAE <= 0,6 mm/j sur les stations ANACIM ou TAHMO disponibles"
+    training: "Aucun apprentissage ; coefficient Hargreaves et biais Rs étalonnés par zone sur 3 ans ERA5-Land"
+    inference: {mode: batch, latency: "< 1 min pour 20 000 parcelles", frequency: "4 fois/j, après chaque émission",
+                fallback: "Hargreaves-Samani (Tmin, Tmax), puis climatologie décadaire ERA5-Land"}
+    challenge: "Sans station de référence au Sénégal, la MAE n'est mesurable que contre ERA5-Land, lui-même biaisé"
+
+  - id: irr_water_balance
+    use_case: IA-1
+    name: "Bilan hydrique FAO-56 par parcelle"
+    kind: physical
+    version: MVP
+    platform: [web:3, web:7, mobile, kit]
+    data:
+      mandatory: [iot.telemetry_hourly, iot.irrigation_events, agronomie.crop_cycles, agronomie.crop_params,
+                  sols.field_profile, meteo.forecast_asof, meteo.grid_daily]
+      recommended: [features.rain_events, sols.lab_results]
+      optional: [satellite.field_indices]
+    features: ["Kc par stade", "profondeur racinaire Zr", "fraction p", "TAW et RAW", "pluie efficace 0,8 x P",
+               "humidité mesurée pour recalage",
+               "seuils conseillés start/stop (CC et PF par pédotransfert)"]
+    candidates:
+      competition: "FAO-56 double Kc (Kcb + Ke) avec assimilation de l'humidité capteur (filtre de Kalman d'ensemble)"
+      production: "FAO-56 Kc simple, recalé chaque jour sur l'humidité mesurée"
+      compromis: "Kc simple recalé + Kc dérivé du NDVI dès que Sentinel-2 est disponible"
+    metrics:
+      primary: "RMSE entre déficit prédit et humidité mesurée à J+1 (points de %)"
+      secondary: ["jours en stress (teneur < RAW)", "m³ par tonne récoltée"]
+      threshold: "RMSE <= 5 points ; aucune dose hors bornes (0 <= dose <= TAW)"
+    training: "Paramètres FAO-56 et ISRA ; p et Zr étalonnés par culture sur les parcelles pilotes"
+    inference: {mode: batch, latency: "< 5 min", frequency: "horaire et après chaque émission",
+                fallback: "seuils du firmware (threshold_start_pct, threshold_stop_pct)"}
+    depends_on: [irr_et0]
+    challenge: "Une seule sonde par parcelle : le recalage suppose une parcelle homogène.
+      Les seuils conseillés s'affichent sur la page locale du kit à côté du réglage choisi, sans le remplacer"
+
+  - id: soil_nowcast
+    use_case: IA-1
+    name: "Prévision de l'humidité du sol à 1–48 h"
+    kind: ml
+    version: V2
+    platform: [web:1, web:3, mobile]
+    data:
+      mandatory: [features.soil_nowcast]
+      recommended: [features.local_weather_bias]
+      optional: [satellite.field_indices]
+    features: ["humidité passée (retards 1–72 h)", "pompe en marche", "pluie, T et HR passées", "ET0 prévue",
+               "distance au seuil de démarrage", "capacité au champ, point de flétrissement"]
+    candidates:
+      competition: "Ensemble LightGBM direct multi-horizon + N-HiTS ou TFT, cible = delta"
+      production: "LightGBM multi-horizon (1, 6, 24, 48 h) sur le delta, quantiles p10, p50, p90"
+      compromis: "LightGBM global + correction du biais résiduel glissant par kit"
+    metrics:
+      primary: "RMSE à 24 h (points de %)"
+      secondary: ["skill vs persistance par horizon", "couverture de l'intervalle p10–p90"]
+      threshold: "skill >= 20 % vs persistance à 24 h sur le holdout figé"
+    training: "Mensuel ; validation temporelle groupée par kit (programme OctOpus soil_moisture_nowcast)"
+    inference: {mode: batch, latency: "< 2 min", frequency: "horaire",
+                fallback: "persistance, puis bilan hydrique irr_water_balance"}
+    depends_on: [irr_et0]
+    octopus_program: soil_moisture_nowcast
+    challenge: "Le jeu existe dès le MVP mais il faut une saison complète (hivernage + saison sèche) pour entraîner"
+
+  - id: irr_need_24h
+    use_case: IA-1
+    name: "Besoin d'irrigation à 24 h"
+    kind: ml
+    version: V2
+    platform: [web:3, web:7, mobile, kit]
+    data:
+      mandatory: [features.irrigation_need]
+      recommended: [features.local_weather_bias]
+      optional: [features.rain_events]
+    features: ["ET0, Kc, pluie efficace", "humidité et tendance", "TAW", "NDVI", "culture et stade", "texture du sol",
+               "historique de pompage passé"]
+    candidates:
+      competition: "Stacking LightGBM + CatBoost sur le résidu du bilan FAO-56, contraintes monotones"
+      production: "LightGBM sur le résidu (besoin observé − bilan FAO-56), sortie bornée à la capacité au champ"
+      compromis: "Bilan FAO-56 + correction LightGBM plafonnée à ±30 %"
+    metrics:
+      primary: "MAE du besoin à 24 h (mm)"
+      secondary: ["biais par culture et par zone", "eau économisée vs parcelle témoin"]
+      threshold: "MAE <= 3 mm sur le holdout (programme irrigation_need) ; régression <= 3 % par tranche"
+    training: "Hebdomadaire en saison ; validation temporelle purgée (72 h) groupée par parcelle"
+    inference: {mode: batch, latency: "< 5 min", frequency: "toutes les 6 h",
+                fallback: "irr_water_balance, puis seuils du firmware"}
+    depends_on: [irr_et0, irr_water_balance]
+    octopus_program: irrigation_need
+    challenge: "La cible « besoin observé » dépend du débitmètre (V1.1) : sans lui, elle n'est qu'estimée"
+
+  - id: irr_scheduler
+    use_case: IA-1
+    name: "Planification de l'irrigation sur 72 h (eau, énergie, tour d'eau)"
+    kind: optimisation
+    version: V3
+    platform: [web:7, web:10, kit]
+    data:
+      mandatory: [features.irrigation_need, economie.costs]
+      recommended: [iot.device_health, features.rain_events]
+      optional: [eau.water_quality]
+    features: ["besoin prévu", "probabilité de pluie", "tarif énergie par heure", "débit de la pompe",
+               "contraintes de tour d'eau et de main-d'œuvre"]
+    candidates:
+      competition: "MPC stochastique sur scénarios de pluie + RL hors ligne évalué de façon contrefactuelle"
+      production: "MPC déterministe sur 72 h (programmation linéaire, OR-Tools)"
+      compromis: "Règles + MPC 48 h, report automatique si P(pluie >= 5 mm) >= 60 %"
+    metrics:
+      primary: "m³ et kWh par parcelle et par campagne vs témoin"
+      secondary: ["jours en stress hydrique", "coût énergie (FCFA)"]
+      threshold: "−20 % d'eau sans hausse des jours en stress (essai apparié)"
+    training: "Pas d'apprentissage pour le MPC ; le RL reste en recherche"
+    inference: {mode: batch, latency: "< 1 min par exploitation", frequency: "toutes les 6 h",
+                fallback: "irr_need_24h, puis seuils du firmware"}
+    depends_on: [irr_need_24h, soil_nowcast, wx_rain_prob]
+    challenge: "Le gain dépend de la flexibilité réelle (tour d'eau, solaire) : à mesurer avant d'optimiser"
+
+  # ================================================================== IA-2 Météo locale
+  - id: wx_blend
+    use_case: IA-2
+    name: "Prévision météo combinée par maille"
+    kind: statistics
+    version: MVP
+    platform: [web:1, web:5, mobile]
+    data:
+      mandatory: [meteo.forecast_asof]
+      recommended: [meteo.grid_daily]
+      optional: [meteo.stations_clean]
+    features: ["prévisions IFS, AIFS, ICON, GFS par échéance", "heure d'émission", "climatologie de la maille"]
+    candidates:
+      competition: "EMOS ou régression quantile par maille sur multi-modèles et ensembles ECMWF ENS"
+      production: "Moyenne pondérée IFS, ICON, GFS ; poids appris par maille et par échéance sur l'historique as-of"
+      compromis: "IFS seul + correction de biais mensuelle contre ERA5-Land"
+    metrics:
+      primary: "CRPS température et pluie J+1 à J+7"
+      secondary: ["MAE Tmax, Tmin", "score de Brier pluie >= 1 mm"]
+      threshold: "CRPS <= meilleur modèle brut − 5 %"
+    training: "Mensuel, sur prévisions as-of (heure d'émission conservée) pour éviter toute fuite"
+    inference: {mode: batch, latency: "< 5 min", frequency: "4 fois/j", fallback: "IFS brut, puis climatologie"}
+    challenge: "La vérité terrain est rare : ERA5 et CHIRPS lissent les orages convectifs du Sahel"
+
+  - id: wx_local_bias
+    use_case: IA-2
+    name: "Correction du biais local au kit"
+    kind: ml
+    version: V2
+    platform: [web:5, mobile, kit]
+    data:
+      mandatory: [features.local_weather_bias]
+      recommended: [meteo.stations_clean]
+      optional: [geo.field_context]
+    features: ["écart capteur − prévision (T, HR, pression)", "heure, saison", "altitude", "occupation du sol"]
+    candidates:
+      competition: "Modèle bayésien hiérarchique par kit + krigeage des résidus entre kits"
+      production: "Ridge ou LightGBM du résidu par kit, fenêtre glissante 30 j"
+      compromis: "Biais moyen glissant par kit et par heure"
+    metrics:
+      primary: "MAE de la température de l'air à J+1 au kit (°C)"
+      secondary: ["gain vs wx_blend"]
+      threshold: "−15 % de MAE vs wx_blend"
+    training: "Hebdomadaire, fenêtres glissantes"
+    inference: {mode: batch, latency: "< 2 min", frequency: "4 fois/j", fallback: "wx_blend sans correction"}
+    depends_on: [wx_blend]
+    challenge: "Le BME280 dans le boîtier chauffe au soleil : sans abri ventilé, on apprend le biais du boîtier"
+
+  - id: wx_rain_prob
+    use_case: IA-2
+    name: "Probabilité de pluie utile (>= 5 mm) à 24–72 h"
+    kind: ml
+    version: V2
+    platform: [web:5, web:7, mobile]
+    data:
+      mandatory: [features.rain_events]
+      recommended: [meteo.grid_daily]
+      optional: [meteo.seasonal_outlook]
+    features: ["fraction des membres ENS au-dessus du seuil", "pluie prévue moyenne", "mois", "zone climatique"]
+    candidates:
+      competition: "LightGBM multi-seuils sur 50 membres ENS, calibration isotone"
+      production: "Régression logistique sur la fraction des membres >= seuil, calibration isotone"
+      compromis: "Fraction brute des membres ENS >= seuil"
+    metrics:
+      primary: "Score de Brier P(pluie >= 5 mm) à 24 et 48 h"
+      secondary: ["diagramme de fiabilité", "ROC-AUC"]
+      threshold: "BSS >= 0,1 vs climatologie"
+    training: "Mensuel ; vérité CHIRPS, IMERG et stations"
+    inference: {mode: batch, latency: "< 2 min", frequency: "4 fois/j",
+                fallback: "fraction des membres, puis climatologie"}
+    depends_on: [wx_blend]
+    challenge: "Les ensembles par Open-Meteo exigent l'offre Professional ; ECMWF Open Data ENS est l'alternative"
+
+  # ================================================================== IA-3 Vision
+  - id: vis_quality
+    use_case: IA-3
+    name: "Contrôle qualité des photos avant envoi"
+    kind: ml
+    version: MVP
+    platform: [mobile]
+    data:
+      mandatory: [images.labelled]
+      recommended: []
+      optional: [images.public_reference]
+    features: ["variance du laplacien (flou)", "histogramme (exposition)", "présence d'un organe végétal", "cadrage"]
+    candidates:
+      competition: "MobileNetV3 multi-tâche (flou, exposition, organe) distillé d'un ViT"
+      production: "Règles d'image + MobileNetV3-Small TFLite int8"
+      compromis: "Règles seules au MVP, classifieur dès 2 000 photos annotées"
+    metrics:
+      primary: "Taux de rejet à tort (%)"
+      secondary: ["part de photos inutilisables reçues"]
+      threshold: "rejet à tort <= 5 % ; photos inutilisables −50 %"
+    training: "Trimestriel ; annotations qualité faites par les conseillers"
+    inference: {mode: edge, latency: "< 150 ms sur Android d'entrée de gamme", frequency: "à chaque photo",
+                fallback: "photo acceptée avec un drapeau qualité"}
+    pretrained: [vision_backbones]
+    challenge: "Le rejet doit rester explicable à l'écran (« trop flou ») sinon l'utilisateur abandonne"
+
+  - id: vis_disease
+    use_case: IA-3
+    name: "Diagnostic de maladies et ravageurs sur photo"
+    kind: deep_learning
+    version: V2
+    platform: [web:8, mobile, kit]
+    data:
+      mandatory: [features.disease_images]
+      recommended: [phyto.reference]
+      optional: [features.pest_risk]
+    features: ["image recadrée 224–384 px", "culture déclarée", "stade", "risque régional (a priori)"]
+    candidates:
+      competition: "Ensemble ConvNeXt, EfficientNetV2 et ViT (DINOv2 affiné), TTA, calibration"
+      production: "EfficientNet-B0 ou MobileNetV3 affiné, ONNX ou TFLite int8, seuil d'abstention"
+      compromis: "EfficientNet-B3 serveur + MobileNetV3 mobile ; abstention transmise au conseiller"
+    metrics:
+      primary: "F1 macro sur le holdout terrain"
+      secondary: ["rappel de la classe « malade »", "ECE (calibration)", "taux d'abstention"]
+      threshold: "F1 macro >= 0,80 ; rappel malade >= 0,90 ; ECE <= 0,05"
+    training: "Mensuel en saison ; StratifiedGroupKFold par plante ; double étiquetage par deux conseillers"
+    inference: {mode: online, latency: "< 2 s serveur, < 300 ms mobile", frequency: "à la demande",
+                fallback: "diagnostic par un conseiller (file d'attente) + fiche générique"}
+    pretrained: [vision_backbones]
+    octopus_program: disease_image_classification
+    challenge: "PlantVillage est photographié en laboratoire : sans photos de terrain locales, le F1 s'effondre.
+      Le kit affiche seulement le verdict mis en cache (confiance calibrée, version, date), jamais calculé à bord"
+
+  - id: vis_pest_count
+    use_case: IA-3
+    name: "Comptage d'insectes sur pièges photographiés"
+    kind: deep_learning
+    version: V3
+    platform: [web:8, kit]
+    data:
+      mandatory: [features.pest_trap_images]
+      recommended: [phyto.reference]
+      optional: []
+    features: ["image du piège (ESP32-CAM)", "espèce ciblée par la phéromone", "date de pose"]
+    candidates:
+      competition: "Détection RT-DETR + comptage par carte de densité"
+      production: "Détecteur léger sous licence permissive (RT-DETR Apache-2.0), comptage par piège"
+      compromis: "Classifieur présence/absence + comptage manuel assisté dans l'app"
+    metrics:
+      primary: "MAE du comptage par piège"
+      secondary: ["mAP@0,5"]
+      threshold: "MAE <= 2 insectes ou <= 15 %"
+    training: "Par campagne ; boîtes annotées sur 1 000 images minimum"
+    inference: {mode: batch, latency: "< 10 s par image", frequency: "4 fois/j", fallback: "comptage manuel"}
+    pretrained: [vision_backbones]
+    challenge: "Les détecteurs YOLO d'Ultralytics sont sous AGPL-3.0 : exclus sans licence commerciale"
+
+  - id: vis_canopy
+    use_case: IA-3
+    name: "Couverture végétale et vigueur sur images du kit"
+    kind: statistics
+    version: V2
+    platform: [web:4, web:6]
+    data:
+      mandatory: [images.espcam_series]
+      recommended: [satellite.field_indices]
+      optional: [images.drone_mosaics]
+    features: ["indice ExG et ExGR", "fraction de couvert", "tendance sur 7 j"]
+    candidates:
+      competition: "Segmentation SegFormer ou U-Net végétation/sol + suivi temporel"
+      production: "ExG + seuillage d'Otsu, suivi de la fraction de couvert"
+      compromis: "ExG puis U-Net léger dès 500 masques annotés"
+    metrics:
+      primary: "IoU végétation"
+      secondary: ["corrélation fraction de couvert vs NDVI Sentinel-2"]
+      threshold: "IoU >= 0,8"
+    training: "Aucun pour ExG ; U-Net trimestriel"
+    inference: {mode: batch, latency: "< 1 s par image", frequency: "4 fois/j", fallback: "NDVI Sentinel-2 seul"}
+    challenge: "Ombres et sol humide trompent ExG : prendre les photos à heure fixe"
+
+  # ================================================================== IA-4 Risques phytosanitaires
+  - id: risk_rules
+    use_case: IA-4
+    name: "Alertes phytosanitaires par règles expertes"
+    kind: rules
+    version: V1.1
+    platform: [web:7, web:8, mobile]
+    data:
+      mandatory: [meteo.forecast_asof, agronomie.crop_cycles, phyto.reference]
+      recommended: [phyto.outbreaks]
+      optional: [meteo.grid_daily]
+    features: ["T, HR, pluie, durée d'humectation estimée", "culture et stade", "alertes officielles de la zone"]
+    candidates:
+      competition: "Règles + modèle d'humectation foliaire calibré sur capteurs"
+      production: "Règles ISRA et DPV : seuils T, HR, pluie × stade × culture"
+      compromis: "Règles + relais des alertes DPV et FAMEWS par zone"
+    metrics:
+      primary: "Précision des alertes (% confirmées par observation)"
+      secondary: ["rappel sur foyers signalés", "alertes par parcelle et par saison"]
+      threshold: "précision >= 50 % ; <= 3 alertes par parcelle et par mois"
+    training: "Révision des seuils chaque campagne avec les agronomes"
+    inference: {mode: batch, latency: "< 1 min", frequency: "quotidien", fallback: "relais des alertes DPV"}
+    challenge: "Trop d'alertes = alertes ignorées : le plafond mensuel est une exigence, pas un réglage"
+
+  - id: pest_phenology
+    use_case: IA-4
+    name: "Développement des ravageurs par degrés-jours"
+    kind: physical
+    version: V2
+    platform: [web:8, mobile]
+    data:
+      mandatory: [meteo.grid_daily, phyto.reference, agronomie.crop_cycles]
+      recommended: [features.local_weather_bias]
+      optional: [phyto.outbreaks]
+    features: ["degrés-jours cumulés (seuils de littérature)", "date de semis", "premières captures"]
+    candidates:
+      competition: "Modèles à distribution de retard calibrés sur pièges"
+      production: "Degrés-jours par ravageur (chenille légionnaire, Tuta absoluta, mouche des fruits)"
+      compromis: "Degrés-jours recalés sur la première capture"
+    metrics:
+      primary: "Erreur sur la date du pic de vol (jours)"
+      secondary: ["date de la 1re génération"]
+      threshold: "<= 7 jours"
+    training: "Seuils de littérature ; recalage par campagne"
+    inference: {mode: batch, latency: "< 1 min", frequency: "quotidien", fallback: "calendrier de risque régional"}
+    depends_on: [wx_blend]
+    challenge: "Seuils thermiques publiés hors Sahel : à valider avec l'ISRA"
+
+  - id: pest_risk_ml
+    use_case: IA-4
+    name: "Probabilité de foyer à 7 jours"
+    kind: ml
+    version: V2
+    platform: [web:4, web:8, mobile]
+    data:
+      mandatory: [features.pest_risk]
+      recommended: [features.rain_events]
+      optional: [features.pest_trap_images]
+    features: ["météo passée et prévue", "foyers voisins (distance, date)", "NDVI", "culture, stade", "degrés-jours"]
+    candidates:
+      competition: "Modèle spatio-temporel (GNN sur graphe de parcelles) + LightGBM"
+      production: "LightGBM calibré P(foyer à 7 j) par couple culture-ravageur"
+      compromis: "Régression logistique pénalisée + règles en garde-fou"
+    metrics:
+      primary: "PR-AUC P(foyer à 7 j)"
+      secondary: ["score de Brier", "précision dans le top 10 %"]
+      threshold: "PR-AUC >= 2 × prévalence et précision >= risk_rules"
+    training: "Mensuel en saison ; validation spatiale par blocs et temporelle"
+    inference: {mode: batch, latency: "< 2 min", frequency: "quotidien", fallback: "risk_rules"}
+    depends_on: [pest_phenology]
+    challenge: "Les absences de foyer ne sont pas observées : biais de signalement à corriger"
+
+  # ================================================================== IA-5 Assistant
+  - id: asst_llm
+    use_case: IA-5
+    name: "Assistant agronomique conversationnel"
+    kind: llm
+    version: MVP
+    platform: [web:12, mobile]
+    data:
+      mandatory: [connaissances.rag_chunks]
+      recommended: [agronomie.crop_cycles, meteo.forecast_asof]
+      optional: [features.rain_events]
+    features: ["passages récupérés et cités", "contexte de la parcelle (culture, stade)", "outils météo et bilan"]
+    candidates:
+      competition: "claude-opus-5-5, raisonnement adaptatif, outils et citations"
+      production: "claude-opus-5-5 avec RAG, outils bornés, réponses citées, cache de prompt"
+      compromis: "claude-haiku-5-5 pour les questions fréquentes, routage vers claude-opus-5-5 si complexe"
+    metrics:
+      primary: "Exactitude agronomique notée par les agronomes (% correct et sûr)"
+      secondary: ["citations valides", "taux d'escalade", "coût par question", "latence p95"]
+      threshold: ">= 90 % correct ; 0 produit non homologué CSP recommandé"
+    training: "Pas d'entraînement : prompts, corpus et outils versionnés ; évaluation hebdomadaire"
+    inference: {mode: online, latency: "p95 < 8 s en streaming", frequency: "à la demande",
+                fallback: "FAQ validées + escalade vers un conseiller"}
+    pretrained: [claude_api]
+    depends_on: [asst_retrieval, asst_guard]
+    challenge: "Le contexte de parcelle part vers l'API hors du Sénégal : minimiser et encadrer le transfert"
+
+  - id: asst_retrieval
+    use_case: IA-5
+    name: "Recherche documentaire du RAG"
+    kind: ml
+    version: MVP
+    platform: [web:12, mobile]
+    data:
+      mandatory: [connaissances.rag_chunks]
+      recommended: [langue.assistant_eval]
+      optional: []
+    features: ["BM25", "embeddings multilingues", "filtres culture, zone, saison", "date de la fiche"]
+    candidates:
+      competition: "Hybride BM25 + embeddings + reranker cross-encoder affiné"
+      production: "Hybride BM25 + embeddings multilingues auto-hébergés, filtres de métadonnées"
+      compromis: "BM25 + métadonnées seulement au MVP"
+    metrics:
+      primary: "Recall@5 sur les questions de référence"
+      secondary: ["nDCG@10", "MRR"]
+      threshold: "Recall@5 >= 0,85"
+    training: "Aucun au MVP ; reranker affiné en V2 sur les paires validées"
+    inference: {mode: online, latency: "< 300 ms", frequency: "à la demande", fallback: "BM25 seul"}
+    pretrained: [embedding_models]
+    challenge: "Les embeddings ouverts sont faibles en wolof : traduire la requête ou indexer des gloses"
+
+  - id: asst_guard
+    use_case: IA-5
+    name: "Garde-fous de l'assistant"
+    kind: rules
+    version: MVP
+    platform: [web:12, mobile]
+    data:
+      mandatory: [phyto.reference, langue.assistant_eval]
+      recommended: []
+      optional: []
+    features: ["liste CSP des matières actives homologuées", "doses maximales", "sujets hors champ",
+               "données personnelles", "tentatives d'injection"]
+    candidates:
+      competition: "Classifieur dédié + LLM-juge + listes CSP"
+      production: "Liste blanche CSP + règles de dose + LLM-juge sur échantillon"
+      compromis: "Liste CSP + règles ; revue humaine des réponses phytosanitaires"
+    metrics:
+      primary: "Réponses dangereuses non bloquées (jeu adversarial)"
+      secondary: ["faux blocages"]
+      threshold: "0 réponse dangereuse ; faux blocages <= 5 %"
+    training: "Jeu adversarial enrichi chaque mois"
+    inference: {mode: online, latency: "< 100 ms (règles)", frequency: "chaque réponse",
+                fallback: "refus poli + escalade vers un conseiller"}
+    challenge: "La liste CSP change : sa date de mise à jour doit être affichée et contrôlée"
+
+  - id: asst_asr
+    use_case: IA-5
+    name: "Reconnaissance vocale wolof et pulaar"
+    kind: deep_learning
+    version: V2
+    platform: [web:12, mobile]
+    data:
+      mandatory: [features.asr_speech]
+      recommended: []
+      optional: []
+    features: ["audio 16 kHz", "vocabulaire agricole", "modèle de langue n-gram"]
+    candidates:
+      competition: "XLS-R 1B affiné + LM n-gram ; MMS comparé en recherche seulement"
+      production: "XLS-R 300M affiné (CTC) en wolof, puis pulaar après collecte ; LM KenLM"
+      compromis: "Wolof seul ; pulaar par boutons et messages vocaux transmis au conseiller"
+    metrics:
+      primary: "WER wolof"
+      secondary: ["CER", "WER pulaar", "WER par région"]
+      threshold: "WER <= 25 % sur le vocabulaire agricole"
+    training: "Local uniquement (voix identifiante, jamais exportée), consentement explicite"
+    inference: {mode: online, latency: "< 3 s pour 10 s d'audio", frequency: "à la demande",
+                fallback: "saisie texte, boutons, message vocal transmis au conseiller"}
+    pretrained: [xlsr_models]
+    pretrained_research: [mms_models, nllb_models]
+    challenge: "MMS et NLLB sont non commerciaux et ignorent le pulaar du Sénégal : collecter un corpus"
+
+  - id: asst_tts
+    use_case: IA-5
+    name: "Restitution vocale des conseils"
+    kind: rules
+    version: V2
+    platform: [mobile]
+    data:
+      mandatory: [langue.speech_corpus]
+      recommended: [connaissances.rag_chunks]
+      optional: []
+    features: ["gabarits de messages", "segments enregistrés (nombres, cultures, actions)"]
+    candidates:
+      competition: "TTS neuronal (VITS) entraîné sur un corpus consenti"
+      production: "Messages assemblés à partir de segments enregistrés par des locuteurs consentants"
+      compromis: "Gabarits enregistrés pour les alertes, texte français lu pour le reste"
+    metrics:
+      primary: "Compréhension mesurée en test utilisateur (%)"
+      secondary: ["MOS"]
+      threshold: ">= 90 % de messages compris"
+    training: "Aucun en production ; TTS en recherche"
+    inference: {mode: edge, latency: "< 500 ms", frequency: "à chaque alerte", fallback: "texte + pictogrammes"}
+    challenge: "Les voix enregistrées sont des données personnelles : contrat de cession avec chaque locuteur"
+
+  # ================================================================== IA-6 Fertilisation
+  - id: npk_calibration
+    use_case: IA-6
+    name: "Étalonnage du capteur NPK contre le laboratoire"
+    kind: statistics
+    version: V2
+    platform: [web:6, kit]
+    data:
+      mandatory: [features.npk_calibration]
+      recommended: [sols.lab_results]
+      optional: []
+    features: ["lecture N, P, K brute", "conductivité", "humidité", "température du sol", "type de sol"]
+    candidates:
+      competition: "Modèle bayésien hiérarchique par lot de capteurs et type de sol"
+      production: "Régression robuste (Huber) par type de sol, corrigée de l'humidité"
+      compromis: "Classes faible / moyen / élevé au lieu de mg/kg"
+    metrics:
+      primary: "Accord de classe avec le laboratoire (kappa de Cohen)"
+      secondary: ["R² et MAE par nutriment"]
+      threshold: "kappa >= 0,6 sur 3 classes, sinon aucune valeur en mg/kg affichée"
+    training: "À chaque campagne d'analyses (>= 30 paires capteur-labo par type de sol)"
+    inference: {mode: batch, latency: "< 1 min", frequency: "quotidien",
+                fallback: "valeurs de laboratoire, sinon iSDAsoil ou SoilGrids"}
+    challenge: "Les sondes NPK RS485 bon marché mesurent surtout la conductivité : rester en classes"
+
+  - id: fert_reco
+    use_case: IA-6
+    name: "Recommandation de fumure"
+    kind: rules
+    version: V1.1
+    platform: [web:6, web:7, mobile, kit]
+    data:
+      mandatory: [sols.field_profile, agronomie.crop_params, agronomie.crop_cycles]
+      recommended: [sols.lab_results, economie.costs]
+      optional: [features.npk_calibration, satellite.field_indices]
+    features: ["besoins de la culture", "fourniture du sol", "rendement visé", "prix des engrais",
+               "seuils d'alerte N, P, K par culture et stade (poussés au kit)"]
+    candidates:
+      competition: "Optimisation économique de la dose (QUEFTS, courbes de réponse, prix)"
+      production: "Bilan de fumure : besoins − fourniture du sol (labo ou iSDAsoil), barèmes ISRA"
+      compromis: "Barèmes ISRA par zone, ajustés par l'analyse de laboratoire si elle existe"
+    metrics:
+      primary: "Écart de dose vs recommandation d'un agronome (%)"
+      secondary: ["marge brute par ha", "kg N par tonne"]
+      threshold: "<= 20 % d'écart sur 50 cas revus"
+    training: "Barèmes révisés chaque année avec l'ISRA"
+    inference: {mode: batch, latency: "< 1 s", frequency: "à la demande", fallback: "barème régional ISRA"}
+    challenge: "Sans analyse de sol, iSDAsoil (30 m) ne voit pas l'historique de fumure de la parcelle"
+
+  # ================================================================== IA-7 Recommandations
+  - id: reco_engine
+    use_case: IA-7
+    name: "Moteur de recommandations"
+    kind: rules
+    version: MVP
+    platform: [web:1, web:7, mobile]
+    data:
+      mandatory: [agronomie.crop_cycles, agronomie.crop_params, iot.telemetry_hourly, meteo.forecast_asof]
+      recommended: [phyto.reference, utilisateurs.reco_events]
+      optional: [phyto.outbreaks]
+    features: ["sorties des modèles", "urgence", "impact attendu", "confiance", "historique d'acceptation"]
+    candidates:
+      competition: "Classement appris (learning-to-rank) sur les retours + contraintes de sûreté"
+      production: "Règles priorisées (urgence × impact × confiance), gabarits français et wolof"
+      compromis: "Règles + pondération apprise sur le taux d'acceptation"
+    metrics:
+      primary: "Taux d'acceptation des recommandations"
+      secondary: ["exécution observée (pompe)", "réclamations"]
+      threshold: ">= 60 % acceptées ; <= 3 recommandations par jour et par exploitation"
+    training: "Aucun au MVP ; poids révisés chaque mois"
+    inference: {mode: batch, latency: "< 1 min", frequency: "horaire et sur événement",
+                fallback: "conseil générique de saison"}
+    depends_on: [irr_water_balance, anomaly_rules]
+    challenge: "Mesurer l'acceptation exige un bouton « fait / pas fait » : sans lui, pas de V3"
+
+  - id: reco_bandit
+    use_case: IA-7
+    name: "Optimisation de la formulation et du moment d'envoi"
+    kind: ml
+    version: V3
+    platform: [web:7, mobile]
+    data:
+      mandatory: [features.reco_bandit]
+      recommended: [utilisateurs.reco_events]
+      optional: []
+    features: ["contexte (culture, heure, canal)", "formulation", "historique de réponse"]
+    candidates:
+      competition: "Bandit contextuel (LinUCB, Thompson) + évaluation hors ligne doublement robuste"
+      production: "Thompson sampling sur la formulation et l'heure, jamais sur le contenu agronomique"
+      compromis: "Tests A/B classiques"
+    metrics:
+      primary: "Gain d'acceptation vs règles (points)"
+      secondary: ["estimation hors ligne IPS ou DR"]
+      threshold: ">= 5 points, sans baisse de sûreté"
+    training: "En continu, avec exploration plafonnée à 10 %"
+    inference: {mode: online, latency: "< 50 ms", frequency: "à chaque envoi", fallback: "reco_engine"}
+    depends_on: [reco_engine]
+    challenge: "L'exploration ne doit jamais modifier une dose ou un traitement"
+
+  # ================================================================== IA-8 Cultures, phénologie, rendement
+  - id: ndvi_gapfill
+    use_case: IA-8
+    name: "Reconstruction des séries NDVI sous nuages"
+    kind: statistics
+    version: V2
+    platform: [web:4, web:6]
+    data:
+      mandatory: [satellite.field_indices]
+      recommended: [satellite.s2_chips]
+      optional: []
+    features: ["NDVI, EVI, NDWI Sentinel-2 clairs", "VV, VH Sentinel-1", "Landsat ou HLS"]
+    candidates:
+      competition: "Fusion S1/S2 par réseau profond (CNN-LSTM)"
+      production: "Lissage Whittaker + régression VV/VH → NDVI par culture"
+      compromis: "Whittaker + HLS (Landsat + Sentinel-2) pour densifier la série"
+    metrics:
+      primary: "RMSE du NDVI reconstruit sur des pixels clairs masqués"
+      secondary: ["biais en hivernage"]
+      threshold: "RMSE <= 0,08"
+    training: "Par saison et par culture"
+    inference: {mode: batch, latency: "< 10 min par tuile", frequency: "à chaque passage (5 j)",
+                fallback: "dernière valeur claire marquée « ancienne »"}
+    challenge: "En hivernage, plus de 60 % des passages Sentinel-2 sont nuageux : c'est le cœur du problème"
+
+  - id: phenology_stage
+    use_case: IA-8
+    name: "Stade phénologique par parcelle"
+    kind: statistics
+    version: V2
+    platform: [web:3, web:6]
+    data:
+      mandatory: [features.phenology]
+      recommended: [images.espcam_series]
+      optional: [images.drone_mosaics]
+    features: ["série NDVI lissée", "degrés-jours", "date de semis déclarée"]
+    candidates:
+      competition: "Transformer temporel sur séries S1 + S2 + degrés-jours"
+      production: "Lissage Whittaker du NDVI + degrés-jours, détection des transitions"
+      compromis: "Degrés-jours calés sur la date de semis, NDVI en contrôle"
+    metrics:
+      primary: "MAE de la date de stade (jours)"
+      secondary: ["MAE floraison", "MAE maturité"]
+      threshold: "<= 7 jours pour la floraison"
+    training: "Par saison ; vérité = stades déclarés et photos"
+    inference: {mode: batch, latency: "< 5 min", frequency: "à chaque passage (5 j)",
+                fallback: "calendrier cultural FAO + date de semis"}
+    depends_on: [ndvi_gapfill]
+    challenge: "Les stades déclarés sont rares et approximatifs : prévoir des relevés de conseillers"
+
+  - id: yield_forecast
+    use_case: IA-8
+    name: "Prévision de rendement p10–p90"
+    kind: ml
+    version: V3
+    platform: [web:9, web:11, partner]
+    data:
+      mandatory: [features.yield]
+      recommended: [agronomie.crop_model_params]
+      optional: [agronomie.yield_potential]
+    features: ["NDVI intégré, pic et date du pic", "degrés-jours", "pluie cumulée par phase", "stress hydrique",
+               "sol", "culture et variété", "statistiques régionales"]
+    candidates:
+      competition: "Ensemble LightGBM + hybride (sorties AquaCrop et SARRA en variables) + quantiles conformes"
+      production: "LightGBM quantile (p10, p50, p90) avec prédiction conforme par culture"
+      compromis: "Régression sur NDVI intégré et pluie cumulée par culture, intervalles conformes"
+    metrics:
+      primary: "RMSE (t/ha) sur le holdout figé"
+      secondary: ["couverture p10–p90 (cible 80 %)", "MAPE par culture", "régression par région"]
+      threshold: "RMSE <= 20 % du rendement moyen ; couverture entre 75 et 85 %"
+    training: "Annuel en fin de campagne ; GroupKFold par parcelle + validation leave-one-season-out"
+    inference: {mode: batch, latency: "< 10 min", frequency: "décadaire en saison",
+                fallback: "statistiques régionales DAPSA ou FAOSTAT × ratio NDVI"}
+    depends_on: [phenology_stage, ndvi_gapfill]
+    octopus_program: yield_forecast
+    challenge: "Le programme OctOpus ne découpe que par parcelle : ajouter un test par saison laissée de côté"
+
+  - id: yield_crop_model
+    use_case: IA-8
+    name: "Simulation de rendement par modèle de culture"
+    kind: physical
+    version: V3
+    platform: [web:9, partner]
+    data:
+      mandatory: [agronomie.crop_model_params, meteo.grid_daily, sols.field_profile, agronomie.crop_cycles]
+      recommended: [iot.telemetry_hourly, iot.irrigation_events]
+      optional: [agronomie.yield_potential]
+    features: ["météo journalière", "sol (TAW)", "date de semis", "irrigation appliquée", "variété"]
+    candidates:
+      competition: "Assimilation (EnKF) du LAI et de l'humidité dans AquaCrop"
+      production: "SARRA-Py (céréales pluviales) et AquaCrop-OSPy (irrigué), calés localement"
+      compromis: "SARRA-Py seul (GPLv3 claire), AquaCrop après lecture de sa licence"
+    metrics:
+      primary: "RMSE du rendement simulé vs observé"
+      secondary: ["biais par culture"]
+      threshold: "RMSE <= 25 %"
+    training: "Calage annuel des paramètres avec l'ISRA"
+    inference: {mode: batch, latency: "< 30 min", frequency: "décadaire", fallback: "yield_forecast seul"}
+    depends_on: [phenology_stage]
+    challenge: "Le potentiel YPYGA est non commercial : comparaison de recherche, jamais affiché aux clients"
+
+  - id: crop_type_map
+    use_case: IA-8
+    name: "Carte des cultures"
+    kind: ml
+    version: V3
+    platform: [web:4, partner]
+    data:
+      mandatory: [features.crop_type]
+      recommended: [geo.open_field_boundaries]
+      optional: []
+    features: ["statistiques temporelles S1 et S2 par parcelle", "phénologie", "texture"]
+    candidates:
+      competition: "Transformer temporel (L-TAE ou Presto) sur S1 + S2"
+      production: "LightGBM sur statistiques temporelles S1 + S2 par parcelle"
+      compromis: "Random forest sur NDVI décadaire"
+    metrics:
+      primary: "F1 macro par culture"
+      secondary: ["précision par région"]
+      threshold: "F1 macro >= 0,75"
+    training: "Annuel ; vérité = cultures déclarées + relevés GPS ; validation spatiale par blocs"
+    inference: {mode: batch, latency: "< 1 h par région", frequency: "2 fois par saison",
+                fallback: "culture déclarée"}
+    depends_on: [ndvi_gapfill]
+    challenge: "Les cultures associées (mil + niébé) n'ont pas de signature unique"
+
+  - id: field_boundary
+    use_case: IA-8
+    name: "Détection des limites de parcelles"
+    kind: deep_learning
+    version: V3
+    platform: [web:3, web:4, mobile]
+    data:
+      mandatory: [features.field_boundaries]
+      recommended: [geo.open_field_boundaries]
+      optional: []
+    features: ["composites S2 10 m", "PlanetScope 3 m (si contrat)", "tracés existants"]
+    candidates:
+      competition: "ResUNet-a multi-tâche (étendue, limite, distance) sur S2 + PlanetScope"
+      production: "Modèle ouvert affiné sur S2, proposé à l'utilisateur pour validation"
+      compromis: "Tracé GPS dans l'app avec accrochage aux limites détectées"
+    metrics:
+      primary: "IoU par parcelle"
+      secondary: ["erreur de surface (%)"]
+      threshold: "IoU >= 0,7 pour les parcelles de plus de 0,5 ha"
+    training: "Local (limites rattachées à des personnes) ; annuel"
+    inference: {mode: batch, latency: "< 1 min par exploitation", frequency: "à la demande",
+                fallback: "tracé manuel"}
+    challenge: "À 10 m, une parcelle de 0,25 ha fait 25 pixels : la saisie manuelle reste la référence"
+
+  # ================================================================== IA-9 Finance et assurance
+  - id: agri_risk_score
+    use_case: IA-9
+    name: "Score de risque agricole pour le crédit"
+    kind: ml
+    version: V3
+    platform: [partner]
+    data:
+      mandatory: [features.agri_risk]
+      recommended: []
+      optional: []
+    features: ["rendement prévu et variabilité", "historique de récoltes", "irrigation", "prévision saisonnière",
+               "remboursements passés"]
+    candidates:
+      competition: "Gradient boosting + modèle de survie, contraintes d'équité"
+      production: "Score logistique monotone explicable (WoE), LightGBM monotone en challenger"
+      compromis: "Grille experte fondée sur des variables agronomiques"
+    metrics:
+      primary: "AUC du défaut"
+      secondary: ["KS", "écart d'AUC par genre et par région", "calibration"]
+      threshold: "AUC >= 0,70 ; écart d'équité <= 0,05"
+    training: "Annuel ; local uniquement (données financières personnelles, jamais exportées)"
+    inference: {mode: batch, latency: "< 1 s par dossier", frequency: "à la demande du partenaire",
+                fallback: "décision humaine de l'IMF"}
+    depends_on: [yield_forecast]
+    challenge: "Décision automatisée sur une personne : intervention humaine et droit d'opposition obligatoires"
+
+  - id: index_insurance
+    use_case: IA-9
+    name: "Indice d'assurance paramétrique"
+    kind: statistics
+    version: V3
+    platform: [partner]
+    data:
+      mandatory: [features.rain_events, historique.regional_stats, satellite.regional_products]
+      recommended: [meteo.grid_daily]
+      optional: [meteo.seasonal_outlook]
+    features: ["pluie par phase culturale", "ETa WaPOR", "NDVI régional", "rendements historiques DAPSA"]
+    candidates:
+      competition: "Indice multi-sources (pluie + ETa + NDVI) optimisé sur le risque de base"
+      production: "Indice pluie CHIRPS v3 par phase culturale, seuils calés sur les rendements DAPSA"
+      compromis: "Indice NDVI et pluie simple par commune"
+    metrics:
+      primary: "Risque de base (mauvaises années non indemnisées)"
+      secondary: ["corrélation indice–pertes"]
+      threshold: "<= 20 % de mauvaises années non indemnisées"
+    training: "Calage tous les 3 ans avec l'assureur"
+    inference: {mode: batch, latency: "< 10 min", frequency: "décadaire", fallback: "expertise sinistre CNAAS"}
+    challenge: "CHIRPS v2 s'arrête fin 2026 : caler l'indice directement sur la v3"
+
+  # ================================================================== IA-10 Kit et capteurs
+  - id: anomaly_rules
+    use_case: IA-10
+    name: "Anomalies capteurs et pompe par règles"
+    kind: rules
+    version: MVP
+    platform: [web:1, web:10, mobile, kit]
+    data:
+      mandatory: [iot.telemetry_clean, iot.device_health]
+      recommended: [iot.irrigation_events]
+      optional: []
+    features: ["valeurs hors plage", "variance nulle (capteur figé)", "sauts", "pompe sans effet sur l'humidité",
+               "drapeaux firmware"]
+    candidates:
+      competition: "Règles + détection statistique (CUSUM, filtre de Hampel)"
+      production: "Règles de plage, de gel, de saut et de cohérence pompe → humidité"
+      compromis: "Règles + CUSUM sur l'humidité"
+    metrics:
+      primary: "Faux positifs par kit et par mois"
+      secondary: ["délai de détection", "incidents manqués"]
+      threshold: "<= 1 faux positif par kit et par mois"
+    training: "Seuils révisés chaque trimestre"
+    inference: {mode: stream, latency: "< 1 min", frequency: "à chaque message",
+                fallback: "drapeaux firmware (soil_sensor_ok, bme_ok, npk_ok, pump_fault)"}
+    challenge: "Sans journal des interventions terrain, impossible d'étiqueter les vrais incidents"
+
+  - id: sm_calibration
+    use_case: IA-10
+    name: "Étalonnage de la sonde d'humidité par type de sol"
+    kind: statistics
+    version: V1.1
+    platform: [web:10, kit]
+    data:
+      mandatory: [iot.telemetry_clean, sols.field_profile]
+      recommended: [sols.lab_results]
+      optional: []
+    features: ["lecture brute de la sonde capacitive", "texture", "température du sol", "mesures gravimétriques"]
+    candidates:
+      competition: "Étalonnage bayésien hiérarchique par sonde, corrigé de la température"
+      production: "Courbe polynomiale par classe de texture, calée sur mesures gravimétriques"
+      compromis: "Étalonnage usine + correction par texture SoilGrids ou iSDAsoil"
+    metrics:
+      primary: "RMSE de la teneur en eau vs gravimétrie (points de %)"
+      secondary: ["dérive par saison"]
+      threshold: "RMSE <= 3 points"
+    training: "À l'installation et chaque saison (>= 10 prélèvements par classe de texture)"
+    inference: {mode: batch, latency: "< 1 min", frequency: "à chaque nouvel étalonnage",
+                fallback: "courbe usine marquée « non étalonnée »"}
+    challenge: "Tous les modèles d'irrigation héritent de l'erreur de cette sonde : à faire avant le ML.
+      La courbe est propre à chaque kit (lectures ADC sec et eau) et stockée en NVS"
+
+  - id: anomaly_ml
+    use_case: IA-10
+    name: "Anomalies multivariées des kits"
+    kind: ml
+    version: V2
+    platform: [web:10, mobile]
+    data:
+      mandatory: [features.sensor_anomaly]
+      recommended: [meteo.forecast_asof]
+      optional: []
+    features: ["résidus de prévision", "corrélations entre capteurs", "tension", "historique des défauts"]
+    candidates:
+      competition: "Autoencodeur LSTM ou Transformer + isolation forest"
+      production: "Isolation forest + résidu de soil_nowcast par kit"
+      compromis: "Résidus de prévision seuillés (z-score robuste)"
+    metrics:
+      primary: "PR-AUC sur incidents étiquetés"
+      secondary: ["précision des alertes"]
+      threshold: "PR-AUC >= 0,5 ; précision >= 70 %"
+    training: "Mensuel"
+    inference: {mode: batch, latency: "< 2 min", frequency: "horaire", fallback: "anomaly_rules"}
+    depends_on: [anomaly_rules, soil_nowcast]
+    challenge: "Peu d'incidents étiquetés : commencer non supervisé, puis apprendre des retours techniciens"
+
+  - id: pump_health
+    use_case: IA-10
+    name: "Maintenance prédictive de la pompe"
+    kind: ml
+    version: V2
+    platform: [web:10, mobile]
+    data:
+      mandatory: [features.sensor_anomaly]
+      recommended: [iot.irrigation_events]
+      optional: [economie.costs]
+    features: ["courant", "débit", "durée de marche", "m³ par kWh", "démarrages par jour"]
+    candidates:
+      competition: "Modèle de survie (Weibull, DeepSurv) sur signatures électriques"
+      production: "Dérive débit et courant vs courbe de la pompe (régression robuste)"
+      compromis: "Seuil de rendement hydraulique (m³/kWh)"
+    metrics:
+      primary: "Pannes détectées au moins 48 h avant (%)"
+      secondary: ["fausses alertes par pompe et par trimestre"]
+      threshold: ">= 50 % avec <= 1 fausse alerte par pompe et par trimestre"
+    training: "Trimestriel"
+    inference: {mode: batch, latency: "< 1 min", frequency: "quotidien", fallback: "alerte pump_fault du firmware"}
+    depends_on: [anomaly_rules]
+    challenge: "Exige le débitmètre et la mesure de puissance (V1.1) : sans eux, modèle impossible"
+
+  # ================================================================== Transverses
+  - id: water_savings
+    use_case: TRANSVERSE
+    name: "Mesure des économies d'eau et d'énergie (MRV)"
+    kind: statistics
+    version: V1.1
+    platform: [web:1, web:11, web:13, partner]
+    data:
+      mandatory: [features.water_savings]
+      recommended: []
+      optional: []
+    features: ["volume mesuré", "besoin théorique FAO-56", "ET0 et pluie de la campagne", "parcelles témoins"]
+    candidates:
+      competition: "Contrôle synthétique ou différence de différences avec parcelles témoins"
+      production: "Besoin théorique FAO-56 vs volume mesuré au débitmètre, par campagne"
+      compromis: "Avant / après par parcelle, corrigé de l'ET0"
+    metrics:
+      primary: "Économie d'eau (%) avec intervalle de confiance à 90 %"
+      secondary: ["kWh économisés", "FCFA économisés"]
+      threshold: "intervalle publié ; aucune économie annoncée sans débitmètre"
+    training: "Par campagne"
+    inference: {mode: batch, latency: "< 10 min", frequency: "mensuel et en fin de campagne",
+                fallback: "minutes de pompage × débit nominal, marqué « estimé »"}
+    depends_on: [irr_water_balance]
+    challenge: "Un chiffre d'économie surestimé engage la crédibilité auprès des bailleurs"
+
+  - id: price_forecast
+    use_case: TRANSVERSE
+    name: "Prévision des prix agricoles à 4 semaines"
+    kind: ml
+    version: V3
+    platform: [web:11, web:13, mobile]
+    data:
+      mandatory: [features.price_forecast]
+      recommended: []
+      optional: []
+    features: ["prix passés par marché et produit", "saisonnalité", "NDVI régional", "fêtes et calendrier"]
+    candidates:
+      competition: "Modèles globaux (N-BEATS, TFT) multi-marchés"
+      production: "LightGBM global sur prix hebdomadaires + saisonnalité + NDVI régional"
+      compromis: "SARIMA par couple marché-produit"
+    metrics:
+      primary: "MAPE à 4 semaines"
+      secondary: ["gain vs saisonnalité naïve"]
+      threshold: "MAPE <= 15 % et meilleur que la saisonnalité naïve"
+    training: "Mensuel"
+    inference: {mode: batch, latency: "< 5 min", frequency: "hebdomadaire",
+                fallback: "saisonnalité naïve (même semaine N−1 × tendance)"}
+    challenge: "Les prix SIM et ARM sont sous convention : sans accord, pas de modèle"
+
+  - id: salinity_risk
+    use_case: TRANSVERSE
+    name: "Risque de salinisation des parcelles irriguées"
+    kind: ml
+    version: V3
+    platform: [web:4, web:6]
+    data:
+      mandatory: [features.salinity_risk]
+      recommended: [eau.water_quality]
+      optional: []
+    features: ["EC et SAR de l'eau", "profondeur de nappe", "distance au fleuve ou au Saloum", "NDVI", "texture"]
+    candidates:
+      competition: "Krigeage avec dérive externe (EC, nappe, NDVI)"
+      production: "LightGBM de classe de risque par parcelle"
+      compromis: "Règles FAO-29 (EC, SAR) + carte des zones à risque (delta, Saloum)"
+    metrics:
+      primary: "Accord de classe avec les mesures EC (kappa)"
+      secondary: ["rappel de la classe « élevé »"]
+      threshold: "kappa >= 0,6"
+    training: "Annuel"
+    inference: {mode: batch, latency: "< 10 min", frequency: "saisonnier", fallback: "règles FAO-29"}
+    challenge: "Le kit ne mesure ni EC ni salinité : sonde EC à ajouter (doc 13, manques capteurs)"

@@ -1,0 +1,70 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "sentinel2_ndvi",
+  "file_name": "deafrica_s2_national_scene_catalog_2024_2026.parquet",
+  "relative_path": "data/real/sentinel2_ndvi/deafrica_s2_national_scene_catalog_2024_2026.parquet",
+  "source_id": "deafrica",
+  "owner": "Digital Earth Africa (Sentinel-2 L2A COG, ESA/Copernicus)",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://explorer.digitalearth.africa/stac/search",
+  "description": "Catalogue de TOUTES les scènes Sentinel-2 L2A touchant le Sénégal (2024-2026), avec liens COG directs B04/B08/SCL.",
+  "fetched_at_utc": "2026-11-14T20:12:14+00:00",
+  "sha256": "c2ae4964bf0ee8f9b337e41d05f9a001c3c0139279b8821176059cd50a16b047",
+  "size_bytes": 1913175,
+  "rows": 20722,
+  "columns": [
+    "item_id",
+    "datetime_utc",
+    "date",
+    "tile",
+    "epsg",
+    "cloud_pct",
+    "data_coverage_pct",
+    "x0",
+    "y0",
+    "b04_href",
+    "b08_href",
+    "scl_href"
+  ],
+  "dtypes": {
+    "item_id": "str",
+    "datetime_utc": "str",
+    "date": "datetime64[us]",
+    "tile": "str",
+    "epsg": "int64",
+    "cloud_pct": "float64",
+    "data_coverage_pct": "float64",
+    "x0": "float64",
+    "y0": "float64",
+    "b04_href": "str",
+    "b08_href": "str",
+    "scl_href": "str"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "item_id"
+    ],
+    "checks": {
+      "tiles": 54,
+      "scenes": 20722,
+      "median_cloud_pct": 23.545
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2024-01-01 00:00:00",
+    "max": "2026-11-13 00:00:00",
+    "unique_periods": 883
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": null,
+    "note": "table non spatialisée par cellule"
+  }
+}

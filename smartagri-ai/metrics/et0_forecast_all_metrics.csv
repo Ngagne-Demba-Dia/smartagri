@@ -1,0 +1,16 @@
+model,target,fold,rmse,mae,r2,best_iter
+LightGBM,et0_pm_mm,0,0.0522,0.0373,0.9995,0
+LightGBM,et0_pm_mm,1,0.0515,0.0377,0.9995,0
+LightGBM,et0_pm_mm,2,0.0528,0.0378,0.9995,0
+LightGBM,et0_pm_mm,3,0.0525,0.038,0.9995,0
+LightGBM,et0_pm_mm,4,0.0488,0.0356,0.9996,0
+XGBoost,et0_pm_mm,0,0.0519,0.0354,0.9995,999
+XGBoost,et0_pm_mm,1,0.0536,0.0382,0.9995,999
+XGBoost,et0_pm_mm,2,0.0522,0.0363,0.9995,999
+XGBoost,et0_pm_mm,3,0.0461,0.033,0.9996,999
+XGBoost,et0_pm_mm,4,0.0456,0.0325,0.9996,999
+CatBoost,et0_pm_mm,0,0.0403,0.0289,0.9997,999
+CatBoost,et0_pm_mm,1,0.0398,0.0292,0.9997,999
+CatBoost,et0_pm_mm,2,0.0402,0.0289,0.9997,999
+CatBoost,et0_pm_mm,3,0.0374,0.0275,0.9997,999
+CatBoost,et0_pm_mm,4,0.0374,0.0276,0.9997,999

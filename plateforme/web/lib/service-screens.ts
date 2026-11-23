@@ -20,19 +20,19 @@ export interface ServiceScreenDef {
 
 export const SERVICE_SCREENS: readonly ServiceScreenDef[] = [
   { service: 3, slug: "irrigation", key: "irrigation", group: "ia", version: "MVP", icon: "drop" },
-  { service: 7, slug: "kit", key: "kit", group: "materiel", version: "V1_1", icon: "pump" },
+  { service: 7, slug: "kit", key: "kit", group: "materiel", version: "MVP", icon: "pump" },
   {
     service: 6,
     slug: "fertilisation",
     key: "fertilization",
     group: "cultures",
-    version: "V1_1",
+    version: "MVP",
     icon: "sprout",
   },
-  { service: 9, slug: "risques", key: "pestRisk", group: "ia", version: "V1_1", icon: "warn" },
+  { service: 9, slug: "risques", key: "pestRisk", group: "ia", version: "MVP", icon: "warn" },
   { service: 2, slug: "previsions", key: "soilForecast", group: "ia", version: "MVP", icon: "drops" },
-  { service: 4, slug: "planning", key: "irrigationPlan", group: "ia", version: "V1_1", icon: "calendar" },
-  { service: 10, slug: "pieges", key: "traps", group: "materiel", version: "V2", icon: "bug" },
-  { service: 11, slug: "vegetation", key: "vegetation", group: "cultures", version: "V2", icon: "satellite" },
-  { service: 15, slug: "marches", key: "markets", group: "cultures", version: "V3", icon: "market" },
+  { service: 4, slug: "planning", key: "irrigationPlan", group: "ia", version: "MVP", icon: "calendar" },
+  { service: 10, slug: "pieges", key: "traps", group: "materiel", version: "MVP", icon: "bug" },
+  { service: 11, slug: "vegetation", key: "vegetation", group: "cultures", version: "MVP", icon: "satellite" },
+  { service: 15, slug: "marches", key: "markets", group: "cultures", version: "MVP", icon: "market" },
 ];

@@ -1,0 +1,50 @@
+{
+  "execution_id": "py_274383690dfd44f4943e07bf63cf8e31",
+  "title": "A3 Yield Forecast + A5 Price Forecast (fix)",
+  "source": "derived",
+  "synthetic": false,
+  "goal": "attaque ce des classes A faisables et qu'il yai suffisament de donnée pour ça? si oui fais le tout ses 6 modeles",
+  "seed": 42,
+  "assumptions": [],
+  "created_at": 1794858343.8996487,
+  "inputs": [
+    {
+      "file_id": "pf_8cffb44cb1be493c9a5fd829",
+      "sha256": "134d1a2e216a4b0a39311b09e2ef6c753c367ab06f6ba5ae222a10fe4d3e6d2d"
+    }
+  ],
+  "code_sha256": "04e3220982d808b3af82043414625f756795c13e1c06344add196db349254e7b",
+  "validation": "Program completed, assertions passed; not independently scientifically validated",
+  "outputs": [
+    {
+      "name": "yield_forecast_all_metrics.csv",
+      "description": "A3 Yield metrics 3x5 folds",
+      "bytes": 728,
+      "sha256": "b46f401d3bafc53b4cba8de74318ad99ad201791a110d0aba38f83e50902e62a"
+    },
+    {
+      "name": "yield_forecast_feature_importance.csv",
+      "description": "A3 Yield feature importance",
+      "bytes": 286,
+      "sha256": "030f37891916f742d7060b50fadbe0ec2e8bd3b3caa5a02c8df170ccb3be9410"
+    },
+    {
+      "name": "price_forecast_all_metrics.csv",
+      "description": "A5 Price metrics 3x5 folds",
+      "bytes": 739,
+      "sha256": "bdad4ebac775ef53598bdb02b45dd9ae8f2bb831ebfa09c5e7421ae5249cbbb8"
+    },
+    {
+      "name": "price_forecast_feature_importance.csv",
+      "description": "A5 Price feature importance",
+      "bytes": 600,
+      "sha256": "dfdda0d41e34e66e9190f0e53eb694b90e1cdad62b5f25e139a2b2bc0bb3de05"
+    },
+    {
+      "name": "price_forecast_group_errors.csv",
+      "description": "A5 Price errors per market group",
+      "bytes": 1690,
+      "sha256": "0cc3a02c7bab1730f4b0430c152cd5ade418c0c6f5bfb6506d3f390ac16a67d5"
+    }
+  ]
+}

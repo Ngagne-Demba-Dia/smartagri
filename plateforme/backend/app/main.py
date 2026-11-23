@@ -6,6 +6,8 @@ permet aux tests d'importer `create_app` sans lire l'environnement du processus.
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 import logging
 from typing import Any
 
@@ -21,6 +23,8 @@ from app.core.metrics import MetricsMiddleware
 from app.core.middleware import BodySizeLimitMiddleware, RateLimitMiddleware, RateRule, RequestContextMiddleware
 from app.db.base import Base
 from app.db.session import build_engine, build_session_factory
+from app.services import access
+from app.services.inference.local_ai import SmartAgriAIClient, SmartAgriAITranscriber, SmartAgriAIVisionAnalyzer
 from app.services.weather import build_provider
 
 logger = logging.getLogger(__name__)
@@ -60,9 +64,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     if settings.app_env != "test":
         configure_logging()
+    access.set_demo_slugs_enabled(not settings.is_strict)
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+        try:
+            yield
+        finally:
+            ai_client = getattr(application.state, "smartagri_ai_client", None)
+            if ai_client is not None and hasattr(ai_client, "close"):
+                ai_client.close()
+            eng = getattr(application.state, "engine", None)
+            if eng is not None and not settings.is_sqlite:
+                eng.dispose()
+
     docs = settings.docs_enabled
     app = FastAPI(title="SmartAgri92 API", version=API_VERSION, docs_url="/docs" if docs else None,
-                  redoc_url=None, openapi_url="/openapi.json" if docs else None)
+                  redoc_url=None, openapi_url="/openapi.json" if docs else None, lifespan=lifespan)
     engine = build_engine(settings.database_url)
     if settings.auto_create_schema:
         Base.metadata.create_all(engine)
@@ -73,6 +91,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.assistant_gateway = None
     app.state.assistant_gateway_ready = False
     app.state.model_backend_factory = None
+    if settings.smartagri_ai_url:
+        ai_cli = SmartAgriAIClient(
+            settings.smartagri_ai_url,
+            timeout_s=settings.smartagri_ai_timeout_s,
+            api_key=settings.smartagri_ai_api_key,
+        )
+        app.state.smartagri_ai_client = ai_cli
+        app.state.transcriber = SmartAgriAITranscriber(ai_cli)
+        app.state.vision_analyzer = SmartAgriAIVisionAnalyzer(ai_cli)
+    else:
+        app.state.smartagri_ai_client = None
     install_error_handlers(app)
     _install_middleware(app, settings)
     app.include_router(health_router)

@@ -1,0 +1,69 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "soil_moisture",
+  "file_name": "nasa_power_soil_wetness_national_daily.parquet",
+  "relative_path": "data/real/soil_moisture/nasa_power_soil_wetness_national_daily.parquet",
+  "source_id": "nasa_power",
+  "owner": "NASA Langley Research Center — POWER (MERRA-2 / CERES), maille native 0,5° × 0,625°",
+  "licence": "NASA Open Data (libre, citation POWER requise)",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://power.larc.nasa.gov/api/temporal/daily/point?community=AG",
+  "description": "Humidité du sol MODÉLISÉE (GEOS/MERRA-2) : taux de saturation relatif [0-1] en surface (0-5 cm), zone racinaire (0-100 cm) et profil. Ce n'est PAS une mesure de capteur ni une teneur volumique.",
+  "fetched_at_utc": "2026-11-14T19:58:48+00:00",
+  "sha256": "41c7819de3f2b5682610dd9f4ebbe1f3f15f216ab0826d9d9bd6727a8e8622c6",
+  "size_bytes": 3035228,
+  "rows": 329232,
+  "columns": [
+    "power_cell_id",
+    "lat",
+    "lon",
+    "date",
+    "gwettop_ratio",
+    "gwetroot_ratio",
+    "gwetprof_ratio"
+  ],
+  "dtypes": {
+    "power_cell_id": "str",
+    "lat": "float64",
+    "lon": "float64",
+    "date": "datetime64[us]",
+    "gwettop_ratio": "float64",
+    "gwetroot_ratio": "float64",
+    "gwetprof_ratio": "float64"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "power_cell_id",
+      "date"
+    ],
+    "checks": {
+      "ratios_in_0_1_share_pct": 100.0
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2015-01-01 00:00:00",
+    "max": "2026-11-10 00:00:00",
+    "unique_periods": 4332,
+    "expected_days": 4332,
+    "missing_days": 0
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "power",
+    "cells_present": 76,
+    "cells_expected": 76,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.5,
+    "lat_max": 16.5,
+    "lon_min": -17.5,
+    "lon_max": -11.25
+  }
+}

@@ -1,0 +1,7 @@
+algorithm,k,silhouette,min_size,max_size
+KMeans,2,0.3446,18,49
+KMeans,3,0.315,15,35
+KMeans,4,0.3127,1,35
+KMeans,5,0.3329,1,32
+KMeans,6,0.3533,1,30
+KMeans,7,0.3597,1,31

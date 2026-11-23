@@ -10,6 +10,7 @@ import { useWeather } from "@/services/ai/weather";
 import type { Locale } from "@/i18n/routing";
 import { ApiError } from "@/lib/api";
 import { MISSING, formatNumber, formatPct, formatWeekday } from "@/lib/format";
+import { waterQualityForField } from "@/lib/irrigation";
 import type { MapFieldShape } from "@/lib/map-style";
 import { localePath } from "@/lib/nav";
 
@@ -50,8 +51,10 @@ function FieldWeather({ fieldId }: { fieldId: string }) {
 /** Panneau de la parcelle choisie sur la carte : valeurs de la carte, météo à 3 jours, liens vers le détail. */
 export function FieldPanel({ field, farmName }: { field: MapFieldShape; farmName: string }) {
   const t = useTranslations("map");
+  const ti = useTranslations("irrigation");
   const locale = useLocale() as Locale;
   const p = field.props;
+  const wq = waterQualityForField(p.field_id);
   const query = `?parcelle=${encodeURIComponent(p.field_id)}`;
 
   return (
@@ -86,6 +89,10 @@ export function FieldPanel({ field, farmName }: { field: MapFieldShape; farmName
         ) : null}
         <dt className="text-mute">{t("panel.area")}</dt>
         <dd>{p.area_ha === null ? MISSING : t("panel.areaValue", { value: formatNumber(p.area_ha, 2) })}</dd>
+        <dt className="text-mute">{t("panel.waterPh")}</dt>
+        <dd className="tabular-nums">
+          {formatNumber(wq.ph, 1)} pH · {ti(`waterQuality.nature.${wq.phState}`)}
+        </dd>
         <dt className="text-mute">{t("panel.alerts")}</dt>
         <dd>{formatNumber(p.open_alerts)}</dd>
       </dl>
@@ -97,6 +104,9 @@ export function FieldPanel({ field, farmName }: { field: MapFieldShape; farmName
           className="btn-secondary"
         >
           {t("panel.detail")}
+        </Link>
+        <Link href={`${localePath(locale, "/irrigation")}${query}`} className="btn-secondary">
+          {t("panel.irrigation")}
         </Link>
         <Link href={`${localePath(locale, "/recommandations")}${query}`} className="btn-secondary">
           {t("panel.recommendations")}

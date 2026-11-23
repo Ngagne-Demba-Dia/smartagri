@@ -1,0 +1,157 @@
+{
+  "champions": {
+    "A1_SoilNowcast": {
+      "champion": "LightGBM",
+      "r2": 0.8353,
+      "rmse": 7.447,
+      "mae": 5.9614
+    },
+    "A2_ET0_Forecast": {
+      "champion": "CatBoost",
+      "r2": 0.9997,
+      "rmse": 0.039,
+      "mae": 0.0284
+    },
+    "A3_Yield_Forecast": {
+      "champion": "CatBoost",
+      "r2": 0.9509,
+      "rmse": 2.0083
+    },
+    "A4_Rain_Intelligence": {
+      "champion": "CatBoost",
+      "auc": 0.9625,
+      "f1": 0.7642,
+      "brier": 0.0611
+    },
+    "A5_Price_Forecast": {
+      "champion": "XGBoost",
+      "r2": 0.8995,
+      "rmse": 66.67
+    }
+  },
+  "features": {
+    "A1_SoilNowcast": [
+      "doy_cos",
+      "doy_sin",
+      "et0_pm_mean_7d_mm",
+      "rain_nasa_sum_14d_mm",
+      "rain_chirps_sum_14d_mm",
+      "rh_mean_pct",
+      "rain_chirps_sum_7d_mm",
+      "rain_nasa_sum_7d_mm",
+      "t_min_c",
+      "pressure_hpa",
+      "ph_h2o",
+      "t_max_c",
+      "t_mean_c",
+      "wind_2m_ms",
+      "bulk_density_g_cm3",
+      "solar_rad_mj_m2",
+      "share_crop",
+      "rain_nasa_sum_3d_mm",
+      "soc_g_kg",
+      "rain_chirps_sum_3d_mm",
+      "rain_mm",
+      "share_tree",
+      "clay_pct",
+      "et0_pm_mm",
+      "sand_pct",
+      "rain_chirps_mm",
+      "share_built",
+      "share_bare",
+      "fc_ptf_pct",
+      "wp_ptf_pct"
+    ],
+    "A2_ET0_Forecast": [
+      "t_min_c",
+      "t_max_c",
+      "t_mean_c",
+      "rh_mean_pct",
+      "wind_2m_ms",
+      "solar_rad_mj_m2",
+      "pressure_hpa",
+      "rain_mm",
+      "ra_mj_m2",
+      "et0_hargreaves_mm",
+      "doy_sin",
+      "doy_cos",
+      "month",
+      "t_range_c",
+      "lat",
+      "lon"
+    ],
+    "A3_Yield_Forecast": [
+      "year",
+      "crop_enc",
+      "year_norm",
+      "decade",
+      "area_ha"
+    ],
+    "A4_Rain_Intelligence": [
+      "doy_cos",
+      "doy_sin",
+      "solar_rad_mj_m2",
+      "wind_2m_ms",
+      "rain_chirps_sum_14d_mm",
+      "t_min_c",
+      "rain_mm",
+      "rain_nasa_sum_3d_mm",
+      "pressure_hpa",
+      "rain_chirps_sum_7d_mm",
+      "rain_chirps_sum_3d_mm",
+      "et0_pm_mean_7d_mm",
+      "rain_nasa_sum_14d_mm",
+      "rain_nasa_sum_7d_mm",
+      "rain_chirps_mm",
+      "t_max_c",
+      "t_mean_c",
+      "rh_mean_pct",
+      "et0_pm_mm",
+      "ph_h2o",
+      "soc_g_kg",
+      "bulk_density_g_cm3",
+      "share_crop",
+      "share_tree",
+      "sand_pct",
+      "share_built",
+      "share_bare",
+      "clay_pct",
+      "fc_ptf_pct",
+      "wp_ptf_pct"
+    ],
+    "A5_Price_Forecast": [
+      "year",
+      "month",
+      "doy_sin",
+      "doy_cos",
+      "crop_enc",
+      "market_enc",
+      "region_enc",
+      "category_enc",
+      "lat",
+      "lon"
+    ]
+  },
+  "rain_shap_top5": [
+    {
+      "feature": "doy_sin",
+      "mean_abs_shap": 0.0706230820776971
+    },
+    {
+      "feature": "doy_cos",
+      "mean_abs_shap": 0.0647576739701891
+    },
+    {
+      "feature": "rain_mm",
+      "mean_abs_shap": 0.0454588770086545
+    },
+    {
+      "feature": "rh_mean_pct",
+      "mean_abs_shap": 0.0182164475745093
+    },
+    {
+      "feature": "solar_rad_mj_m2",
+      "mean_abs_shap": 0.0132097516369817
+    }
+  ]
+}

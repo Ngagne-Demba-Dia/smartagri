@@ -1,0 +1,52 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "market_prices",
+  "file_name": "wfp_senegal_markets.parquet",
+  "relative_path": "data/real/market_prices/wfp_senegal_markets.parquet",
+  "source_id": "hdx_wfp_senegal",
+  "owner": "WFP VAM",
+  "licence": "CC BY-IGO 3.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://data.humdata.org/dataset/wfp-food-prices-for-senegal",
+  "description": "Répertoire géolocalisé des marchés suivis par le PAM au Sénégal.",
+  "fetched_at_utc": "2026-11-16T08:44:14+00:00",
+  "sha256": "f962b7473bfe806c1f41ade9f0dbe4b80fa2a73fad0a5d68749aba844231302b",
+  "size_bytes": 4847,
+  "rows": 79,
+  "columns": [
+    "market_id",
+    "market",
+    "region",
+    "department",
+    "lat",
+    "lon",
+    "source_id"
+  ],
+  "dtypes": {
+    "market_id": "Int64",
+    "market": "str",
+    "region": "str",
+    "department": "str",
+    "lat": "float64",
+    "lon": "float64",
+    "source_id": "str"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "market_id"
+    ]
+  },
+  "temporal_coverage": {
+    "type": "static_or_not_applicable"
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": null,
+    "note": "table non spatialisée par cellule"
+  }
+}

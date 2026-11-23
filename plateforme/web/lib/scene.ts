@@ -33,6 +33,7 @@ const SCENE_BY_SLUG: Readonly<Record<string, Scene>> = {
   pieges: "maladies",
   recommandations: "recommandations",
   assistant: "recommandations",
+  communaute: "parcelles",
   kit: "kit",
   equipements: "kit",
   alertes: "kit",

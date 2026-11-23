@@ -105,7 +105,7 @@ export function CropsView({ initialFieldId }: { initialFieldId: string | null })
   const cycles = useCropCycles(fieldId);
 
   return (
-    <ModuleShell title={tm("crops")} description={t("description")} version="V1_1">
+    <ModuleShell title={tm("crops")} description={t("description")} version="MVP">
       <QueryState
         isPending={all.isPending}
         error={all.error}

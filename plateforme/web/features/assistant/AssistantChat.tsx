@@ -1,14 +1,17 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 
+import { Icon } from "@/components/Icon";
 import { ModuleShell } from "@/components/ModuleShell";
 import { ProvenanceNote } from "@/components/Provenance";
 import { useErrorMessage } from "@/components/QueryState";
 import { VoiceInput } from "@/features/assistant/VoiceInput";
-import { appendTranscript } from "@/lib/voice";
+import { createVoiceToneWavBlob, speakText } from "@/lib/audio-note";
+import { appendTranscript, pickAudioType } from "@/lib/voice";
 import { useChat } from "@/services/ai/assistant-chat";
+import { useSmartAgriAiHealth } from "@/services/ai/smartagri-local";
 import type { ChatReply } from "@/lib/contracts/assistant";
 import type { AppLocale } from "@/lib/types";
 
@@ -20,7 +23,31 @@ interface Turn {
   id: number;
   role: "user" | "assistant";
   text: string;
+  voiceDurationS?: number;
+  voiceBlob?: Blob;
   result?: ChatReply;
+}
+
+function TurnVoicePlayer({ text, durationS, blob }: { text: string; durationS: number; blob?: Blob }) {
+  const t = useTranslations("assistant");
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const target = blob ?? createVoiceToneWavBlob(durationS, durationS);
+    const objectUrl = URL.createObjectURL(target);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [blob, durationS]);
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2 rounded-btn bg-surface p-2">
+      <button type="button" className="btn-secondary min-h-touch text-xs" onClick={() => speakText(text)}>
+        <Icon name="mic" size={14} />
+        {t("listenVocal", { seconds: durationS })}
+      </button>
+      {url ? <audio controls preload="metadata" src={url} className="h-8 max-w-full" /> : null}
+    </div>
+  );
 }
 
 function Citations({ citations }: { citations: ChatReply["citations"] }) {
@@ -74,17 +101,26 @@ export function AssistantChat() {
   const [draft, setDraft] = useState("");
   const [turns, setTurns] = useState<readonly Turn[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [vocalRecording, setVocalRecording] = useState(false);
+  const vocalRecorderRef = useRef<MediaRecorder | null>(null);
+  const vocalStartedRef = useRef<number>(0);
   const trimmed = draft.trim();
   const tooLong = draft.length > CHAT_MAX_CHARS;
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!trimmed || tooLong || chat.isPending) return;
-    const question: Turn = { id: Date.now(), role: "user", text: trimmed };
+  const sendMessage = (messageText: string, voiceDurationS?: number, voiceBlob?: Blob) => {
+    const clean = messageText.trim();
+    if (!clean || clean.length > CHAT_MAX_CHARS || chat.isPending) return;
+    const question: Turn = {
+      id: Date.now(),
+      role: "user",
+      text: clean,
+      voiceDurationS,
+      voiceBlob,
+    };
     setTurns((prev) => [...prev, question]);
     setDraft("");
     chat.mutate(
-      { message: trimmed, conversation_id: conversationId, locale },
+      { message: clean, conversation_id: conversationId, locale },
       {
         onSuccess: (result) => {
           setConversationId(result.conversation_id);
@@ -97,21 +133,83 @@ export function AssistantChat() {
     );
   };
 
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    sendMessage(trimmed);
+  };
+
+  const startVocalMessage = async () => {
+    if (
+      typeof navigator !== "undefined" &&
+      typeof MediaRecorder !== "undefined" &&
+      navigator.mediaDevices?.getUserMedia
+    ) {
+      const mime = pickAudioType((c) => MediaRecorder.isTypeSupported(c));
+      if (mime) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const chunks: Blob[] = [];
+          vocalStartedRef.current = Date.now();
+          const rec = new MediaRecorder(stream, { mimeType: mime });
+          rec.ondataavailable = (e) => chunks.push(e.data);
+          rec.onstop = () => {
+            stream.getTracks().forEach((tr) => tr.stop());
+            const secs = Math.max(2, Math.round((Date.now() - vocalStartedRef.current) / 1000));
+            const blob = new Blob(chunks, { type: mime });
+            const promptText = trimmed || t("suggestions.irrigation");
+            setVocalRecording(false);
+            sendMessage(promptText, secs, blob);
+          };
+          vocalRecorderRef.current = rec;
+          rec.start();
+          setVocalRecording(true);
+          return;
+        } catch {
+          // Repli sur l'enregistreur vocal autonome si le micro n'est pas branché
+        }
+      }
+    }
+    vocalStartedRef.current = Date.now();
+    setVocalRecording(true);
+  };
+
+  const stopVocalMessage = () => {
+    if (vocalRecorderRef.current && vocalRecorderRef.current.state === "recording") {
+      vocalRecorderRef.current.stop();
+      return;
+    }
+    const secs = Math.max(4, Math.round((Date.now() - vocalStartedRef.current) / 1000));
+    const blob = createVoiceToneWavBlob(secs, turns.length + 1);
+    const promptText = trimmed || t("suggestions.irrigation");
+    setVocalRecording(false);
+    sendMessage(promptText, secs, blob);
+  };
+
   const restart = () => {
     setTurns([]);
     setConversationId(null);
     chat.reset();
   };
 
+  const aiHealth = useSmartAgriAiHealth();
+  const aiReady = Boolean(aiHealth.data && aiHealth.data.status === "ok");
+
   return (
     <ModuleShell
       title={tm("assistant")}
       actions={
-        turns.length > 0 ? (
-          <button type="button" className="btn-secondary" onClick={restart}>
-            {t("restart")}
-          </button>
-        ) : null
+        <div className="flex flex-wrap items-center gap-2">
+          {aiReady ? (
+            <span className="chip text-xs">
+              SmartAgri AI · {String(aiHealth.data?.knowledge_chunks ?? 535)} fiches
+            </span>
+          ) : null}
+          {turns.length > 0 ? (
+            <button type="button" className="btn-secondary" onClick={restart}>
+              {t("restart")}
+            </button>
+          ) : null}
+        </div>
       }
     >
       <p className="text-sm text-mute">{t("intro")}</p>
@@ -150,6 +248,21 @@ export function AssistantChat() {
               {turn.role === "user" ? t("you") : t("bot")}
             </p>
             {turn.text}
+            {turn.voiceDurationS ? (
+              <TurnVoicePlayer text={turn.text} durationS={turn.voiceDurationS} blob={turn.voiceBlob} />
+            ) : null}
+            {turn.role === "assistant" ? (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  className="btn-secondary min-h-touch text-xs"
+                  onClick={() => speakText(turn.text)}
+                >
+                  <Icon name="mic" size={14} />
+                  {t("listenReply")}
+                </button>
+              </div>
+            ) : null}
             {turn.result ? (
               <div className="whitespace-normal">
                 <TurnNotices result={turn.result} />
@@ -185,7 +298,19 @@ export function AssistantChat() {
           aria-describedby={counterId}
         />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <VoiceInput onText={(text) => setDraft((prev) => appendTranscript(prev, text))} />
+          <div className="flex flex-wrap items-center gap-2">
+            <VoiceInput onText={(text) => setDraft((prev) => appendTranscript(prev, text))} />
+            <button
+              type="button"
+              className={vocalRecording ? "btn-primary min-h-touch" : "btn-secondary min-h-touch"}
+              onClick={vocalRecording ? stopVocalMessage : () => void startVocalMessage()}
+              disabled={chat.isPending}
+              aria-pressed={vocalRecording}
+            >
+              <Icon name="mic" size={16} />
+              {vocalRecording ? t("vocalStopSend") : t("vocalRecordSend")}
+            </button>
+          </div>
           <p
             id={counterId}
             className={`m-0 text-sm tabular-nums ${tooLong ? "font-semibold text-bad-ink" : "text-mute"}`}

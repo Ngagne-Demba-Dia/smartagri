@@ -84,7 +84,7 @@ export function IrrigationPlanView() {
   const fieldNames = useMemo(() => new Map(fields.fields.map((f) => [f.id, f.name])), [fields.fields]);
 
   return (
-    <ModuleShell title={tm("irrigationPlan")} description={t("description")} version="V1_1">
+    <ModuleShell title={tm("irrigationPlan")} description={t("description")} version="MVP">
       <QueryState
         isPending={farms.isPending}
         error={farms.error}

@@ -1,0 +1,57 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "crops_senegal",
+  "file_name": "fao56_crop_coefficients_daily.parquet",
+  "relative_path": "data/real/crops_senegal/fao56_crop_coefficients_daily.parquet",
+  "source_id": "fao56_tables",
+  "owner": "FAO-56 (Allen et al., 1998) tel qu'encodé dans backend/app/services/agronomy.py",
+  "licence": "Référence scientifique publiée",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://www.fao.org/3/x0490e/x0490e00.htm",
+  "description": "Courbe Kc journalière par culture maraîchère, générée par le code du backend (aucune saisie manuelle). Kc non ajustés au climat local.",
+  "fetched_at_utc": "2026-11-16T08:44:14+00:00",
+  "sha256": "669bf1e8fab1e439a46450561b5552ef7b3dde2c90993c4a8cd89f7f095adccf",
+  "size_bytes": 9653,
+  "rows": 900,
+  "columns": [
+    "crop_code",
+    "crop_name_fr",
+    "day_after_planting",
+    "season_days",
+    "growth_stage",
+    "kc",
+    "kc_ini",
+    "kc_mid",
+    "kc_end"
+  ],
+  "dtypes": {
+    "crop_code": "str",
+    "crop_name_fr": "str",
+    "day_after_planting": "int64",
+    "season_days": "int64",
+    "growth_stage": "str",
+    "kc": "float64",
+    "kc_ini": "float64",
+    "kc_mid": "float64",
+    "kc_end": "float64"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "crop_code",
+      "day_after_planting"
+    ]
+  },
+  "temporal_coverage": {
+    "type": "static_or_not_applicable"
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": null,
+    "note": "table non spatialisée par cellule"
+  }
+}

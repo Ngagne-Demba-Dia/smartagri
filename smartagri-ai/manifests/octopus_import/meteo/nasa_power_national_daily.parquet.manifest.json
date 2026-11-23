@@ -1,0 +1,91 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "meteo",
+  "file_name": "nasa_power_national_daily.parquet",
+  "relative_path": "data/real/meteo/nasa_power_national_daily.parquet",
+  "source_id": "nasa_power",
+  "owner": "NASA Langley Research Center — POWER (MERRA-2 / CERES), maille native 0,5° × 0,625°",
+  "licence": "NASA Open Data (libre, citation POWER requise)",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://power.larc.nasa.gov/api/temporal/daily/point?community=AG",
+  "description": "Météo quotidienne observée/réanalysée, toutes les mailles NASA POWER du Sénégal, 2015-2026.",
+  "fetched_at_utc": "2026-11-14T19:58:47+00:00",
+  "sha256": "45d69fbed8e0f43e044090b8b921e7a2a28f9be6abdce6c8631d3c4a422ae5ce",
+  "size_bytes": 10849340,
+  "rows": 329232,
+  "columns": [
+    "power_cell_id",
+    "lat",
+    "lon",
+    "date",
+    "t_min_c",
+    "t_max_c",
+    "t_mean_c",
+    "rh_mean_pct",
+    "wind_2m_ms",
+    "solar_rad_mj_m2",
+    "pressure_hpa",
+    "rain_mm"
+  ],
+  "dtypes": {
+    "power_cell_id": "str",
+    "lat": "float64",
+    "lon": "float64",
+    "date": "datetime64[us]",
+    "t_min_c": "float64",
+    "t_max_c": "float64",
+    "t_mean_c": "float64",
+    "rh_mean_pct": "float64",
+    "wind_2m_ms": "float64",
+    "solar_rad_mj_m2": "float64",
+    "pressure_hpa": "float64",
+    "rain_mm": "float64"
+  },
+  "quality": {
+    "completeness_pct": 99.998,
+    "null_cells_by_column": {
+      "solar_rad_mj_m2": 76
+    },
+    "duplicate_key_rows": 0,
+    "key": [
+      "power_cell_id",
+      "date"
+    ],
+    "checks": {
+      "tmin_le_tmax_share_pct": 100.0,
+      "rh_in_0_100_share_pct": 100.0,
+      "rain_non_negative_share_pct": 100.0,
+      "t_max_range_c": [
+        18.36,
+        47.46
+      ],
+      "solar_rad_range_mj": [
+        1.21,
+        29.68
+      ]
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2015-01-01 00:00:00",
+    "max": "2026-11-10 00:00:00",
+    "unique_periods": 4332,
+    "expected_days": 4332,
+    "missing_days": 0
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "power",
+    "cells_present": 76,
+    "cells_expected": 76,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.5,
+    "lat_max": 16.5,
+    "lon_min": -17.5,
+    "lon_max": -11.25
+  }
+}

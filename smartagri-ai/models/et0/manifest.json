@@ -1,0 +1,38 @@
+{
+  "execution_id": "py_ae3a0c309b444ac1b59ce131d74d9230",
+  "title": "A2 ET0 Forecast — LightGBM + XGBoost + CatBoost",
+  "source": "derived",
+  "synthetic": false,
+  "goal": "attaque ce des classes A faisables et qu'il yai suffisament de donnée pour ça? si oui fais le tout ses 6 modeles",
+  "seed": 42,
+  "assumptions": [],
+  "created_at": 1794858153.6281354,
+  "inputs": [
+    {
+      "file_id": "pf_8cffb44cb1be493c9a5fd829",
+      "sha256": "134d1a2e216a4b0a39311b09e2ef6c753c367ab06f6ba5ae222a10fe4d3e6d2d"
+    }
+  ],
+  "code_sha256": "d5e386c30025a5dfc4ced5977ad07ce10300258279c92ff53862cbfdf87756f7",
+  "validation": "Program completed, assertions passed; not independently scientifically validated",
+  "outputs": [
+    {
+      "name": "et0_forecast_all_metrics.csv",
+      "description": "ET0 Forecast metrics: 3 models × 5 folds",
+      "bytes": 713,
+      "sha256": "4589e17f20c328268505f7583712681dd85b8b68dfab680997bb4f71444cac5e"
+    },
+    {
+      "name": "et0_forecast_feature_importance.csv",
+      "description": "ET0 Forecast feature importance LGB/XGB/CB",
+      "bytes": 1026,
+      "sha256": "0a932c844933154d3f417f310dfd1add2498c526141ad6551f6fb6480590b4ad"
+    },
+    {
+      "name": "et0_forecast_group_errors.csv",
+      "description": "ET0 Forecast errors per power_cell_id",
+      "bytes": 3066,
+      "sha256": "7594817d9c9b1b72853cc8305fe0aabfc85d0445fa479b3f7bde5e09371e99c1"
+    }
+  ]
+}

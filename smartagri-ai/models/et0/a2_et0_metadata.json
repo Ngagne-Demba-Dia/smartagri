@@ -1,0 +1,27 @@
+{
+  "champion": "CatBoost",
+  "r2": 0.9997,
+  "rmse": 0.0387,
+  "mae": 0.0281,
+  "rows": 329156,
+  "features": [
+    "t_min_c",
+    "t_max_c",
+    "t_mean_c",
+    "rh_mean_pct",
+    "wind_2m_ms",
+    "solar_rad_mj_m2",
+    "pressure_hpa",
+    "rain_mm",
+    "ra_mj_m2",
+    "et0_hargreaves_mm",
+    "doy_sin",
+    "doy_cos",
+    "month",
+    "t_range_c",
+    "lat",
+    "lon"
+  ],
+  "artifact": "models/et0/a2_et0_champion.cbm",
+  "elapsed_s": 1272.0
+}

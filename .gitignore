@@ -30,3 +30,11 @@ checkpoints/
 # OS
 .DS_Store
 Thumbs.db
+
+# Dépendances locales et caches de build
+smartagri-ai/.pydeps/
+catboost_info/
+.hyperframes/
+smartagri-ai/datasets/class_b/
+livrables/video/film/renders/
+livrables/video/showcase/renders/

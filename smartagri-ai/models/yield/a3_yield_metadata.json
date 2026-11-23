@@ -1,0 +1,111 @@
+{
+  "champion": "CatBoost",
+  "rows": 9894,
+  "features": [
+    "year",
+    "year_norm",
+    "decade",
+    "log_area_ha",
+    "crop_enc",
+    "admin1_enc",
+    "admin2_enc",
+    "season_enc"
+  ],
+  "metrics_cv5": {
+    "CatBoost": {
+      "r2": 0.7832,
+      "rmse": 0.6596,
+      "mae": 0.2987
+    },
+    "LightGBM": {
+      "r2": 0.7495,
+      "rmse": 0.7091,
+      "mae": 0.3111
+    },
+    "XGBoost": {
+      "r2": 0.7806,
+      "rmse": 0.6636,
+      "mae": 0.282
+    }
+  },
+  "encoders": {
+    "crop": {
+      "Cassava": 0,
+      "Cowpea": 1,
+      "Fonio": 2,
+      "Groundnuts (In Shell)": 3,
+      "Maize": 4,
+      "Millet": 5,
+      "Rice": 6,
+      "Sesame Seed": 7,
+      "Sorghum": 8,
+      "Sweet Potatoes": 9
+    },
+    "admin1": {
+      "Dakar": 0,
+      "Diourbel": 1,
+      "Fatick": 2,
+      "Kaffrine": 3,
+      "Kaolack": 4,
+      "Kedougou": 5,
+      "Kolda": 6,
+      "Louga": 7,
+      "Matam": 8,
+      "Saint-Louis": 9,
+      "Sedhiou": 10,
+      "Tambacounda": 11,
+      "Thies": 12,
+      "Ziguinchor": 13
+    },
+    "admin2": {
+      "Bakel": 0,
+      "Bambey": 1,
+      "Bignona": 2,
+      "Birkelane": 3,
+      "Bounkiling": 4,
+      "Dagana": 5,
+      "Dakar": 6,
+      "Diourbel": 7,
+      "Fatick": 8,
+      "Foundiougne": 9,
+      "Gossas": 10,
+      "Goudiry": 11,
+      "Goudomp": 12,
+      "Guinguineo": 13,
+      "Kaffrine": 14,
+      "Kanel": 15,
+      "Kaolack": 16,
+      "Kebemer": 17,
+      "Kedougou": 18,
+      "Kolda": 19,
+      "Koumpentoum": 20,
+      "Koungheul": 21,
+      "Linguere": 22,
+      "Louga": 23,
+      "Malem Hoddar": 24,
+      "Matam": 25,
+      "Mbacke": 26,
+      "Mbour": 27,
+      "Medina Yoro Foulah": 28,
+      "Nioro du Rip": 29,
+      "Oussouye": 30,
+      "Podor": 31,
+      "Ranerou Ferlo": 32,
+      "Rufisque": 33,
+      "Saint-Louis": 34,
+      "Salemata": 35,
+      "Saraya": 36,
+      "Sedhiou": 37,
+      "Tambacounda": 38,
+      "Thies": 39,
+      "Tivaouane": 40,
+      "Velingara": 41,
+      "Ziguinchor": 42
+    },
+    "season": {
+      "Main": 0,
+      "Main-off": 1
+    }
+  },
+  "train_seconds": 115.99
+}

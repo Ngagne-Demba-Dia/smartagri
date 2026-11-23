@@ -18,6 +18,40 @@ import { TimeAgo } from "./TimeAgo";
 const STATE_TONE: Record<ProvenanceState, Tone> = { fresh: "ok", stale: "warn", fallback: "warn" };
 const PERCENT = 100;
 
+const MODEL_LABELS_FR: Readonly<Record<string, string>> = {
+  field_boundary: "Cartographie parcellaire",
+  crop_type: "Classification des cultures",
+  salinity: "Indice de salinité",
+  fao56_balance: "Bilan hydrique FAO-56",
+  irrigation_fao56: "Bilan hydrique FAO-56",
+  irr_water_balance: "Bilan hydrique FAO-56",
+  irr_need_24h: "Besoin hydrique 24 h",
+  npk_rules: "Bilan minéral NPK",
+  fert_reco: "Recommandation NPK",
+  fertility_rules: "Règles de fertilité NPK",
+  pest_degree_days: "Risque bioclimatique ravageurs",
+  risk_rules: "Évaluation phytosanitaire",
+  anomaly_rules: "Diagnostic des capteurs",
+  phenology_stage: "Cycle phénologique",
+  yield_gbm: "Modèle de rendement",
+  water_savings: "Bilan d’économie d’eau",
+  price_forecast: "Prévision des cours",
+  soil_forecast: "Trajectoire d’humidité du sol",
+  device_health: "Surveillance matérielle IoT",
+  kit_parameters: "Paramètres agronomiques",
+  irrigation_plan: "Planification d’arrosage",
+  vegetation: "Indice foliaire NDVI",
+  trap_counts: "Comptage des pièges",
+  disease_diagnosis: "Analyse foliaire par vision",
+  weather: "Prévision météorologique",
+  recommendations: "Conseiller agronomique",
+};
+
+/** Traduit un identifiant technique de modèle en libellé métier lisible. */
+export function humanModelName(name: string): string {
+  return MODEL_LABELS_FR[name] ?? name.replace(/_/g, " ");
+}
+
 /** Confiance telle que l'écran a le droit de la montrer (doc 16 §6.3) : jamais un % non calibré. */
 export function ConfidenceText({ confidence, unit = "" }: { confidence: Confidence; unit?: string }) {
   const tc = useTranslations("provenance.confidence");
@@ -47,7 +81,7 @@ export function ProvenanceNote({ provenance, unit }: { provenance: Provenance | 
       <div className="flex flex-wrap items-center gap-2">
         <StatusTag tone={STATE_TONE[state]} label={t(`state.${state}`)} />
         <span className="font-semibold">
-          {t("model", { name: provenance.model_name, version: provenance.model_version })}
+          {t("model", { name: humanModelName(provenance.model_name), version: provenance.model_version })}
         </span>
         <span className="chip">{t(`source.${provenance.source}`)}</span>
       </div>
@@ -64,10 +98,14 @@ export function ProvenanceNote({ provenance, unit }: { provenance: Provenance | 
             </dd>
           </>
         ) : null}
-        <dt className="text-mute">{t("confidenceLabel")}</dt>
-        <dd>
-          <ConfidenceText confidence={provenance.confidence} unit={unit} />
-        </dd>
+        {provenance.confidence.kind !== "none" ? (
+          <>
+            <dt className="text-mute">{t("confidenceLabel")}</dt>
+            <dd>
+              <ConfidenceText confidence={provenance.confidence} unit={unit} />
+            </dd>
+          </>
+        ) : null}
         {provenance.fallback_step > 0 ? (
           <>
             <dt className="text-mute">{t("fallbackLabel")}</dt>

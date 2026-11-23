@@ -58,13 +58,21 @@ DEMO_SLUG_TO_UUID: dict[str, uuid.UUID] = {
     "eq-mboro-pump": uuid.UUID("00000000-0000-4000-8000-000000000601"),
 }
 
+_DEMO_SLUGS_ENABLED = True
+
+
+def set_demo_slugs_enabled(enabled: bool) -> None:
+    """Désactive la résolution des slugs de démo en staging/prod."""
+    global _DEMO_SLUGS_ENABLED
+    _DEMO_SLUGS_ENABLED = bool(enabled)
+
 
 def parse_uuid(value: str | uuid.UUID, resource: str = "Ressource") -> uuid.UUID:
     """Un identifiant mal formé est traité comme introuvable (même réponse qu'un identifiant étranger)."""
     if isinstance(value, uuid.UUID):
         return value
     text = str(value).strip()
-    if text in DEMO_SLUG_TO_UUID:
+    if _DEMO_SLUGS_ENABLED and text in DEMO_SLUG_TO_UUID:
         return DEMO_SLUG_TO_UUID[text]
     try:
         return uuid.UUID(text)

@@ -110,7 +110,15 @@ AGRI_SERVICES=irrigation_need=real,weather=real,recommendations=real,kit_paramet
 
 ---
 
-## 4. Frontières avec les phases ultérieures (IA, Données, Mobile, Langues)
+## 4. Phase IA Réelle — Data Lake National Prêt pour OctOpus (`IA-REAL-03`)
+
+- **Changement d'échelle** : le Data Lake réel [`plateforme/ml/data/real/`](../ml/data/real/) couvre désormais **tout le Sénégal (14/14 régions)** sur une grille nationale unique à **0,05° (6 945 cellules)** indexée par `(cell_id, power_cell_id)` (76 mailles NASA POWER), permettant à tout futur kit installé n'importe où au Sénégal d'être rattaché sans dépendance aux sites pilotes.
+- **Volume & Sources Niveau A téléchargées (0 donnée synthétique, 0 modèle entraîné)** : **23 fichiers Parquet** (**30 066 374 lignes**, **162,58 Mo**) couvrant pluie quotidienne CHIRPS (2015–2026), météo et $ET_0$ FAO-56 NASA POWER (2015–2026), humidité du sol modélisée GEOS, pédologie nationale iSDAsoil + contrôle croisé SoilGrids, occupation du sol ESA WorldCover 10 m, catalogue Sentinel-2 L2A (20 722 scènes) + composites NDVI 2025, rendements FAOSTAT (1961–2024) et prix WFP/VAM sur 79 marchés.
+- **Validation spatiale & instantané OctOpus** : **Mboro, Potou et Richard-Toll** sont isolés comme zones de validation spatiale (`validation_zone`). Le premier instantané national pseudonymisé ([`octopus/soil_nowcast_proxy_national/v=20261114-natl01/`](../ml/data/curated/octopus/soil_nowcast_proxy_national/v=20261114-natl01/)) et ses deux holdouts locaux (`temporal_2026` et `spatial_validation_zones`) sont générés et audités dans [`docs/45_real_data_lake_ready.md`](../docs/45_real_data_lake_ready.md) et [`docs/46_real_data_enrichment.md`](../docs/46_real_data_enrichment.md).
+
+---
+
+## 5. Frontières avec les phases ultérieures (IA, Données, Mobile, Langues)
 
 Voir le rapport détaillé [`docs/39_cloture_web_complete.md`](../docs/39_cloture_web_complete.md) pour la répartition complète :
 - **Ce qui dépend de l'IA (`agriml` / OctOpus)** : entraînement et export des bundles ONNX/LightGBM dans `ml/artifacts/` (`soil_nowcast`, `irr_need_24h`, `vis_disease`, `anomaly_ml`, etc.).

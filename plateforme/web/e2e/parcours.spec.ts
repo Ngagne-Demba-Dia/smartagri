@@ -73,6 +73,8 @@ test.describe("parcours principaux", () => {
   });
 
   test("rapports : indicateurs sur une période et plage invalide refusée", async ({ page }) => {
+    await page.getByRole("button", { name: "Se déconnecter" }).click();
+    await login(page, "cooperative@demo.sn");
     await open(page, "rapports", "Rapports");
     await expect(page.getByText("Mesures reçues").first()).toBeVisible();
     await page.getByLabel("Du", { exact: true }).fill("2099-12-31");

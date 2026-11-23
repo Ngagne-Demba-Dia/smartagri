@@ -21,8 +21,10 @@ export function ProvenanceCapsules({ provenance, unit }: { provenance: Provenanc
   return (
     <div role="group" aria-label={t("title")} className="flex flex-wrap items-center gap-1.5">
       <StatusTag tone={STATE_TONE[state]} label={t(`state.${state}`)} />
-      <span className="chip">{t("model", { name: provenance.model_name, version: provenance.model_version })}</span>
-      <ConfidenceBadge confidence={provenance.confidence} unit={unit} />
+      <span className="chip">{t(`source.${provenance.source}`)}</span>
+      {provenance.confidence.kind !== "none" ? (
+        <ConfidenceBadge confidence={provenance.confidence} unit={unit} />
+      ) : null}
     </div>
   );
 }

@@ -41,7 +41,7 @@ function HealthCards({ health }: { health: DeviceHealth }) {
           </div>
         ) : null}
       </div>
-      <ul className="flex flex-col gap-2">
+      <ul className="m-0 grid list-none gap-2.5 p-0 sm:grid-cols-2 lg:grid-cols-3">
         {health.sensors.map((s) => (
           <li key={s.sensor} className="card flex flex-wrap items-center justify-between gap-2">
             <span className="font-semibold">{t(`sensors.${s.sensor}`)}</span>

@@ -1,0 +1,15 @@
+services:
+  smartagri-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartagri-ai-runtime
+    ports:
+      - "8001:8001"
+    mem_limit: 4g
+    volumes:
+      - ./datasets:/app/datasets:ro
+      - ./models:/app/models:ro
+      - ./rag/embeddings:/app/rag/embeddings
+      - ./data:/app/data
+    restart: unless-stopped

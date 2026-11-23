@@ -1,0 +1,466 @@
+# Catalogue des JEUX DE DONNÉES du lac (raw → curated → features). Confidentiel - réservé aux partenaires de travail.
+# Contrôlé par `python -m agriml.catalog check` (voir ml/catalog/README.md). Champs :
+#   zone            raw (immuable, entrées = sources) | curated (entrées = raw ou curated)
+#                   | features (entrées = curated ou features)
+#   available       première version où le jeu existe : MVP | V1.1 | V2 | V3
+#   classification  publique | interne | confidentielle | personnelle
+#   minimised       pseudonymisation + coordonnées arrondies + champs libres retirés : direct → indirect
+#   aggregated      agrégation k-anonyme (k ≥ 10 exploitations par cellule) : → none
+#   research_only   jeu soumis à une licence non commerciale : jamais obligatoire ni recommandé pour un modèle
+#   holdout         un holdout est conservé dans curated/holdout/<jeu>/ et n'est jamais exporté
+#   octopus.policy  forbidden (défaut) | public (aucune donnée personnelle) | pseudonymised (features + holdout)
+# La donnée personnelle n'est PAS déclarée : elle est calculée depuis les sources amont (règle 3).
+# Volumes : hypothèse de cible 10 000 kits / 20 000 parcelles, pilote 100 kits ; Parquet zstd sauf mention.
+
+datasets:
+  # ================================================================== RAW (immuable, jamais exporté)
+  # ---------------------------------------------------------------- IoT (kit SmartAgri92)
+  - {id: raw.iot.telemetry, zone: raw, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [kit_telemetry, kit_flowmeter, kit_power, kit_soil_extended, kit_microclimate],
+     content: "Messages telemetry.v1 tels que reçus (MQTT → ingestor), y compris capteurs ajoutés en V1.1+",
+     grain: "kit × 5 min", refresh: "flux continu", retention: "3 ans, puis agrégats horaires seulement",
+     volume: "10 000 kits × 288 msg/j = 2,9 M lignes/j ≈ 1,05 G lignes/an ≈ 20–40 Go/an ; pilote 100 kits = 29 k lignes/j"}
+  - {id: raw.iot.events, zone: raw, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [kit_events],
+     content: "Événements du kit : démarrage/arrêt pompe, défauts, redémarrages, OTA ; actions depuis la page locale
+       ou l'app (seuils modifiés, mode auto/manuel, commande manuelle, alerte acquittée, analyse lancée,
+       jeu de paramètres appliqué), avec déclencheur, origine et param_version",
+     grain: "événement", refresh: "flux continu", retention: "3 ans",
+     volume: "≈ 20 évén./kit/j, dont 2–5 actions ⇒ 73 M lignes/an à 10 000 kits ≈ 1–2 Go/an"}
+  - {id: raw.iot.devices, zone: raw, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [kit_config], content: "Inventaire et configuration : firmware, seuils, étalonnages, rattachement parcelle",
+     grain: "kit × version de configuration", refresh: "à chaque changement", retention: "durée de vie du kit + 1 an",
+     volume: "10 000 kits × ~20 versions ≈ 200 k lignes, < 100 Mo"}
+  - {id: raw.images.espcam, zone: raw, domain: iot, available: V2, classification: confidentielle,
+     inputs: [kit_espcam], content: "Photos ESP32-CAM du couvert ou du piège (politique de volume : 4/j, pas horaire)",
+     grain: "photo", refresh: "4 photos/j/kit équipé", retention: "1 an, sauf images étiquetées (5 ans)",
+     volume: "500 kits × 4 photos/j × 100 Ko ≈ 75 Go/an ; horaire sur 10 000 kits = 8,8 To/an (à proscrire)"}
+  - {id: raw.images.field_photos, zone: raw, domain: phyto, available: MVP, classification: personnelle,
+     inputs: [farmer_photos], content: "Photos téléphone (symptômes, couvert) avec EXIF et GPS d'origine",
+     grain: "photo", refresh: "à la demande (app mobile)", retention: "5 ans avec consentement, sinon 90 j",
+     volume: "50 k–200 k photos/an × 1–2,5 Mo ≈ 50–500 Go/an"}
+  - {id: raw.images.drone, zone: raw, domain: drone, available: V3, classification: confidentielle,
+     inputs: [drone_rgb, drone_multispectral, drone_thermal], content: "Images de vol brutes RGB, multispectrales, thermiques",
+     grain: "vol × image", refresh: "campagne (2–4 vols/saison/site)", retention: "2 ans, orthomosaïques conservées",
+     volume: "2–5 Go par vol de 50 ha ⇒ 20 sites × 4 vols × 4 Go ≈ 320 Go/an"}
+  # ---------------------------------------------------------------- Météo
+  - {id: raw.meteo.forecasts, zone: raw, domain: meteo, available: MVP, classification: interne,
+     inputs: [open_meteo, ecmwf_open_data, noaa_gfs], content: "Prévisions brutes avec heure d'émission (GRIB2 / JSON)",
+     grain: "émission × échéance × maille ou point", refresh: "4 émissions/j", retention: "5 ans (rejeu as-of)",
+     volume: "IFS 0,25° Sénégal 450 mailles × 4 émissions × 61 échéances × 15 var. ≈ 2,4 Go/an ; + GFS et points ≈ 5 Go/an"}
+  - {id: raw.meteo.reanalysis, zone: raw, domain: meteo, available: MVP, classification: publique,
+     inputs: [era5, era5_land, agera5, nasa_power], content: "Réanalyses et agroclimat (températures, Rs, vent, HR, ET)",
+     grain: "maille × heure ou jour", refresh: "quotidien (latence ERA5 ~5 j)", retention: "illimitée",
+     volume: "ERA5-Land 0,1° : 2 772 mailles × 8 760 h × 10 var. × 4 o ≈ 1 Go/an ; historique 1991+ ≈ 35 Go"}
+  - {id: raw.meteo.rain_satellite, zone: raw, domain: meteo, available: V1.1, classification: publique,
+     inputs: [chirps, tamsat, imerg], content: "Pluie estimée par satellite (journalier, pentadaire)",
+     grain: "maille × jour", refresh: "quotidien (IMERG early) à mensuel (CHIRPS final)", retention: "illimitée",
+     volume: "CHIRPS 0,05° : 11 k mailles × 365 j ≈ 16 Mo/an ; 1981+ < 1 Go"}
+  - {id: raw.meteo.radiation, zone: raw, domain: meteo, available: V2, classification: publique,
+     inputs: [cmsaf_sarah], content: "Rayonnement solaire de surface satellitaire", grain: "maille × jour",
+     refresh: "mensuel", retention: "illimitée", volume: "0,05° journalier ≈ 20 Mo/an"}
+  - {id: raw.meteo.stations, zone: raw, domain: meteo, available: V2, classification: confidentielle,
+     inputs: [tahmo, anacim_stations], content: "Observations de stations partenaires (sous convention)",
+     grain: "station × 5–60 min", refresh: "horaire à quotidien", retention: "selon convention (défaut 5 ans)",
+     volume: "100 stations × 288 obs/j ≈ 10 M lignes/an ≈ 0,3 Go/an"}
+  - {id: raw.meteo.seasonal, zone: raw, domain: meteo, available: V3, classification: confidentielle,
+     inputs: [agrhymet_presass], content: "Prévisions saisonnières (terciles pluie, dates de démarrage, séquences sèches)",
+     grain: "zone × saison", refresh: "annuel (mai) + mises à jour", retention: "illimitée", volume: "< 10 Mo/an"}
+  # ---------------------------------------------------------------- Sols
+  - {id: raw.sols.grids, zone: raw, domain: sols, available: MVP, classification: publique,
+     inputs: [soilgrids, isdasoil, hwsd], content: "Cartes de sols mondiales/africaines (texture, pH, MO, N, P, K, CEC)",
+     grain: "pixel 30–250 m × profondeur", refresh: "à chaque nouvelle version (≈ annuelle)", retention: "illimitée",
+     volume: "iSDAsoil 30 m Sénégal ≈ 5–10 Go ; SoilGrids 250 m ≈ 0,4 Go ; HWSD < 1 Go"}
+  - {id: raw.sols.national, zone: raw, domain: sols, available: V2, classification: confidentielle,
+     inputs: [inp_soil_map], content: "Carte pédologique et profils nationaux (sous convention)", grain: "polygone / profil",
+     refresh: "ponctuel", retention: "selon convention", volume: "< 1 Go"}
+  - {id: raw.sols.lab, zone: raw, domain: sols, available: V1.1, classification: confidentielle,
+     inputs: [soil_lab_analyses, soil_field_kits], content: "Analyses de laboratoire et kits terrain géoréférencés",
+     grain: "échantillon × profondeur", refresh: "campagne", retention: "illimitée (référence d'étalonnage)",
+     volume: "150–300 échantillons au pilote, puis ≈ 1 000/an ; < 10 Mo"}
+  # ---------------------------------------------------------------- Satellite
+  - {id: raw.satellite.optical, zone: raw, domain: satellite, available: V2, classification: publique,
+     inputs: [sentinel2, landsat, hls], content: "Scènes L2A optiques (références STAC, découpes COG sur les AOI)",
+     grain: "scène × bande", refresh: "à chaque passage (2–5 j)", retention: "découpes AOI 3 ans (re-téléchargeables)",
+     volume: "AOI pilote 5 000 km² ≈ 50 Go/an de découpes ; pas de copie des tuiles complètes"}
+  - {id: raw.satellite.sar, zone: raw, domain: satellite, available: V2, classification: publique,
+     inputs: [sentinel1], content: "Sentinel-1 GRD/RTC (VV, VH), insensible aux nuages", grain: "scène",
+     refresh: "6–12 j", retention: "découpes AOI 3 ans", volume: "AOI pilote ≈ 30 Go/an"}
+  - {id: raw.satellite.coarse, zone: raw, domain: satellite, available: V2, classification: publique,
+     inputs: [modis_viirs, wapor], content: "Produits basse résolution (NDVI 250 m, ETa, biomasse)", grain: "pixel × 8–16 j",
+     refresh: "8–16 j", retention: "illimitée", volume: "Sénégal ≈ 2 Go/an"}
+  - {id: raw.satellite.deafrica, zone: raw, domain: satellite, available: V2, classification: publique,
+     inputs: [deafrica], content: "Produits Digital Earth Africa (géomédianes, eau, masques cultures)",
+     grain: "pixel × produit", refresh: "trimestriel à annuel", retention: "illimitée", volume: "≈ 5 Go/an sur les AOI"}
+  - {id: raw.satellite.planet, zone: raw, domain: satellite, available: V3, classification: confidentielle,
+     inputs: [planetscope], content: "PlanetScope 3 m (sous licence, zones à forte valeur seulement)", grain: "scène",
+     refresh: "quotidien", retention: "selon licence", volume: "500 km² × 100 dates × 30 Mo/km²/100 ≈ 15 Go/an"}
+  # ---------------------------------------------------------------- Phytosanitaire
+  - {id: raw.phyto.labels, zone: raw, domain: phyto, available: MVP, classification: confidentielle,
+     inputs: [advisor_diagnoses], content: "Diagnostics des conseillers (étiquettes d'images et d'observations)",
+     grain: "diagnostic", refresh: "à la demande", retention: "illimitée (vérité terrain)",
+     volume: "objectif ≥ 5 000 diagnostics validés à V2"}
+  - {id: raw.phyto.field_reports, zone: raw, domain: phyto, available: V1.1, classification: confidentielle,
+     inputs: [scouting_reports, treatments_log], content: "Relevés de piégeage, observations, traitements appliqués",
+     grain: "relevé", refresh: "hebdomadaire en saison", retention: "illimitée", volume: "≈ 100 k relevés/an"}
+  - {id: raw.phyto.external_alerts, zone: raw, domain: phyto, available: V2, classification: confidentielle,
+     inputs: [dpv_alerts, famews, fao_locust], content: "Alertes officielles et réseaux de surveillance (chenille, criquet)",
+     grain: "alerte × zone", refresh: "hebdomadaire", retention: "illimitée", volume: "< 50 Mo/an"}
+  - {id: raw.phyto.reference, zone: raw, domain: phyto, available: MVP, classification: interne,
+     inputs: [csp_pesticides, pest_biology_reference], content: "Liste CSP des produits homologués, biologie des ravageurs",
+     grain: "produit / espèce", refresh: "à chaque publication CSP (≈ semestriel)", retention: "toutes versions",
+     volume: "< 10 Mo"}
+  - {id: raw.phyto.public_images, zone: raw, domain: phyto, available: V2, classification: publique,
+     inputs: [plantvillage, plantdoc], content: "Jeux d'images publics (pré-entraînement, hors conditions sénégalaises)",
+     grain: "image", refresh: "ponctuel", retention: "illimitée", volume: "PlantVillage ≈ 54 k images ≈ 1–2 Go ; PlantDoc ≈ 2,6 k"}
+  - {id: raw.phyto.gbif, zone: raw, domain: phyto, available: V3, classification: publique,
+     inputs: [gbif], content: "Occurrences géoréférencées d'espèces nuisibles (licence par jeu)", grain: "occurrence",
+     refresh: "trimestriel", retention: "illimitée", volume: "< 100 Mo"}
+  # ---------------------------------------------------------------- Agronomie
+  - {id: raw.agronomie.cycles, zone: raw, domain: agronomie, available: MVP, classification: confidentielle,
+     inputs: [crop_cycles_user, operations_log], content: "Déclarations : culture, variété, semis, opérations, irrigation manuelle",
+     grain: "parcelle × campagne / opération", refresh: "à la saisie", retention: "illimitée (historique parcelle)",
+     volume: "20 000 parcelles × 2 campagnes × 30 opérations ≈ 1,2 M lignes/an"}
+  - {id: raw.agronomie.reference, zone: raw, domain: agronomie, available: MVP, classification: publique,
+     inputs: [fao56_tables, fao_crop_calendar], content: "Kc, durées de stades, profondeur racinaire, calendriers",
+     grain: "culture × stade × zone", refresh: "ponctuel", retention: "toutes versions", volume: "< 5 Mo"}
+  - {id: raw.agronomie.partner_reference, zone: raw, domain: agronomie, available: V1.1, classification: confidentielle,
+     inputs: [isra_cdh_references], content: "Références locales ISRA/CDH : variétés, doses, rendements potentiels",
+     grain: "culture × variété × zone", refresh: "annuel", retention: "selon convention", volume: "< 10 Mo"}
+  - {id: raw.agronomie.crop_models, zone: raw, domain: agronomie, available: V3, classification: confidentielle,
+     inputs: [aquacrop, sarra], content: "Paramètres et sorties de modèles de culture (AquaCrop, SARRA-Py/O)",
+     grain: "culture × site × scénario", refresh: "annuel", retention: "illimitée", volume: "< 1 Go"}
+  - {id: raw.agronomie.yield_gap, zone: raw, domain: agronomie, available: V3, classification: interne,
+     inputs: [gyga], research_only: true,
+     content: "Rendements potentiels et écarts YPYGA (CC BY-NC-SA) : étalonnage et comparaison uniquement",
+     grain: "culture × zone climatique", refresh: "ponctuel", retention: "durée du projet de recherche",
+     volume: "< 50 Mo"}
+  # ---------------------------------------------------------------- Économie
+  - {id: raw.economie.market_prices, zone: raw, domain: economie, available: V2, classification: confidentielle,
+     inputs: [sim_csa, arm_prices, fews_net, giews_fpma], content: "Prix de gros et de détail par marché et produit",
+     grain: "marché × produit × semaine", refresh: "hebdomadaire", retention: "illimitée",
+     volume: "50 marchés × 20 produits × 52 sem. = 52 k lignes/an"}
+  - {id: raw.economie.inputs_costs, zone: raw, domain: economie, available: V2, classification: interne,
+     inputs: [input_prices_survey, energy_tariffs, logistics_costs], content: "Prix des intrants, tarifs énergie, coûts de transport",
+     grain: "intrant × zone × mois", refresh: "mensuel", retention: "illimitée", volume: "< 10 Mo/an"}
+  - {id: raw.economie.farm_accounts, zone: raw, domain: economie, available: V2, classification: personnelle,
+     inputs: [farm_accounts], content: "Comptes d'exploitation saisis : dépenses, ventes, main-d'œuvre",
+     grain: "exploitation × écriture", refresh: "à la saisie", retention: "10 ans (pièces comptables) ou retrait du consentement",
+     volume: "5 000 exploitations × 200 écritures/an = 1 M lignes/an"}
+  - {id: raw.economie.payments, zone: raw, domain: economie, available: V2, classification: personnelle,
+     inputs: [payments], content: "Abonnements et paiements mobile money (statut, montant, échéance)",
+     grain: "transaction", refresh: "flux continu", retention: "10 ans (obligation comptable)",
+     volume: "10 000 abonnés × 12 paiements/an = 120 k lignes/an"}
+  - {id: raw.economie.finance_partners, zone: raw, domain: economie, available: V3, classification: personnelle,
+     inputs: [cnaas_insurance, mfi_credit_outcomes], content: "Sinistres d'assurance et remboursements de crédit (avec consentement)",
+     grain: "contrat × campagne", refresh: "campagne", retention: "durée du contrat + 5 ans",
+     volume: "≈ 5–20 k contrats/an"}
+  # ---------------------------------------------------------------- Géospatial
+  - {id: raw.geo.fields, zone: raw, domain: geo, available: MVP, classification: personnelle,
+     inputs: [user_field_boundaries], content: "Polygones de parcelles saisis ou dessinés, rattachés à l'exploitant",
+     grain: "parcelle × version", refresh: "à la saisie", retention: "durée du compte + 1 an",
+     volume: "20 000 polygones × 2 Ko ≈ 40 Mo"}
+  - {id: raw.geo.reference, zone: raw, domain: geo, available: MVP, classification: publique,
+     inputs: [geoboundaries, copernicus_dem, worldcover, jrc_gsw, hydrosheds],
+     content: "Limites administratives, MNT 30 m, occupation du sol 10 m, eaux de surface, bassins",
+     grain: "raster / vecteur", refresh: "à chaque version", retention: "toutes versions",
+     volume: "MNT GLO-30 ≈ 0,9 Go ; WorldCover ≈ 0,5–2 Go ; GSW ≈ 1 Go ; HydroSHEDS < 1 Go"}
+  - {id: raw.geo.official, zone: raw, domain: geo, available: V1.1, classification: confidentielle,
+     inputs: [ansd_admin], content: "Découpage administratif officiel ANSD (communes, villages)", grain: "polygone",
+     refresh: "à chaque recensement", retention: "toutes versions", volume: "< 500 Mo"}
+  - {id: raw.geo.osm, zone: raw, domain: geo, available: V2, classification: publique,
+     inputs: [osm], content: "Routes, marchés, points d'eau OSM (ODbL, partage à l'identique)", grain: "objet",
+     refresh: "mensuel", retention: "dernière version + 1", volume: "Sénégal ≈ 200 Mo (PBF)"}
+  - {id: raw.geo.open_field_boundaries, zone: raw, domain: geo, available: V3, classification: publique,
+     inputs: [field_boundaries_open], content: "Limites de parcelles ouvertes (jeux de référence, entraînement)",
+     grain: "polygone", refresh: "ponctuel", retention: "illimitée", volume: "< 1 Go"}
+  # ---------------------------------------------------------------- Eau
+  - {id: raw.eau.groundwater, zone: raw, domain: eau, available: V3, classification: confidentielle,
+     inputs: [dgpre_groundwater], content: "Piézométrie et qualité des nappes (DGPRE, sous convention)",
+     grain: "piézomètre × mois", refresh: "mensuel à annuel", retention: "illimitée", volume: "< 50 Mo"}
+  - {id: raw.eau.water_quality, zone: raw, domain: eau, available: V1.1, classification: confidentielle,
+     inputs: [irrigation_water_quality, well_inventory], content: "CE, pH, SAR des eaux d'irrigation ; inventaire des puits",
+     grain: "point d'eau × prélèvement", refresh: "campagne", retention: "illimitée", volume: "≈ 2 000 prélèvements/an, < 5 Mo"}
+  # ---------------------------------------------------------------- Historique
+  - {id: raw.historique.statistics, zone: raw, domain: historique, available: V1.1, classification: interne,
+     inputs: [faostat, dapsa_surveys, ansd_stats], content: "Statistiques agricoles nationales et régionales",
+     grain: "zone × culture × année", refresh: "annuel", retention: "illimitée", volume: "< 50 Mo"}
+  - {id: raw.historique.harvests, zone: raw, domain: historique, available: V1.1, classification: confidentielle,
+     inputs: [farmer_harvests], content: "Récoltes déclarées ou pesées (poids, surface récoltée, qualité)",
+     grain: "parcelle × campagne", refresh: "fin de campagne", retention: "illimitée",
+     volume: "20 000 parcelles × 2 campagnes = 40 k lignes/an"}
+  - {id: raw.historique.trials, zone: raw, domain: historique, available: V3, classification: confidentielle,
+     inputs: [research_trials], content: "Essais agronomiques (doses, variétés, rendements mesurés)", grain: "parcelle d'essai",
+     refresh: "annuel", retention: "selon convention", volume: "< 100 Mo"}
+  # ---------------------------------------------------------------- Utilisateurs
+  - {id: raw.utilisateurs.accounts, zone: raw, domain: utilisateurs, available: MVP, classification: personnelle,
+     inputs: [user_accounts, farm_registry, consents], content: "Comptes, exploitations, rôles, consentements horodatés",
+     grain: "compte / exploitation / consentement", refresh: "flux continu", retention: "durée du compte + 1 an ; preuves de consentement 5 ans",
+     volume: "10 000 comptes, < 100 Mo"}
+  - {id: raw.utilisateurs.feedback, zone: raw, domain: utilisateurs, available: MVP, classification: confidentielle,
+     inputs: [reco_feedback, app_usage], content: "Retour sur les recommandations (suivie, ignorée, note) et usage",
+     grain: "événement", refresh: "flux continu", retention: "2 ans", volume: "10 000 utilisateurs × 5 évén./j ≈ 18 M lignes/an"}
+  # ---------------------------------------------------------------- Langue et connaissances
+  - {id: raw.langue.assistant, zone: raw, domain: langue, available: MVP, classification: personnelle,
+     inputs: [assistant_logs], content: "Conversations de l'assistant (texte libre, pièces jointes)", grain: "message",
+     refresh: "flux continu", retention: "90 j bruts, puis extraits minimisés",
+     volume: "5 000 utilisateurs actifs × 100 conversations/an × 5 Ko ≈ 2,5 Go/an"}
+  - {id: raw.langue.speech, zone: raw, domain: langue, available: V2, classification: personnelle,
+     inputs: [speech_consented], content: "Enregistrements vocaux (wolof, pulaar, sérère) avec consentement explicite",
+     grain: "enregistrement", refresh: "campagnes de collecte", retention: "jusqu'au retrait du consentement, max 5 ans",
+     volume: "16 kHz mono 16 bits = 115 Mo/h ; 100 h ≈ 12 Go"}
+  - {id: raw.langue.public_speech, zone: raw, domain: langue, available: V2, classification: publique,
+     inputs: [common_voice, open_wolof_speech], content: "Corpus vocaux publics", grain: "enregistrement",
+     refresh: "à chaque version", retention: "illimitée", volume: "wolof public ≈ 10–40 h ≈ 1–5 Go"}
+  - {id: raw.connaissances.corpus, zone: raw, domain: connaissances, available: MVP, classification: interne,
+     inputs: [technical_sheets, agronomist_qa], content: "Fiches techniques et questions-réponses validées par agronomes",
+     grain: "document", refresh: "à chaque ajout", retention: "toutes versions", volume: "500–2 000 documents, < 2 Go"}
+
+  # ================================================================== CURATED (nettoyé, typé, daté)
+  - {id: iot.telemetry_clean, zone: curated, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [raw.iot.telemetry, raw.iot.devices],
+     content: "Dédoublonné, UTC, unités SI, plages physiques, drapeaux qualité, étalonnage par kit appliqué",
+     grain: "kit × 5 min", refresh: "micro-lots 5 min", retention: "3 ans", volume: "≈ raw (~1 G lignes/an à cible)"}
+  - {id: iot.telemetry_hourly, zone: curated, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [iot.telemetry_clean], content: "Agrégats horaires (moyenne, min, max, taux de complétude) par kit",
+     grain: "kit × heure", refresh: "horaire", retention: "illimitée",
+     volume: "10 000 × 24 × 365 = 87,6 M lignes/an ≈ 2–4 Go/an"}
+  - {id: iot.irrigation_events, zone: curated, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [raw.iot.events, iot.telemetry_clean],
+     content: "Sessions d'irrigation : début, fin, durée, volume (débitmètre ou débit nominal), déclencheur
+       (auto, manuel, utilisateur, planificateur), mode, seuils et param_version appliqués ; changements
+       de seuils et de mode (les forçages servent de signal d'étiquette)",
+     grain: "session", refresh: "horaire", retention: "illimitée", volume: "≈ 2 sessions/kit/j ⇒ 7 M lignes/an"}
+  - {id: iot.device_health, zone: curated, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [raw.iot.events, raw.iot.devices, iot.telemetry_clean],
+     content: "État quotidien du kit : complétude, défauts capteurs, batterie, courant pompe, firmware",
+     grain: "kit × jour", refresh: "quotidien", retention: "illimitée", volume: "3,65 M lignes/an"}
+  - {id: meteo.forecast_asof, zone: curated, domain: meteo, available: MVP, classification: interne,
+     inputs: [raw.meteo.forecasts],
+     content: "Prévisions indexées par (heure d'émission, échéance) : on n'utilise que ce qui était connu à t (pas de fuite)",
+     grain: "émission × échéance × maille", refresh: "4×/j", retention: "5 ans", volume: "≈ 5 Go/an"}
+  - {id: meteo.grid_daily, zone: curated, domain: meteo, available: MVP, classification: publique,
+     inputs: [raw.meteo.reanalysis, raw.meteo.rain_satellite, raw.meteo.radiation],
+     content: "Météo journalière observée par maille : Tmin/Tmax, HR, vent 2 m, Rs, pluie fusionnée, ET0 FAO-56",
+     grain: "maille 0,1° × jour", refresh: "quotidien", retention: "illimitée", volume: "2 772 × 365 ≈ 1 M lignes/an"}
+  - {id: meteo.stations_clean, zone: curated, domain: meteo, available: V2, classification: confidentielle,
+     inputs: [raw.meteo.stations], content: "Observations de stations contrôlées (QC, homogénéisation)",
+     grain: "station × heure", refresh: "horaire", retention: "selon convention", volume: "≈ 1 M lignes/an"}
+  - {id: meteo.seasonal_outlook, zone: curated, domain: meteo, available: V3, classification: confidentielle,
+     inputs: [raw.meteo.seasonal], content: "Prévision saisonnière normalisée par zone (terciles, démarrage, fin)",
+     grain: "zone × saison", refresh: "annuel", retention: "illimitée", volume: "< 1 Mo/an"}
+  - {id: sols.soil_grid, zone: curated, domain: sols, available: MVP, classification: publique,
+     inputs: [raw.sols.grids, raw.sols.national],
+     content: "Propriétés harmonisées : texture, pH, MO, N, P, K, CEC, CC/PF par pédotransfert, incertitude",
+     grain: "pixel 30 m × 2 profondeurs", refresh: "à chaque version source", retention: "toutes versions", volume: "≈ 10 Go"}
+  - {id: sols.lab_results, zone: curated, domain: sols, available: V1.1, classification: confidentielle,
+     inputs: [raw.sols.lab, geo.fields], minimised: true,
+     content: "Analyses rattachées à une parcelle pseudonymisée, méthode et laboratoire normalisés",
+     grain: "échantillon", refresh: "campagne", retention: "illimitée", volume: "≈ 1 000 lignes/an"}
+  - {id: sols.field_profile, zone: curated, domain: sols, available: MVP, classification: confidentielle,
+     inputs: [sols.lab_results, sols.soil_grid, geo.fields], minimised: true,
+     content: "Profil de sol par parcelle : RU (TAW), CC, PF, pH, MO, CE ; source = labo sinon grille (avec incertitude)",
+     grain: "parcelle", refresh: "à chaque analyse", retention: "illimitée", volume: "20 000 lignes"}
+  - {id: satellite.field_indices, zone: curated, domain: satellite, available: V2, classification: confidentielle,
+     inputs: [raw.satellite.optical, raw.satellite.sar, raw.satellite.deafrica, raw.satellite.planet, geo.fields],
+     minimised: true,
+     content: "Statistiques zonales par parcelle et date : NDVI, EVI, NDWI, SAVI, NDRE, MSAVI, VV, VH, part nuageuse",
+     grain: "parcelle × date d'acquisition", refresh: "à chaque passage", retention: "illimitée",
+     volume: "20 000 parcelles × 70–150 dates/an ⇒ 1,5–3 M lignes/an, < 1 Go"}
+  - {id: satellite.regional_products, zone: curated, domain: satellite, available: V2, classification: publique,
+     inputs: [raw.satellite.coarse, raw.satellite.deafrica],
+     content: "Anomalies NDVI, ETa, biomasse et masques cultures agrégés par commune", grain: "commune × décade",
+     refresh: "décadaire", retention: "illimitée", volume: "550 communes × 36 décades ≈ 20 k lignes/an"}
+  - {id: satellite.s2_chips, zone: curated, domain: satellite, available: V2, classification: publique,
+     inputs: [raw.satellite.optical, raw.satellite.sar],
+     content: "Tuiles 256×256 multi-dates (10 bandes S2 + VV/VH), masque nuages, pour l'apprentissage profond",
+     grain: "tuile × date", refresh: "mensuel", retention: "3 ans",
+     volume: "AOI 5 000 km² ≈ 760 tuiles × 30 dates × 1,3 Mo ≈ 30 Go/an ; zone agricole nationale ≈ 240 Go/an"}
+  - {id: images.labelled, zone: curated, domain: phyto, available: MVP, classification: confidentielle,
+     inputs: [raw.images.field_photos, raw.phyto.labels], minimised: true,
+     content: "Photos floutées (visages, plaques), sans EXIF, GPS arrondi, étiquette conseiller et niveau de confiance",
+     grain: "image", refresh: "quotidien", retention: "5 ans", volume: "≈ 30 % des photos brutes, recadrées 1 Mpx"}
+  - {id: images.espcam_series, zone: curated, domain: iot, available: V2, classification: confidentielle,
+     inputs: [raw.images.espcam], minimised: true, content: "Séries temporelles d'images du kit, normalisées, contrôle qualité",
+     grain: "kit × image", refresh: "quotidien", retention: "1 an (5 ans si étiquetée)", volume: "≈ 75 Go/an"}
+  - {id: images.public_reference, zone: curated, domain: phyto, available: V2, classification: publique,
+     inputs: [raw.phyto.public_images], content: "Images publiques ré-étiquetées vers la taxonomie SmartAgri92",
+     grain: "image", refresh: "ponctuel", retention: "illimitée", volume: "≈ 2 Go"}
+  - {id: images.drone_mosaics, zone: curated, domain: drone, available: V3, classification: confidentielle,
+     inputs: [raw.images.drone, geo.fields], minimised: true,
+     content: "Orthomosaïques géoréférencées, MNS, cartes NDVI/NDRE et température de couvert", grain: "vol × raster",
+     refresh: "après chaque vol", retention: "5 ans", volume: "≈ 10 % du brut ⇒ 30 Go/an"}
+  - {id: phyto.outbreaks, zone: curated, domain: phyto, available: V1.1, classification: confidentielle,
+     inputs: [raw.phyto.labels, raw.phyto.field_reports, raw.phyto.external_alerts, raw.phyto.gbif],
+     content: "Événements de présence / absence de bioagresseurs datés et localisés (parcelle ou commune)",
+     grain: "événement", refresh: "quotidien", retention: "illimitée", volume: "≈ 100 k lignes/an"}
+  - {id: phyto.reference, zone: curated, domain: phyto, available: MVP, classification: interne,
+     inputs: [raw.phyto.reference], content: "Produits homologués (matière active, dose, DAR, cultures), seuils biologiques",
+     grain: "produit × culture", refresh: "à chaque publication CSP", retention: "toutes versions", volume: "< 5 Mo"}
+  - {id: agronomie.crop_cycles, zone: curated, domain: agronomie, available: MVP, classification: confidentielle,
+     inputs: [raw.agronomie.cycles], content: "Cycle normalisé par parcelle : culture, variété, semis, stades déclarés, opérations",
+     grain: "parcelle × campagne", refresh: "à la saisie", retention: "illimitée", volume: "40 k cycles/an"}
+  - {id: agronomie.crop_params, zone: curated, domain: agronomie, available: MVP, classification: interne,
+     inputs: [raw.agronomie.reference, raw.agronomie.partner_reference],
+     content: "Paramètres par culture et zone : Kc, durées de stades, Zr, p, Ky, besoins NPK, seuils de rendement",
+     grain: "culture × variété × zone", refresh: "annuel", retention: "toutes versions", volume: "< 5 Mo"}
+  - {id: agronomie.crop_model_params, zone: curated, domain: agronomie, available: V3, classification: confidentielle,
+     inputs: [raw.agronomie.crop_models, agronomie.crop_params],
+     content: "Paramètres calés AquaCrop / SARRA (cultures, sols, variétés locales)",
+     grain: "culture × site", refresh: "annuel", retention: "illimitée", volume: "< 100 Mo"}
+  - {id: agronomie.yield_potential, zone: curated, domain: agronomie, available: V3, classification: interne,
+     inputs: [raw.agronomie.yield_gap], research_only: true,
+     content: "Potentiels de rendement par zone (YPYGA) : référence de recherche, jamais servie en production",
+     grain: "culture × zone", refresh: "ponctuel", retention: "durée du projet", volume: "< 10 Mo"}
+  - {id: economie.prices_weekly, zone: curated, domain: economie, available: V2, classification: interne,
+     inputs: [raw.economie.market_prices], content: "Prix hebdomadaires harmonisés (FCFA/kg), marché, produit, qualité",
+     grain: "marché × produit × semaine", refresh: "hebdomadaire", retention: "illimitée", volume: "52 k lignes/an"}
+  - {id: economie.costs, zone: curated, domain: economie, available: V2, classification: interne,
+     inputs: [raw.economie.inputs_costs, raw.economie.farm_accounts], aggregated: true,
+     content: "Coûts de production de référence par culture et zone (k ≥ 10 exploitations par cellule)",
+     grain: "culture × zone × campagne", refresh: "mensuel", retention: "illimitée", volume: "< 1 Mo/an"}
+  - {id: economie.farm_economics, zone: curated, domain: economie, available: V2, classification: personnelle,
+     inputs: [raw.economie.farm_accounts, raw.economie.payments],
+     content: "Marge brute par exploitation et campagne, historique de paiement", grain: "exploitation × campagne",
+     refresh: "mensuel", retention: "10 ans", volume: "10 k lignes/an"}
+  - {id: economie.credit_outcomes, zone: curated, domain: economie, available: V3, classification: personnelle,
+     inputs: [raw.economie.finance_partners, economie.farm_economics],
+     content: "Résultat crédit / assurance par exploitation (remboursé, retard, sinistre indemnisé)",
+     grain: "contrat", refresh: "campagne", retention: "durée du contrat + 5 ans", volume: "5–20 k lignes/an"}
+  - {id: geo.fields, zone: curated, domain: geo, available: MVP, classification: personnelle,
+     inputs: [raw.geo.fields, raw.utilisateurs.accounts],
+     content: "Parcelles valides (géométrie réparée, surface, centroïde) filtrées par consentement actif",
+     grain: "parcelle", refresh: "à la saisie", retention: "durée du compte + 1 an", volume: "20 000 lignes"}
+  - {id: geo.reference_layers, zone: curated, domain: geo, available: MVP, classification: publique,
+     inputs: [raw.geo.reference, raw.geo.official, raw.geo.osm],
+     content: "Couches de contexte normalisées (EPSG:4326 / 32628) : admin, pente, occupation du sol, eau, routes",
+     grain: "raster / vecteur", refresh: "à chaque version", retention: "toutes versions", volume: "≈ 5 Go"}
+  - {id: geo.field_context, zone: curated, domain: geo, available: MVP, classification: confidentielle,
+     inputs: [geo.fields, geo.reference_layers], minimised: true,
+     content: "Contexte statique par parcelle pseudonymisée : surface, altitude, pente, commune, distance à l'eau et au marché",
+     grain: "parcelle", refresh: "à la saisie", retention: "illimitée", volume: "20 000 lignes"}
+  - {id: geo.open_field_boundaries, zone: curated, domain: geo, available: V3, classification: publique,
+     inputs: [raw.geo.open_field_boundaries], content: "Limites ouvertes harmonisées (masques d'entraînement)",
+     grain: "polygone", refresh: "ponctuel", retention: "illimitée", volume: "< 1 Go"}
+  - {id: eau.water_quality, zone: curated, domain: eau, available: V1.1, classification: confidentielle,
+     inputs: [raw.eau.water_quality, raw.eau.groundwater],
+     content: "CE, SAR, pH par point d'eau rattaché aux parcelles ; contexte piézométrique", grain: "point d'eau × date",
+     refresh: "campagne", retention: "illimitée", volume: "< 10 Mo"}
+  - {id: historique.yields, zone: curated, domain: historique, available: V1.1, classification: confidentielle,
+     inputs: [raw.historique.harvests, raw.historique.trials, agronomie.crop_cycles],
+     content: "Rendement (t/ha) par parcelle et campagne avec méthode (pesée, déclaration, essai) et fiabilité",
+     grain: "parcelle × campagne", refresh: "fin de campagne", retention: "illimitée", volume: "40 k lignes/an"}
+  - {id: historique.regional_stats, zone: curated, domain: historique, available: V1.1, classification: interne,
+     inputs: [raw.historique.statistics], content: "Rendements, surfaces, productions par région et culture (séries 1990+)",
+     grain: "région × culture × année", refresh: "annuel", retention: "illimitée", volume: "< 1 Mo"}
+  - {id: utilisateurs.reco_events, zone: curated, domain: utilisateurs, available: MVP, classification: confidentielle,
+     inputs: [raw.utilisateurs.feedback, raw.iot.events], minimised: true,
+     content: "Recommandation émise → vue → suivie / ignorée → résultat mesuré (humidité, rendement) ;
+       alertes acquittées (page locale du kit, app)",
+     grain: "recommandation", refresh: "horaire", retention: "illimitée", volume: "10 000 × 1 reco/j ≈ 3,7 M lignes/an"}
+  - {id: langue.assistant_eval, zone: curated, domain: langue, available: MVP, classification: confidentielle,
+     inputs: [raw.langue.assistant], minimised: true,
+     content: "Questions anonymisées (PII retirées), réponses, sources citées, notes agronome (jeu d'évaluation)",
+     grain: "échange", refresh: "hebdomadaire", retention: "illimitée", volume: "≈ 5 k échanges notés/an"}
+  - {id: langue.speech_corpus, zone: curated, domain: langue, available: V2, classification: personnelle,
+     inputs: [raw.langue.speech, raw.langue.public_speech],
+     content: "Segments audio transcrits (wolof, pulaar, sérère, français), locuteur pseudonymisé ; la voix reste identifiante",
+     grain: "segment", refresh: "campagne", retention: "jusqu'au retrait du consentement", volume: "100–300 h ≈ 12–35 Go"}
+  - {id: connaissances.rag_chunks, zone: curated, domain: connaissances, available: MVP, classification: interne,
+     inputs: [raw.connaissances.corpus, phyto.reference, agronomie.crop_params],
+     content: "Passages de 300–800 jetons avec métadonnées (culture, zone, licence, date) et embeddings",
+     grain: "passage", refresh: "à chaque ajout", retention: "toutes versions", volume: "≈ 20–80 k passages, < 1 Go"}
+
+  # ================================================================== FEATURES (prêtes à l'entraînement)
+  - {id: features.soil_nowcast, zone: features, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [iot.telemetry_hourly, iot.irrigation_events, meteo.forecast_asof, meteo.grid_daily, sols.field_profile],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: soil_nowcast},
+     content: "Fenêtres horaires d'humidité, irrigation, météo as-of ; cible : soil_moisture_pct à t+1…t+72 h",
+     grain: "kit × heure", refresh: "quotidien", retention: "versions DVC", volume: "pilote 876 k lignes/an ; cible 87,6 M"}
+  - {id: features.irrigation_need, zone: features, domain: eau, available: V2, classification: confidentielle,
+     inputs: [iot.telemetry_hourly, iot.irrigation_events, meteo.forecast_asof, meteo.grid_daily, sols.field_profile,
+              agronomie.crop_cycles, agronomie.crop_params, geo.field_context, satellite.field_indices],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: irrigation_need},
+     content: "État hydrique, stade, ETc prévue ; cible : target_need_mm_24h (bilan hydrique a posteriori)",
+     grain: "parcelle × jour", refresh: "quotidien", retention: "versions DVC", volume: "20 000 × 365 = 7,3 M lignes/an"}
+  - {id: features.local_weather_bias, zone: features, domain: meteo, available: V2, classification: confidentielle,
+     inputs: [iot.telemetry_hourly, meteo.forecast_asof, meteo.stations_clean],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: local_weather_bias},
+     content: "Écart prévision as-of / mesure kit ou station ; cible : erreur T, HR, pluie par échéance",
+     grain: "kit × émission × échéance", refresh: "quotidien", retention: "versions DVC", volume: "≈ 50 M lignes/an à cible"}
+  - {id: features.rain_events, zone: features, domain: meteo, available: V2, classification: interne,
+     inputs: [meteo.grid_daily, meteo.forecast_asof], octopus: {policy: public, name: rain_events},
+     content: "Prévisions as-of et pluie observée par maille ; cible : pluie ≥ 1 / 10 / 20 mm à J+1…J+5",
+     grain: "maille × émission × échéance", refresh: "quotidien", retention: "versions DVC", volume: "≈ 20 M lignes (1991+)"}
+  - {id: features.disease_images, zone: features, domain: phyto, available: V2, classification: confidentielle,
+     inputs: [images.labelled, images.public_reference, images.espcam_series],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: disease_images},
+     content: "Images 384 px + métadonnées (culture, stade, région) ; cible : label (maladie, ravageur, sain, carence)",
+     grain: "image", refresh: "hebdomadaire", retention: "versions DVC", volume: "≥ 5 000 images validées (V2) ≈ 2 Go"}
+  - {id: features.pest_trap_images, zone: features, domain: phyto, available: V3, classification: confidentielle,
+     inputs: [images.espcam_series, images.labelled],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: pest_trap_images},
+     content: "Images de pièges avec boîtes annotées ; cible : nombre d'individus par espèce",
+     grain: "image", refresh: "hebdomadaire", retention: "versions DVC", volume: "≈ 3 000 images annotées, < 1 Go"}
+  - {id: features.pest_risk, zone: features, domain: phyto, available: V2, classification: confidentielle,
+     inputs: [phyto.outbreaks, phyto.reference, meteo.grid_daily, meteo.forecast_asof, satellite.field_indices,
+              agronomie.crop_cycles, geo.field_context],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: pest_risk},
+     content: "Degrés-jours, humectation, stade, voisinage des foyers ; cible : présence sous 7 / 14 j",
+     grain: "parcelle × semaine", refresh: "hebdomadaire", retention: "versions DVC", volume: "20 000 × 52 ≈ 1 M lignes/an"}
+  - {id: features.npk_calibration, zone: features, domain: sols, available: V2, classification: confidentielle,
+     inputs: [iot.telemetry_clean, sols.lab_results, eau.water_quality],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: npk_calibration},
+     content: "Lecture NPK du kit (RS485), humidité, température, CE ; cible : N, P, K de laboratoire",
+     grain: "échantillon", refresh: "campagne", retention: "versions DVC", volume: "150–1 000 paires/an (petit jeu)"}
+  - {id: features.yield, zone: features, domain: historique, available: V3, classification: confidentielle,
+     inputs: [historique.yields, satellite.field_indices, meteo.grid_daily, meteo.seasonal_outlook, iot.telemetry_hourly,
+              sols.field_profile, agronomie.crop_cycles, geo.field_context, historique.regional_stats],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: yield},
+     content: "Agrégats saisonniers (NDVI intégré, stress hydrique, pluie, GDD) ; cible : yield_t_ha",
+     grain: "parcelle × campagne", refresh: "décadaire en saison", retention: "versions DVC", volume: "≈ 40 k lignes/an"}
+  - {id: features.sensor_anomaly, zone: features, domain: iot, available: V2, classification: confidentielle,
+     inputs: [iot.telemetry_clean, iot.device_health, iot.irrigation_events, meteo.forecast_asof],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: sensor_anomaly},
+     content: "Résidus capteur / attendu, dérives, courant pompe ; cible : défaut confirmé par intervention",
+     grain: "kit × heure", refresh: "quotidien", retention: "versions DVC", volume: "≈ 87 M lignes/an à cible"}
+  - {id: features.phenology, zone: features, domain: agronomie, available: V2, classification: confidentielle,
+     inputs: [satellite.field_indices, agronomie.crop_cycles, agronomie.crop_params, meteo.grid_daily],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: phenology},
+     content: "Séries NDVI lissées, GDD depuis semis ; cible : stade BBCH observé",
+     grain: "parcelle × date", refresh: "à chaque passage", retention: "versions DVC", volume: "≈ 3 M lignes/an"}
+  - {id: features.crop_type, zone: features, domain: satellite, available: V3, classification: confidentielle,
+     inputs: [satellite.field_indices, satellite.s2_chips, agronomie.crop_cycles],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: crop_type},
+     content: "Séries temporelles S1/S2 par parcelle ; cible : culture déclarée et vérifiée",
+     grain: "parcelle × campagne", refresh: "campagne", retention: "versions DVC", volume: "≈ 40 k séries/an"}
+  - {id: features.reco_bandit, zone: features, domain: utilisateurs, available: V3, classification: confidentielle,
+     inputs: [utilisateurs.reco_events, agronomie.crop_cycles, geo.field_context],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: reco_bandit},
+     content: "Contexte, action recommandée, propension, récompense (adoption, gain mesuré)",
+     grain: "recommandation", refresh: "quotidien", retention: "versions DVC", volume: "≈ 3,7 M lignes/an"}
+  - {id: features.salinity_risk, zone: features, domain: eau, available: V3, classification: confidentielle,
+     inputs: [eau.water_quality, sols.field_profile, iot.telemetry_hourly, geo.field_context, satellite.regional_products],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: salinity_risk},
+     content: "CE eau et sol, fraction de lessivage, distance à la mer / au fleuve ; cible : CE sol en fin de saison",
+     grain: "parcelle × saison", refresh: "campagne", retention: "versions DVC", volume: "< 100 k lignes"}
+  - {id: features.price_forecast, zone: features, domain: economie, available: V3, classification: interne,
+     inputs: [economie.prices_weekly, historique.regional_stats, satellite.regional_products],
+     octopus: {policy: public, name: price_forecast},
+     content: "Prix retardés, saisonnalité, anomalies de végétation régionales ; cible : prix à 4 / 8 / 12 semaines",
+     grain: "marché × produit × semaine", refresh: "hebdomadaire", retention: "versions DVC", volume: "≈ 500 k lignes (2010+)"}
+  - {id: features.water_savings, zone: features, domain: eau, available: V1.1, classification: confidentielle,
+     inputs: [iot.irrigation_events, iot.telemetry_hourly, agronomie.crop_cycles, meteo.grid_daily, economie.costs],
+     content: "Volume appliqué vs besoin FAO-56 et vs pratique de référence ; économie d'eau et d'énergie (MRV)",
+     grain: "parcelle × semaine", refresh: "hebdomadaire", retention: "illimitée", volume: "≈ 1 M lignes/an"}
+  - {id: features.field_boundaries, zone: features, domain: geo, available: V3, classification: personnelle,
+     inputs: [satellite.s2_chips, geo.fields, geo.open_field_boundaries],
+     content: "Tuiles S2 + masques de limites ; les polygones exacts identifient l'exploitant : entraînement local seulement",
+     grain: "tuile", refresh: "campagne", retention: "versions DVC", volume: "≈ 30 Go"}
+  - {id: features.agri_risk, zone: features, domain: economie, available: V3, classification: personnelle,
+     inputs: [economie.credit_outcomes, economie.farm_economics, historique.yields, meteo.seasonal_outlook, features.yield],
+     content: "Historique de rendement, marge, paiements, exposition climatique ; cible : défaut ou sinistre",
+     grain: "exploitation × campagne", refresh: "campagne", retention: "durée du contrat + 5 ans", volume: "5–20 k lignes/an"}
+  - {id: features.asr_speech, zone: features, domain: langue, available: V2, classification: personnelle,
+     inputs: [langue.speech_corpus], content: "Segments audio 16 kHz + transcriptions normalisées ; la voix reste identifiante",
+     grain: "segment", refresh: "campagne", retention: "jusqu'au retrait du consentement", volume: "≈ 12–35 Go"}

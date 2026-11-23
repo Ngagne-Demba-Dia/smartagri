@@ -33,16 +33,23 @@ router = APIRouter(tags=["assistant"])
 
 
 @router.post("/assistant/chat")
-def assistant_chat(body: ChatIn, principal: Principal = Depends(get_principal),
+def assistant_chat(body: ChatIn, request: Request, principal: Principal = Depends(get_principal),
                    session: Session = Depends(get_session), settings: Settings = Depends(get_settings),
                    gateway: AssistantGateway | None = Depends(get_assistant_gateway),
                    provider: WeatherProvider = Depends(get_weather_provider), now: datetime = Depends(get_now),
                    meta: RequestMeta = Depends(get_request_meta)) -> dict[str, Any]:
     user = session.get(User, principal.user_id)
-    ctx = ToolContext(session=session, settings=settings, principal=principal, now=now, weather_provider=provider)
-    request = ChatRequest(message=body.message, conversation_id=body.conversation_id,
-                          organization_id=body.organization_id, locale=body.locale)
-    result = chat(gateway, ctx, request, default_locale=user.locale if user else "fr")
+    ctx = ToolContext(
+        session=session,
+        settings=settings,
+        principal=principal,
+        now=now,
+        weather_provider=provider,
+        smartagri_ai_client=getattr(request.app.state, "smartagri_ai_client", None),
+    )
+    chat_request = ChatRequest(message=body.message, conversation_id=body.conversation_id,
+                               organization_id=body.organization_id, locale=body.locale)
+    result = chat(gateway, ctx, chat_request, default_locale=user.locale if user else "fr")
     # Audit sans le contenu des messages (données de l'utilisateur) : outils utilisés et issue seulement.
     record_audit(session, "assistant.chat", actor_user_id=principal.user_id, target_type="conversation",
                  target_id=result["conversation_id"], meta=meta,

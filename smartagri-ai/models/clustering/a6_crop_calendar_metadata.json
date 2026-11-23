@@ -1,0 +1,31 @@
+{
+  "champion": "CatBoost",
+  "accuracy": 0.9822,
+  "f1_macro": 0.9812,
+  "stages": [
+    "arriere_saison",
+    "developpement",
+    "initial",
+    "mi_saison"
+  ],
+  "crops": [
+    "cabbage",
+    "carrot",
+    "lettuce",
+    "onion",
+    "pepper",
+    "potato",
+    "tomato"
+  ],
+  "features": [
+    "crop_enc",
+    "day_after_planting",
+    "season_days",
+    "kc",
+    "kc_ini",
+    "kc_mid",
+    "kc_end"
+  ],
+  "artifact": "models/clustering/a6_crop_calendar_champion.cbm",
+  "elapsed_s": 17.43
+}

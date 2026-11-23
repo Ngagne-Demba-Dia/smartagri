@@ -65,6 +65,16 @@ function LatestReading({ device }: { device: DeviceDetail }) {
         </dd>
         <dt className="text-mute">{t("airHumidity")}</dt>
         <dd className="tabular-nums">{formatPct(m.air_humidity_pct ?? null)}</dd>
+        <dt className="text-mute">{t("pressure")}</dt>
+        <dd className="tabular-nums">
+          {m.pressure_hpa != null ? `${formatNumber(m.pressure_hpa, 0)} hPa` : MISSING}
+        </dd>
+        <dt className="text-mute">{t("npk")}</dt>
+        <dd className="tabular-nums">
+          {m.n_mgkg != null || m.p_mgkg != null || m.k_mgkg != null
+            ? `${m.n_mgkg != null ? formatNumber(m.n_mgkg, 0) : MISSING} / ${m.p_mgkg != null ? formatNumber(m.p_mgkg, 0) : MISSING} / ${m.k_mgkg != null ? formatNumber(m.k_mgkg, 0) : MISSING} mg/kg`
+            : MISSING}
+        </dd>
         <dt className="text-mute">{t("measuredAt")}</dt>
         <dd>
           <TimeAgo value={m.ts} />

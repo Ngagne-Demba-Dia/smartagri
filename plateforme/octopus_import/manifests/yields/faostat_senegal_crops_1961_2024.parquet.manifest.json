@@ -1,0 +1,65 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "yields",
+  "file_name": "faostat_senegal_crops_1961_2024.parquet",
+  "relative_path": "data/real/yields/faostat_senegal_crops_1961_2024.parquet",
+  "source_id": "faostat",
+  "owner": "FAO — FAOSTAT (QCL, Sénégal)",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://bulks-faostat.fao.org/production/Production_Crops_Livestock_E_Africa.zip",
+  "description": "Surfaces, rendements, productions nationales 1961-2024. Échelle NATIONALE uniquement (pas de maille spatiale).",
+  "fetched_at_utc": "2026-11-16T08:44:14+00:00",
+  "sha256": "6ff29cc1905a0a75287c6c4d9ed542c6de6f9c8e4b18c45c54a8fccb140cea42",
+  "size_bytes": 25004,
+  "rows": 956,
+  "columns": [
+    "year",
+    "season",
+    "crop",
+    "crop_fao_name",
+    "fao_item_code",
+    "area_ha",
+    "yield_t_ha",
+    "yield_kg_ha",
+    "production_t",
+    "scale",
+    "source_id"
+  ],
+  "dtypes": {
+    "year": "int64",
+    "season": "str",
+    "crop": "str",
+    "crop_fao_name": "str",
+    "fao_item_code": "int64",
+    "area_ha": "float64",
+    "yield_t_ha": "float64",
+    "yield_kg_ha": "float64",
+    "production_t": "float64",
+    "scale": "str",
+    "source_id": "str"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "crop",
+      "year"
+    ],
+    "checks": {
+      "scale": "national",
+      "note": "pas de rendement régional/parcellaire en open data"
+    }
+  },
+  "temporal_coverage": {
+    "type": "static_or_not_applicable"
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": null,
+    "note": "table non spatialisée par cellule"
+  }
+}

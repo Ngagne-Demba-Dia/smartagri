@@ -1,0 +1,88 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "market_prices",
+  "file_name": "wfp_senegal_food_prices.parquet",
+  "relative_path": "data/real/market_prices/wfp_senegal_food_prices.parquet",
+  "source_id": "hdx_wfp_senegal",
+  "owner": "WFP VAM",
+  "licence": "CC BY-IGO 3.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://data.humdata.org/dataset/wfp-food-prices-for-senegal",
+  "description": "Prix de marché au Sénégal. price_fcfa_kg n'est calculé que pour les unités de masse (KG, 50/90/100 KG, MT) ; sinon vide.",
+  "fetched_at_utc": "2026-11-16T08:44:14+00:00",
+  "sha256": "18464e6f1871354fc5735ebea2cc10296198cbfeeb263299c9bfc87d3fc605f8",
+  "size_bytes": 997495,
+  "rows": 55283,
+  "columns": [
+    "date",
+    "market_id",
+    "market",
+    "region",
+    "department",
+    "lat",
+    "lon",
+    "category",
+    "crop",
+    "unit",
+    "price_flag",
+    "price_type",
+    "currency",
+    "price_fcfa_raw",
+    "price_usd",
+    "price_fcfa_kg",
+    "source_id"
+  ],
+  "dtypes": {
+    "date": "str",
+    "market_id": "Int64",
+    "market": "str",
+    "region": "str",
+    "department": "str",
+    "lat": "float64",
+    "lon": "float64",
+    "category": "str",
+    "crop": "str",
+    "unit": "str",
+    "price_flag": "str",
+    "price_type": "str",
+    "currency": "str",
+    "price_fcfa_raw": "float64",
+    "price_usd": "float64",
+    "price_fcfa_kg": "float64",
+    "source_id": "str"
+  },
+  "quality": {
+    "completeness_pct": 99.979,
+    "null_cells_by_column": {
+      "price_fcfa_kg": 195
+    },
+    "duplicate_key_rows": 0,
+    "key": [
+      "date",
+      "market_id",
+      "crop",
+      "unit",
+      "price_type"
+    ],
+    "checks": {
+      "units": {
+        "KG": 55088,
+        "Head": 195
+      },
+      "rows_with_price_fcfa_kg": 55088
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2000-01-15 00:00:00",
+    "max": "2026-09-15 00:00:00",
+    "unique_periods": 320
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": null,
+    "note": "table non spatialisée par cellule"
+  }
+}

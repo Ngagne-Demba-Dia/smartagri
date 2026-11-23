@@ -1,0 +1,56 @@
+{
+  "champion": "CatBoost",
+  "targets": {
+    "rain_1d": {
+      "auc": 0.9826,
+      "f1": 0.8926,
+      "brier": 0.0452,
+      "artifact": "models/rain_intelligence/rain_1d_champion.cbm"
+    },
+    "rain_2d": {
+      "auc": 0.9768,
+      "f1": 0.8752,
+      "brier": 0.0522,
+      "artifact": "models/rain_intelligence/rain_2d_champion.cbm"
+    },
+    "rain_3d": {
+      "auc": 0.9755,
+      "f1": 0.868,
+      "brier": 0.0536,
+      "artifact": "models/rain_intelligence/rain_3d_champion.cbm"
+    }
+  },
+  "features": [
+    "doy_cos",
+    "doy_sin",
+    "solar_rad_mj_m2",
+    "wind_2m_ms",
+    "rain_chirps_sum_14d_mm",
+    "t_min_c",
+    "rain_mm",
+    "rain_nasa_sum_3d_mm",
+    "pressure_hpa",
+    "rain_chirps_sum_7d_mm",
+    "rain_chirps_sum_3d_mm",
+    "et0_pm_mean_7d_mm",
+    "rain_nasa_sum_14d_mm",
+    "rain_nasa_sum_7d_mm",
+    "rain_chirps_mm",
+    "t_max_c",
+    "t_mean_c",
+    "rh_mean_pct",
+    "et0_pm_mm",
+    "ph_h2o",
+    "soc_g_kg",
+    "bulk_density_g_cm3",
+    "share_crop",
+    "share_tree",
+    "sand_pct",
+    "share_built",
+    "share_bare",
+    "clay_pct",
+    "fc_ptf_pct",
+    "wp_ptf_pct"
+  ],
+  "elapsed_s": 521.4
+}

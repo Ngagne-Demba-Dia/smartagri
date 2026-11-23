@@ -1,0 +1,29 @@
+fichier,lignes,colonnes,cols,Mo
+esa_worldcover_national_grid_0p05.parquet,6945,13,"cell_id, lat, lon, n_samples, share_tree, share_shrub, share_grass, share_crop, share_built, share_bare, share_water, share_wetland, share_mangrove",0.67
+fao56_crop_coefficients_daily.parquet,900,9,"crop_code, crop_name_fr, day_after_planting, season_days, growth_stage, kc, kc_ini, kc_mid, kc_end",0.22
+fao56_et0_national_daily.parquet,329232,7,"power_cell_id, lat, lon, date, ra_mj_m2, et0_hargreaves_mm, et0_pm_mm",39.51
+power_cells_0p5x0p625.parquet,76,7,"power_cell_id, n_grid_cells, area_km2, region_main, lat, lon, validation_zone",0.01
+senegal_grid_0p05.parquet,6945,9,"cell_id, row, col, lat, lon, region_adm1, power_cell_id, validation_zone, area_km2",1.35
+wfp_senegal_food_prices.parquet,55283,17,"date, market_id, market, region, department, lat, lon, category, crop, unit, price_flag, price_type, currency, price_fcfa_raw, price_usd, price_fcfa_kg, source_id",42.57
+wfp_senegal_markets.parquet,79,7,"market_id, market, region, department, lat, lon, source_id",0.02
+nasa_power_national_daily.parquet,329232,12,"power_cell_id, lat, lon, date, t_min_c, t_max_c, t_mean_c, rh_mean_pct, wind_2m_ms, solar_rad_mj_m2, pressure_hpa, rain_mm",52.68
+deafrica_s2_national_scene_catalog_2024_2026.parquet,20722,12,"item_id, datetime_utc, date, tile, epsg, cloud_pct, data_coverage_pct, x0, y0, b04_href, b08_href, scl_href",17.07
+s2_ndvi_national_grid_monthly_2025.parquet,26198,6,"cell_id, month, ndvi_mean, ndvi_std, n_valid_px, valid_fraction",2.52
+nasa_power_soil_wetness_national_daily.parquet,329232,7,"power_cell_id, lat, lon, date, gwettop_ratio, gwetroot_ratio, gwetprof_ratio",39.51
+isdasoil_national_grid_0p05.parquet,13890,19,"cell_id, lat, lon, depth_cm, sand_pct, clay_pct, silt_pct, ph_h2o, soc_g_kg, n_total_g_kg, p_mg_kg, k_mg_kg, cec_cmol_kg, bulk_density_g_cm3, fc_ptf_pct, wp_ptf_pct, awc_ptf_mm_per_m, sg_sand_pct_5_15cm, sg_clay_pct_5_15cm",1.99
+faostat_senegal_crops_1961_2024.parquet,956,11,"year, season, crop, crop_fao_name, fao_item_code, area_ha, yield_t_ha, yield_kg_ha, production_t, scale, source_id",0.36
+test.parquet,25915,32,"power_cell_id, t_min_c, t_max_c, t_mean_c, rh_mean_pct, wind_2m_ms, solar_rad_mj_m2, pressure_hpa, rain_mm, rain_chirps_mm, et0_pm_mm, rain_nasa_sum_3d_mm, rain_nasa_sum_7d_mm, rain_nasa_sum_14d_mm, rain_chirps_sum_3d_mm, rain_chirps_sum_7d_mm, rain_chirps_sum_14d_mm, et0_pm_mean_7d_mm, doy_sin, doy_cos, sand_pct, clay_pct, soc_g_kg, ph_h2o, bulk_density_g_cm3, fc_ptf_pct, wp_ptf_pct, share_crop, share_tree, share_bare, share_built, ts",6.22
+train.parquet,258440,36,"power_cell_id, t_min_c, t_max_c, t_mean_c, rh_mean_pct, wind_2m_ms, solar_rad_mj_m2, pressure_hpa, rain_mm, rain_chirps_mm, et0_pm_mm, rain_nasa_sum_3d_mm, rain_nasa_sum_7d_mm, rain_nasa_sum_14d_mm, rain_chirps_sum_3d_mm, rain_chirps_sum_7d_mm, rain_chirps_sum_14d_mm, et0_pm_mean_7d_mm, doy_sin, doy_cos, sand_pct, clay_pct, soc_g_kg, ph_h2o, bulk_density_g_cm3, fc_ptf_pct, wp_ptf_pct, share_crop, share_tree, share_bare, share_built, soil_wetness_root_pct, y_plus_1d_pct, y_plus_2d_pct, y_plus_3d_pct, ts",70.3
+chirps_v3_national_daily_2015.parquet,2534925,4,"date, cell_id, rain_mm, is_provisional",43.09
+chirps_v3_national_daily_2016.parquet,2541870,4,"date, cell_id, rain_mm, is_provisional",43.21
+chirps_v3_national_daily_2017.parquet,2534925,4,"date, cell_id, rain_mm, is_provisional",43.09
+chirps_v3_national_daily_2018.parquet,2534925,4,"date, cell_id, rain_mm, is_provisional",43.09
+chirps_v3_national_daily_2019.parquet,2534925,4,"date, cell_id, rain_mm, is_provisional",43.09
+chirps_v3_national_daily_2020.parquet,2541870,4,"date, cell_id, rain_mm, is_provisional",43.21
+chirps_v3_national_daily_2021.parquet,2534925,4,"date, cell_id, rain_mm, is_provisional",43.09
+chirps_v3_national_daily_2022.parquet,2326575,4,"date, cell_id, rain_mm, is_provisional",39.55
+chirps_v3_national_daily_2023.parquet,2319630,4,"date, cell_id, rain_mm, is_provisional",39.43
+chirps_v3_national_daily_2024.parquet,2118225,4,"date, cell_id, rain_mm, is_provisional",36.01
+chirps_v3_national_daily_2025.parquet,2534925,4,"date, cell_id, rain_mm, is_provisional",43.09
+chirps_v3_national_daily_2026.parquet,1895985,4,"date, cell_id, rain_mm, is_provisional",32.23
+octopus_datasets_inventory.csv,25,16,"wave, wave_label, domain, dataset_name, relative_path, rows, size_bytes, size_mb, completeness_pct, licence, commercial_use, source_id, time_min, time_max, regions_covered, sha256",0.02

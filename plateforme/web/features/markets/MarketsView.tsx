@@ -141,7 +141,7 @@ export function MarketsView() {
   const marketLabel = t(`marketNames.${market}`);
 
   return (
-    <ModuleShell title={tm("markets")} description={t("description")} version="V3">
+    <ModuleShell title={tm("markets")} description={t("description")} version="MVP">
       <div className="flex flex-wrap items-end gap-4">
         <Segmented
           legend={t("cropLegend")}

@@ -108,7 +108,7 @@ export function VegetationView({ initialFieldId }: { initialFieldId: string | nu
   const query = useVegetation(fieldId, from, to);
 
   return (
-    <ModuleShell title={tm("vegetation")} description={t("description")} version="V2">
+    <ModuleShell title={tm("vegetation")} description={t("description")} version="MVP">
       <QueryState
         isPending={all.isPending}
         error={all.error}

@@ -1,0 +1,16 @@
+{
+  "model_id": "B4_Disease_Detection_Rice",
+  "backbone": "mobilenet_v3_small",
+  "in_dim": 576,
+  "classes": [
+    "Rice___Brown_Spot",
+    "Rice___Healthy",
+    "Rice___Leaf_Blast",
+    "Rice___Neck_Blast"
+  ],
+  "train_samples": 3261,
+  "val_samples": 817,
+  "val_accuracy": 0.8409,
+  "val_macro_f1": 0.8221,
+  "train_seconds": 797.07
+}

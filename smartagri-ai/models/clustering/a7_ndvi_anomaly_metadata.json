@@ -1,0 +1,25 @@
+{
+  "champion": "LightGBM",
+  "accuracy": 0.9978,
+  "f1_macro": 0.9948,
+  "rows": 26198,
+  "features": [
+    "cell_id",
+    "month_num",
+    "ndvi_mean",
+    "ndvi_std",
+    "n_valid_px",
+    "valid_fraction",
+    "share_tree",
+    "share_shrub",
+    "share_grass",
+    "share_crop",
+    "share_built",
+    "share_bare",
+    "share_water",
+    "share_wetland",
+    "share_mangrove"
+  ],
+  "artifact": "models/clustering/a7_ndvi_anomaly_champion.txt",
+  "elapsed_s": 7.4
+}

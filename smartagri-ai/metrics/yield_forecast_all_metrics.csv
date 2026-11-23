@@ -1,0 +1,16 @@
+model,target,fold,rmse,mae,r2,best_iter
+LightGBM,yield_t_ha,0,2.2749,1.0787,0.9511,0
+LightGBM,yield_t_ha,1,2.6872,1.2388,0.9086,0
+LightGBM,yield_t_ha,2,2.0655,1.0269,0.957,0
+LightGBM,yield_t_ha,3,2.3086,1.3722,0.9324,0
+LightGBM,yield_t_ha,4,2.1126,1.0285,0.9313,0
+XGBoost,yield_t_ha,0,2.0861,1.0365,0.9588,289
+XGBoost,yield_t_ha,1,2.3656,1.1587,0.9292,355
+XGBoost,yield_t_ha,2,1.6621,0.8868,0.9721,407
+XGBoost,yield_t_ha,3,2.3786,1.4252,0.9283,115
+XGBoost,yield_t_ha,4,1.9468,0.9969,0.9417,173
+CatBoost,yield_t_ha,0,2.0098,1.0833,0.9618,499
+CatBoost,yield_t_ha,1,2.1467,1.1638,0.9417,499
+CatBoost,yield_t_ha,2,1.7984,1.0141,0.9674,499
+CatBoost,yield_t_ha,3,2.1495,1.2983,0.9414,499
+CatBoost,yield_t_ha,4,1.937,1.0493,0.9422,306

@@ -68,7 +68,7 @@ export function CampaignsView() {
   const rows = campaigns.data ?? [];
 
   return (
-    <ModuleShell title={tm("campaigns")} description={t("description")} version="V1_1">
+    <ModuleShell title={tm("campaigns")} description={t("description")} version="MVP">
       <QueryState
         isPending={campaigns.isPending}
         error={campaigns.error}
@@ -81,6 +81,19 @@ export function CampaignsView() {
             <CampaignCard key={campaign.id} campaign={campaign} now={now} />
           ))}
         </ul>
+        <section aria-label={t("calendarTitle")} className="card flex flex-col gap-3">
+          <h2 className="m-0 text-base font-bold text-ink">{t("calendarTitle")}</h2>
+          <p className="m-0 text-sm text-mute">{t("calendarIntro")}</p>
+          <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            {(["onion", "tomato", "cabbage", "potato"] as const).map((cropKey) => (
+              <li key={cropKey} className="rounded-btn bg-surface p-3 text-sm">
+                <p className="m-0 font-bold text-ink">{t(`calendar.${cropKey}.name`)}</p>
+                <p className="m-0 mt-1 text-xs text-mute">{t(`calendar.${cropKey}.window`)}</p>
+                <p className="m-0 mt-1 text-xs font-semibold text-g">{t(`calendar.${cropKey}.cycle`)}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
       </QueryState>
     </ModuleShell>
   );

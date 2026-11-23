@@ -1,0 +1,116 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "soil_properties",
+  "file_name": "isdasoil_national_grid_0p05.parquet",
+  "relative_path": "data/real/soil_properties/isdasoil_national_grid_0p05.parquet",
+  "source_id": "isdasoil+soilgrids",
+  "owner": "iSDA / ICRAF / Rothamsted (iSDAsoil 30 m) ; ISRIC (SoilGrids 2.0)",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://isdasoil.s3.amazonaws.com/soil_data/",
+  "description": "Propriétés des sols agrégées à 0,05° sur tout le Sénégal depuis iSDAsoil 30 m (vue pyramide ~1,9 km, moyenne). fc/wp/awc sont DÉRIVÉS par pédotransfert Saxton-Rawls (non mesurés).",
+  "fetched_at_utc": "2026-11-14T19:59:31+00:00",
+  "sha256": "f459ea7d72151d79dfab62031b3272fb646591bc6ee747fd8ec315d93c4f889b",
+  "size_bytes": 732071,
+  "rows": 13890,
+  "columns": [
+    "cell_id",
+    "lat",
+    "lon",
+    "depth_cm",
+    "sand_pct",
+    "clay_pct",
+    "silt_pct",
+    "ph_h2o",
+    "soc_g_kg",
+    "n_total_g_kg",
+    "p_mg_kg",
+    "k_mg_kg",
+    "cec_cmol_kg",
+    "bulk_density_g_cm3",
+    "fc_ptf_pct",
+    "wp_ptf_pct",
+    "awc_ptf_mm_per_m",
+    "sg_sand_pct_5_15cm",
+    "sg_clay_pct_5_15cm"
+  ],
+  "dtypes": {
+    "cell_id": "int32",
+    "lat": "float64",
+    "lon": "float64",
+    "depth_cm": "str",
+    "sand_pct": "float32",
+    "clay_pct": "float32",
+    "silt_pct": "float32",
+    "ph_h2o": "float32",
+    "soc_g_kg": "float32",
+    "n_total_g_kg": "float32",
+    "p_mg_kg": "float32",
+    "k_mg_kg": "float32",
+    "cec_cmol_kg": "float32",
+    "bulk_density_g_cm3": "float32",
+    "fc_ptf_pct": "float32",
+    "wp_ptf_pct": "float32",
+    "awc_ptf_mm_per_m": "float32",
+    "sg_sand_pct_5_15cm": "float32",
+    "sg_clay_pct_5_15cm": "float32"
+  },
+  "quality": {
+    "completeness_pct": 94.484,
+    "null_cells_by_column": {
+      "sand_pct": 48,
+      "clay_pct": 48,
+      "silt_pct": 48,
+      "ph_h2o": 48,
+      "soc_g_kg": 48,
+      "n_total_g_kg": 48,
+      "p_mg_kg": 48,
+      "k_mg_kg": 48,
+      "cec_cmol_kg": 48,
+      "bulk_density_g_cm3": 48,
+      "fc_ptf_pct": 48,
+      "wp_ptf_pct": 48,
+      "awc_ptf_mm_per_m": 48,
+      "sg_sand_pct_5_15cm": 6967,
+      "sg_clay_pct_5_15cm": 6967
+    },
+    "duplicate_key_rows": 0,
+    "key": [
+      "cell_id",
+      "depth_cm"
+    ],
+    "checks": {
+      "valid_cells_0_20cm": 6921,
+      "cells_total": 6945,
+      "sand_range_pct": [
+        37.540000915527344,
+        98.53900146484375
+      ],
+      "ph_range": [
+        5.307000160217285,
+        10.647000312805176
+      ],
+      "texture_sum_mean_pct": 98.88,
+      "n_total_backtransform": "expm1(x/100) — à vérifier contre la documentation iSDA",
+      "log_layers_note": "moyenne calculée dans l'espace transformé (≈ moyenne géométrique)"
+    }
+  },
+  "temporal_coverage": {
+    "type": "static_or_not_applicable"
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "grid",
+    "cells_present": 6945,
+    "cells_expected": 6945,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.325,
+    "lat_max": 16.675,
+    "lon_min": -17.525,
+    "lon_max": -11.325
+  }
+}

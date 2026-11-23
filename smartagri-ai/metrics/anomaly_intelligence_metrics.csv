@@ -1,0 +1,31 @@
+model,anomaly_type,precision,recall,f1,detected,true_anomalies,training_time_s
+Isolation Forest,heat,0.0001,0.0001,0.0001,12922,12841,2.27
+Isolation Forest,flood,0.1828,0.9475,0.3065,12922,2493,2.27
+Isolation Forest,drought,0.0005,0.0013,0.0008,12922,5584,2.27
+Isolation Forest,et0_extreme,0.0,0.0,0.0,12922,12857,2.27
+Isolation Forest,water_stress,0.0,0.0,0.0,12922,2574,2.27
+Isolation Forest,any_anomaly,0.1834,0.0836,0.1149,12922,28338,2.27
+LOF (50K),heat,0.04,0.0078,0.013,2500,12841,4.37
+LOF (50K),flood,0.0392,0.0393,0.0393,2500,2493,4.37
+LOF (50K),drought,0.0112,0.005,0.0069,2500,5584,4.37
+LOF (50K),et0_extreme,0.0516,0.01,0.0168,2500,12857,4.37
+LOF (50K),water_stress,0.0172,0.0167,0.0169,2500,2574,4.37
+LOF (50K),any_anomaly,0.1252,0.011,0.0203,2500,28338,4.37
+One-Class SVM,heat,0.0614,0.0618,0.0616,12922,12841,12.01
+One-Class SVM,flood,0.1518,0.7866,0.2544,12922,2493,12.01
+One-Class SVM,drought,0.0114,0.0263,0.0159,12922,5584,12.01
+One-Class SVM,et0_extreme,0.0508,0.0511,0.051,12922,12857,12.01
+One-Class SVM,water_stress,0.0312,0.1566,0.052,12922,2574,12.01
+One-Class SVM,any_anomaly,0.2336,0.1065,0.1463,12922,28338,12.01
+AutoEncoder MLP,heat,0.0045,0.0045,0.0045,12922,12841,29.57
+AutoEncoder MLP,flood,0.0547,0.2836,0.0917,12922,2493,29.57
+AutoEncoder MLP,drought,0.0026,0.0059,0.0036,12922,5584,29.57
+AutoEncoder MLP,et0_extreme,0.0029,0.003,0.0029,12922,12857,29.57
+AutoEncoder MLP,water_stress,0.0,0.0,0.0,12922,2574,29.57
+AutoEncoder MLP,any_anomaly,0.0639,0.0291,0.04,12922,28338,29.57
+Robust Stats (MAD),heat,0.0,0.0,0.0,12922,12841,0.17
+Robust Stats (MAD),flood,0.1463,0.7581,0.2452,12922,2493,0.17
+Robust Stats (MAD),drought,0.0001,0.0002,0.0001,12922,5584,0.17
+Robust Stats (MAD),et0_extreme,0.0,0.0,0.0,12922,12857,0.17
+Robust Stats (MAD),water_stress,0.0,0.0,0.0,12922,2574,0.17
+Robust Stats (MAD),any_anomaly,0.1463,0.0667,0.0917,12922,28338,0.17

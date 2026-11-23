@@ -475,6 +475,12 @@ def stage_nasa() -> None:
 # 3. CHIRPS v3 quotidien sur toute la grille nationale (une année = un fichier)
 # ======================================================================================================
 def _chirps_url(d: date) -> tuple[str, bool]:
+    if d <= date(2026, 9, 30):
+        return (
+            f"https://deafrica-input-datasets.s3.af-south-1.amazonaws.com/rainfall_chirps_daily/"
+            f"{d.year}/{d.month:02d}/chirps-v2.0_{d:%Y.%m.%d}.tif",
+            False,
+        )
     base = "https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily"
     if d <= date(2026, 10, 31):
         return f"{base}/final/rnl/{d.year}/chirps-v3.0.rnl.{d:%Y.%m.%d}.tif", False
@@ -483,9 +489,16 @@ def _chirps_url(d: date) -> tuple[str, bool]:
 
 def _read_chirps_day(d: date) -> tuple[date, np.ndarray | None]:
     url, _ = _chirps_url(d)
-    for attempt in range(4):
+    attempts = 3 if "deafrica-input-datasets" in url else 1
+    for attempt in range(attempts):
         try:
-            with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", GDAL_HTTP_MAX_RETRY="3", GDAL_HTTP_RETRY_DELAY="2"):
+            with rasterio.Env(
+                GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR",
+                GDAL_HTTP_TIMEOUT="15",
+                GDAL_HTTP_CONNECTTIMEOUT="8",
+                GDAL_HTTP_MAX_RETRY="2",
+                GDAL_HTTP_RETRY_DELAY="1",
+            ):
                 with rasterio.open(url) as src:
                     co = int(round((WEST - src.bounds.left) / RES))
                     ro = int(round((src.bounds.top - NORTH) / RES))
@@ -493,7 +506,8 @@ def _read_chirps_day(d: date) -> tuple[date, np.ndarray | None]:
             arr[arr < 0] = np.nan
             return d, arr
         except Exception:  # noqa: BLE001
-            time.sleep(2 * (attempt + 1))
+            if attempt + 1 < attempts:
+                time.sleep(1.5 * (attempt + 1))
     return d, None
 
 
@@ -799,6 +813,7 @@ def stage_static() -> None:
     log("== static : coefficients culturaux FAO-56 (depuis agronomy.py, lecture seule) ==")
     spec = importlib.util.spec_from_file_location("agronomy_ro", PLATEFORME / "backend" / "app" / "services" / "agronomy.py")
     mod = importlib.util.module_from_spec(spec)
+    sys.modules["agronomy_ro"] = mod  # requis par @dataclass
     spec.loader.exec_module(mod)  # type: ignore[union-attr]
     rows = []
     for code, prof in mod.CROP_PROFILES.items():

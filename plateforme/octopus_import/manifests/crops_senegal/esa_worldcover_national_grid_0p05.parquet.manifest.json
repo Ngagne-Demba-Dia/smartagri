@@ -1,0 +1,77 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "crops_senegal",
+  "file_name": "esa_worldcover_national_grid_0p05.parquet",
+  "relative_path": "data/real/crops_senegal/esa_worldcover_national_grid_0p05.parquet",
+  "source_id": "worldcover",
+  "owner": "ESA WorldCover (v200, 2021)",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/",
+  "description": "Fractions d'occupation du sol (cultures, arbres, bâti, eau, zones humides…) par cellule 0,05° sur tout le Sénégal.",
+  "fetched_at_utc": "2026-11-14T19:59:34+00:00",
+  "sha256": "43935c971f181c2ae0aa0ea91fe0f800d2451145b65e22f343b27725a1910b30",
+  "size_bytes": 115997,
+  "rows": 6945,
+  "columns": [
+    "cell_id",
+    "lat",
+    "lon",
+    "n_samples",
+    "share_tree",
+    "share_shrub",
+    "share_grass",
+    "share_crop",
+    "share_built",
+    "share_bare",
+    "share_water",
+    "share_wetland",
+    "share_mangrove"
+  ],
+  "dtypes": {
+    "cell_id": "int32",
+    "lat": "float64",
+    "lon": "float64",
+    "n_samples": "int32",
+    "share_tree": "float64",
+    "share_shrub": "float64",
+    "share_grass": "float64",
+    "share_crop": "float64",
+    "share_built": "float64",
+    "share_bare": "float64",
+    "share_water": "float64",
+    "share_wetland": "float64",
+    "share_mangrove": "float64"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "cell_id"
+    ],
+    "checks": {
+      "cropland_cells_over_10pct": 2269,
+      "national_cropland_share_pct": 18.08,
+      "sampling": "nearest 10×10 échantillons par cellule 0,05° (≈ 100 sur 360 000 pixels de 10 m)"
+    }
+  },
+  "temporal_coverage": {
+    "type": "static_or_not_applicable"
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "grid",
+    "cells_present": 6945,
+    "cells_expected": 6945,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.325,
+    "lat_max": 16.675,
+    "lon_min": -17.525,
+    "lon_max": -11.325
+  }
+}

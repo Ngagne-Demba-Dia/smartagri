@@ -1,0 +1,82 @@
+{
+  "dataset": "soil_nowcast_proxy_national",
+  "version": "20261114-natl01",
+  "s3_prefix": "octopus/soil_nowcast_proxy_national/v=20261114-natl01/",
+  "created_at": "2026-11-16T09:23:39+00:00",
+  "git_sha": "b022447471cb4ececfb05ebe17c6bae1d81ef722",
+  "agriml_version": "0.1.0",
+  "source": {
+    "pipeline": "build_national_data_lake.py",
+    "mission": "IA-REAL-03",
+    "synthetic": false,
+    "target_nature": "PROXY modélisé (NASA GEOS), pas une mesure de capteur",
+    "spatial_holdout_zones": [
+      "mboro",
+      "potou",
+      "richard_toll"
+    ]
+  },
+  "rows": 258440,
+  "test_rows": 25915,
+  "schema": {
+    "power_cell_id": "string",
+    "t_min_c": "float",
+    "t_max_c": "float",
+    "t_mean_c": "float",
+    "rh_mean_pct": "float",
+    "wind_2m_ms": "float",
+    "solar_rad_mj_m2": "float",
+    "pressure_hpa": "float",
+    "rain_mm": "float",
+    "rain_chirps_mm": "float",
+    "et0_pm_mm": "float",
+    "rain_nasa_sum_3d_mm": "float",
+    "rain_nasa_sum_7d_mm": "float",
+    "rain_nasa_sum_14d_mm": "float",
+    "rain_chirps_sum_3d_mm": "float",
+    "rain_chirps_sum_7d_mm": "float",
+    "rain_chirps_sum_14d_mm": "float",
+    "et0_pm_mean_7d_mm": "float",
+    "doy_sin": "float",
+    "doy_cos": "float",
+    "sand_pct": "float",
+    "clay_pct": "float",
+    "soc_g_kg": "float",
+    "ph_h2o": "float",
+    "bulk_density_g_cm3": "float",
+    "fc_ptf_pct": "float",
+    "wp_ptf_pct": "float",
+    "share_crop": "float",
+    "share_tree": "float",
+    "share_bare": "float",
+    "share_built": "float",
+    "soil_wetness_root_pct": "float",
+    "y_plus_1d_pct": "float",
+    "y_plus_2d_pct": "float",
+    "y_plus_3d_pct": "float",
+    "ts": "timestamp"
+  },
+  "target": "soil_wetness_root_pct",
+  "groups": "power_cell_id",
+  "time_column": "ts",
+  "pseudonymisation": {
+    "method": "HMAC-SHA256",
+    "salt_id": "local-dev-2026-11"
+  },
+  "dropped_columns": [],
+  "masked_columns": [],
+  "pseudonymized_columns": [
+    "power_cell_id"
+  ],
+  "rounded_columns": {},
+  "files": {
+    "README.md": "sha256:d608a77e1f071e51318af4582e7b26000e3ede7d81ab29f03e430bc91217c828",
+    "test.parquet": "sha256:af1d72f63c8f4538caae3ece76eb1419bc3d40b5cb7e90d8b8489943e73cf500",
+    "train.parquet": "sha256:5d01aded3857c7422d03271e95d4e2c0d77397bb20753e8c93edda8eefd755fb"
+  },
+  "holdout_window": [
+    "2026-01-01",
+    "2026-11-10"
+  ],
+  "holdout_sent": false
+}

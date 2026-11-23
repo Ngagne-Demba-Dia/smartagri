@@ -81,7 +81,7 @@ export function TrapsView({ initialDeviceId }: { initialDeviceId: string | null 
   const query = useTrapCounts(deviceId, from, to);
 
   return (
-    <ModuleShell title={tm("traps")} description={t("description")} version="V2">
+    <ModuleShell title={tm("traps")} description={t("description")} version="MVP">
       <QueryState
         isPending={devices.isPending}
         error={devices.error}

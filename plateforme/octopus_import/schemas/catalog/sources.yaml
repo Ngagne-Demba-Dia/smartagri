@@ -1,0 +1,426 @@
+# Catalogue des SOURCES de données et des modèles pré-entraînés. Confidentiel - réservé aux partenaires de travail.
+# Référence unique, lue et contrôlée par `python -m agriml.catalog check` (voir ml/catalog/README.md).
+# Champs :
+#   kind        public_api | open_data | commercial | partner | internal | user_input | reference | pretrained
+#   commercial  open (usage commercial permis) | contract (accord, abonnement ou conditions à signer)
+#               | restricted (non commercial seulement) | unknown (licence non confirmée)
+#   personal    none | indirect (rattachée à une parcelle ou un kit) | direct (identifie une personne)
+#   identifying true si le contenu identifie la personne même après minimisation (voix)
+#   coverage    couverture du Sénégal : full | partial | none | unknown
+#   verified    date (AAAA-MM-JJ) de la dernière lecture de la licence sur une page publique, sinon null ;
+#               une source vérifiée peut rester « unknown » si la page ne tranche pas
+#   evidence    URL lue lors de la vérification (pages publiques uniquement)
+# Coûts en FCFA ou en devise du fournisseur ; « hypothèse » = à valider par devis.
+
+sources:
+  # ---------------------------------------------------------------- Météo et climat
+  - {id: open_meteo, domain: meteo, kind: public_api, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://open-meteo.com/en/terms ; https://open-meteo.com/en/pricing",
+     name: "Open-Meteo (prévision, archive, ensembles)",
+     licence: "Données CC BY 4.0 ; API gratuite réservée au non commercial (abonnement ou publicité = commercial)",
+     commercial: contract,
+     cost: "Standard ~29 $/mois, Professional ~99 $/mois (blog 2023, à reconfirmer) ; Professional requis pour historique, ensembles, rayonnement ; ou auto-hébergement (AGPLv3)",
+     access: "API REST JSON", details: "ECMWF IFS, ICON, GFS… ; ~9–25 km ; horaire ; 16 j ; archive ERA5"}
+  - {id: ecmwf_open_data, domain: meteo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "ECMWF Open Data (IFS, AIFS)", licence: "CC BY 4.0", commercial: open, cost: "Gratuit",
+     access: "GRIB2 par HTTP et miroirs cloud", details: "0,25° ; 4 émissions/j ; jusqu'à 15 j"}
+  - {id: noaa_gfs, domain: meteo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "NOAA GFS", licence: "Domaine public (NOAA)", commercial: open, cost: "Gratuit",
+     access: "GRIB2 (NOMADS, AWS Open Data)", details: "0,25° ; 4 émissions/j ; 16 j"}
+  - {id: era5, domain: meteo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels",
+     name: "ERA5 (réanalyse ECMWF)", licence: "CC BY (C3S/ECMWF), compte CDS", commercial: open,
+     cost: "Gratuit", access: "Copernicus CDS (cdsapi), ARCO Zarr", details: "0,25° ; horaire ; depuis 1940 ; ~5 j"}
+  - {id: era5_land, domain: meteo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "ERA5-Land", licence: "Licence Copernicus (libre, attribution)", commercial: open, cost: "Gratuit",
+     access: "Copernicus CDS", details: "0,1° ; horaire ; depuis 1950 ; humidité du sol, ET, rayonnement"}
+  - {id: agera5, domain: meteo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "AgERA5 (indicateurs agrométéo)", licence: "Licence Copernicus (libre, attribution)", commercial: open,
+     cost: "Gratuit", access: "Copernicus CDS", details: "0,1° ; journalier ; depuis 1979 ; Tmin/Tmax, vent 2 m, HR, rayonnement"}
+  - {id: nasa_power, domain: meteo, kind: public_api, personal: none, coverage: full, verified: null,
+     name: "NASA POWER (agroclimatologie)", licence: "Données NASA, libres avec citation", commercial: open,
+     cost: "Gratuit", access: "API REST (point, région), JSON/CSV", details: "0,5° × 0,625° ; journalier ; depuis 1981"}
+  - {id: chirps, domain: meteo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://www.chc.ucsb.edu/data/chirps ; https://www.chc.ucsb.edu/data/chirps3",
+     name: "CHIRPS v3 (pluie satellite + stations)", licence: "v2 domaine public ; v3 CC BY 4.0 (attribution)",
+     commercial: open, cost: "Gratuit", access: "GeoTIFF, NetCDF, COG (HTTP), GEE",
+     details: "0,05° ; journalier/pentade ; depuis 1981 ; provisoire ~2 j, final ~3 sem. ; v2 arrêtée après déc. 2026 → v3"}
+  - {id: tamsat, domain: meteo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://ourresearch.reading.ac.uk/tamsat/",
+     name: "TAMSAT v3.1 (pluie Afrique)",
+     licence: "Creative Commons (version non nommée) ; usage opérationnel, recherche et commercial déclaré",
+     commercial: open, cost: "Gratuit", access: "NetCDF (HTTP), sous-ensembles CSV ; pas d'API",
+     details: "0,0375° ; journalier ; depuis 1983 ; humidité du sol forcée par ERA5-Land depuis 03/2026 (rupture)"}
+  - {id: imerg, domain: meteo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "NASA GPM IMERG", licence: "Données NASA, libres", commercial: open, cost: "Gratuit (compte Earthdata)",
+     access: "GES DISC (HTTP, OPeNDAP)", details: "0,1° ; 30 min ; depuis 2000 ; Early ~4 h, Final ~3,5 mois"}
+  - {id: cmsaf_sarah, domain: meteo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://ewds.climate.copernicus.eu/licences/eumetsat-cm-saf",
+     name: "CM SAF SARAH-3 (rayonnement MSG)",
+     licence: "CM SAF products licence rev. 1 : gratuit, © EUMETSAT ; usage commercial non explicite",
+     commercial: unknown,
+     cost: "Gratuit (inscription)", access: "Portail CM SAF", details: "0,05° ; 30 min/jour ; rayonnement global"}
+  - {id: tahmo, domain: meteo, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "TAHMO (stations automatiques)", licence: "Accord de données TAHMO", commercial: contract,
+     cost: "Non publié (Data Policy non lue) ; hypothèse : gratuit recherche, devis en commercial",
+     access: "Portail après formulaire ; API non documentée publiquement",
+     details: "Pluie, T, HR, vent, rayonnement ; 5 min ; densité au Sénégal à vérifier"}
+  - {id: anacim_stations, domain: meteo, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "ANACIM (stations synoptiques et climatologiques)", licence: "Convention ANACIM", commercial: contract,
+     cost: "Sur convention", access: "Fichiers fournis par l'ANACIM", details: "Horaire/journalier ; séries longues"}
+  - {id: agrhymet_presass, domain: meteo, kind: partner, personal: none, coverage: full, verified: null,
+     name: "AGRHYMET / PRESASS (prévision saisonnière)", licence: "Bulletins publics ; données sur convention",
+     commercial: contract, cost: "Gratuit (bulletins)", access: "Bulletins PDF, cartes",
+     details: "Cumul, dates de début et de fin de saison, séquences sèches ; une fois par an (mai)"}
+
+  # ---------------------------------------------------------------- Sols
+  - {id: soilgrids, domain: sols, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://isric.org/explore/soilgrids",
+     name: "ISRIC SoilGrids 2.0", licence: "CC BY 4.0", commercial: open, cost: "Gratuit",
+     access: "WCS, WebDAV (COG) ; API REST « temporarily paused » sans calendrier", details: "250 m ; 6 profondeurs ; pH, C org., N, texture, CEC, densité"}
+  - {id: isdasoil, domain: sols, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://registry.opendata.aws/isdasoil/",
+     name: "iSDAsoil (Afrique)", licence: "CC BY 4.0", commercial: open, cost: "Gratuit",
+     access: "S3 public isdasoil (us-west-2), COG ; API iSDA (état non vérifié)", details: "30 m ; 0–20 et 20–50 cm ; pH, C org., N, P, K, texture, CEC"}
+  - {id: hwsd, domain: sols, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/",
+     name: "FAO HWSD v2",
+     licence: "Aucune licence affichée par la FAO ; mentions secondaires CC BY-NC-SA (risque NC)",
+     commercial: unknown, cost: "Gratuit",
+     access: "Raster + base de profils", details: "~1 km ; unités cartographiques"}
+  - {id: inp_soil_map, domain: sols, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "Institut national de pédologie (cartes, études)", licence: "Convention INP", commercial: contract,
+     cost: "Sur convention", access: "Cartes et rapports", details: "Échelles variables ; salinité des Niayes"}
+  - {id: soil_lab_analyses, domain: sols, kind: partner, personal: indirect, coverage: partial, verified: null,
+     name: "Analyses de sol en laboratoire", licence: "Prestation : résultats propriété du projet", commercial: open,
+     cost: "Hypothèse 15–40 k FCFA par échantillon", access: "Fichiers du laboratoire, saisie",
+     details: "pH, CE, MO, N total, P assimilable, K échangeable, CEC, texture ; ponctuel"}
+  - {id: soil_field_kits, domain: sols, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Mesures de terrain (conductimètre, pH-mètre)", licence: "Interne", commercial: open,
+     cost: "Hypothèse 100–300 € par appareil", access: "Saisie mobile du technicien",
+     details: "CE 1:5 et pH à l'installation du kit puis deux fois par saison"}
+
+  # ---------------------------------------------------------------- Télédétection satellite
+  - {id: sentinel2, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "Sentinel-2 L2A", licence: "Licence Copernicus (libre)", commercial: open, cost: "Gratuit (quotas CDSE)",
+     access: "Copernicus Data Space : STAC, openEO, Sentinel Hub", details: "10–60 m ; 13 bandes ; 5 j ; depuis 2015"}
+  - {id: sentinel1, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "Sentinel-1 GRD", licence: "Licence Copernicus (libre)", commercial: open, cost: "Gratuit (quotas CDSE)",
+     access: "Copernicus Data Space", details: "Radar bande C ; 10 m ; VV/VH ; 6–12 j ; insensible aux nuages"}
+  - {id: landsat, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "Landsat 8/9 Collection 2", licence: "Domaine public (USGS)", commercial: open, cost: "Gratuit",
+     access: "USGS M2M, STAC, AWS (paiement du demandeur)", details: "30 m (thermique 100 m) ; 8 j ; archive depuis 1984"}
+  - {id: hls, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "NASA HLS (Landsat + Sentinel-2 harmonisés)", licence: "Données NASA, libres", commercial: open,
+     cost: "Gratuit (Earthdata)", access: "LP DAAC, STAC CMR", details: "30 m ; 2–3 j"}
+  - {id: modis_viirs, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "MODIS / VIIRS (indices de végétation)", licence: "Données NASA, libres", commercial: open,
+     cost: "Gratuit", access: "LP DAAC, AppEEARS", details: "250 m–1 km ; 8–16 j ; depuis 2000 ; MODIS en fin de vie"}
+  - {id: planetscope, domain: satellite, kind: commercial, personal: none, coverage: full, verified: null,
+     name: "PlanetScope", licence: "Licence Planet (usage et diffusion restreints)", commercial: contract,
+     cost: "Sur devis (non publié) ; NICFI terminé le 23/01/2025 ; offre Éducation et recherche non commerciale",
+     access: "API Planet", details: "~3 m ; quasi quotidien ; 8 bandes"}
+  - {id: deafrica, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "Digital Earth Africa", licence: "CC BY 4.0 (à confirmer par produit)", commercial: open, cost: "Gratuit",
+     access: "AWS af-south-1 (COG), STAC", details: "ARD Sentinel-2/Landsat, masque cultures, WOfS, anomalies NDVI"}
+  - {id: wapor, domain: satellite, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://www.fao.org/in-action/remote-sensing-for-water-productivity/wapor-data/en",
+     name: "FAO WaPOR v3",
+     licence: "Contradictoire : FAO Open Data, CC BY-SA 4.0 ou CC BY-NC-SA 4.0 selon la page", commercial: unknown,
+     cost: "Gratuit", access: "Portail et API WaPOR, GEE, DE Africa",
+     details: "ETa, biomasse ; L1 300 m, L2 100 m Afrique, L3 20 m sur le delta du fleuve Sénégal ; décadaire ; 2018+"}
+
+  # ---------------------------------------------------------------- Drones
+  - {id: drone_rgb, domain: drone, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Drone RGB (orthomosaïques, MNS)", licence: "Interne", commercial: open,
+     cost: "Hypothèse 5–15 k FCFA/ha en prestation", access: "Missions planifiées, photogrammétrie",
+     details: "1–3 cm/px ; 2 à 4 vols par saison sur parcelles pilotes"}
+  - {id: drone_multispectral, domain: drone, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Drone multispectral", licence: "Interne", commercial: open, cost: "Capteur 5–10 bandes (hypothèse 4–8 k€)",
+     access: "Missions planifiées, panneau de calibration", details: "3–8 cm/px ; NDVI, NDRE à la plante"}
+  - {id: drone_thermal, domain: drone, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Drone thermique", licence: "Interne", commercial: open, cost: "Hypothèse 3–6 k€ le capteur",
+     access: "Vols en milieu de journée", details: "5–15 cm/px ; température de couvert, indice CWSI"}
+
+  # ---------------------------------------------------------------- IoT (kit SmartAgri92)
+  - {id: kit_telemetry, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Télémétrie du kit (telemetry.v1)", licence: "Interne", commercial: open, cost: "Inclus dans le kit",
+     access: "MQTT, relais mobile, POST /v1/telemetry/batch",
+     details: "Humidité du sol, T/HR/pression de l'air, N/P/K, pompe, états capteurs, seuils ; 5 min"}
+  - {id: kit_events, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Événements du kit", licence: "Interne", commercial: open, cost: "Inclus",
+     access: "MQTT, API", details: "Pompe marche/arrêt, défauts, changements de seuils, acquittements, redémarrages"}
+  - {id: kit_config, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Registre et configuration des kits", licence: "Interne", commercial: open, cost: "Inclus",
+     access: "API devices, installation (UC-01)",
+     details: "Firmware, modèle et profondeur de sonde, étalonnage, débit nominal de pompe, cuve, panneau"}
+  - {id: kit_espcam, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Images ESP32-CAM", licence: "Interne", commercial: open, cost: "Module caméra (hypothèse 5–8 k FCFA)",
+     access: "Téléversement S3 présigné", details: "JPEG 0,3–2 Mpx ; fréquence à régler (4 photos/j conseillé)"}
+  - {id: kit_flowmeter, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Débitmètre (prévu, firmware v1.2)", licence: "Interne", commercial: open,
+     cost: "Hypothèse 3–10 k FCFA (effet Hall)", access: "telemetry.v2 (à définir)",
+     details: "Débit (L/min) et volume cumulé ; cible réelle des modèles d'irrigation"}
+  - {id: kit_power, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Énergie (prévu) : batterie, panneau, courant pompe", licence: "Interne", commercial: open,
+     cost: "Hypothèse 2–5 k FCFA (INA219)", access: "telemetry.v2 (à définir)",
+     details: "Tension batterie, courant panneau, courant pompe ; 5 min"}
+  - {id: kit_soil_extended, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Sol étendu (prévu) : CE, température, 2e profondeur", licence: "Interne", commercial: open,
+     cost: "0 si la sonde 7-en-1 expose CE/T ; sinon seconde sonde", access: "telemetry.v2 (à définir)",
+     details: "CE du sol (salinité), température du sol, humidité à 30–40 cm"}
+  - {id: kit_microclimate, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Microclimat (prévu, kits de référence)", licence: "Interne", commercial: open,
+     cost: "Hypothèse 60–150 k FCFA par kit de référence", access: "telemetry.v2 (à définir)",
+     details: "Pluviomètre à augets, humectation foliaire, pyranomètre, anémomètre ; 1 kit sur 20"}
+
+  # ---------------------------------------------------------------- Phytosanitaire
+  - {id: advisor_diagnoses, domain: phyto, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Validations des conseillers", licence: "Interne", commercial: open, cost: "Temps des conseillers",
+     access: "File de validation (module 8)", details: "Classe, gravité, certitude, commentaire structuré"}
+  - {id: farmer_photos, domain: phyto, kind: user_input, personal: direct, coverage: partial, verified: null,
+     name: "Photos des producteurs", licence: "Consentement de l'utilisateur", commercial: open, cost: "—",
+     access: "Application mobile, web (POST /v1/images)", details: "1–4 Mo ; visages et EXIF GPS possibles"}
+  - {id: scouting_reports, domain: phyto, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: "Observations et piégeage", licence: "Interne", commercial: open, cost: "Pièges à phéromones (hypothèse)",
+     access: "Saisie mobile", details: "Comptages Tuta absoluta, thrips, Plutella ; gravité ; hebdomadaire"}
+  - {id: treatments_log, domain: phyto, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: "Journal des traitements", licence: "Interne", commercial: open, cost: "—",
+     access: "Saisie mobile", details: "Produit, matière active, dose, date, cible"}
+  - {id: dpv_alerts, domain: phyto, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "Direction de la protection des végétaux (alertes)", licence: "Convention DPV", commercial: contract,
+     cost: "Sur convention", access: "Bulletins, échanges", details: "Foyers signalés, campagnes de lutte"}
+  - {id: famews, domain: phyto, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "FAO FAMEWS (chenille légionnaire)",
+     licence: "Plateforme « freely accessible » ; ni licence, ni export, ni API trouvés (page FAO en 404)",
+     commercial: unknown, cost: "Gratuit", access: "Plateforme FAMEWS (accord à demander à la FAO)", details: "Observations de pièges et de parcelles géolocalisées"}
+  - {id: fao_locust, domain: phyto, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "FAO Desert Locust Watch / Locust Hub",
+     licence: "Réutilisation encouragée avec crédit FAO ; licence exacte non trouvée", commercial: unknown,
+     cost: "Gratuit", access: "Locust Hub ; jeu complet sur demande de compte, pas de temps réel", details: "Observations, bulletins mensuels, prévisions"}
+  - {id: csp_pesticides, domain: phyto, kind: reference, personal: none, coverage: full, verified: null,
+     name: "Liste des pesticides autorisés (CSP / CILSS)", licence: "Liste réglementaire publique", commercial: open,
+     cost: "Gratuit", access: "Liste publiée par le CSP", details: "Produits, matières actives, usages ; deux sessions par an"}
+  - {id: pest_biology_reference, domain: phyto, kind: reference, personal: none, coverage: full, verified: null,
+     name: "Biologie des ravageurs (littérature)", licence: "Faits publiés, citation", commercial: open, cost: "—",
+     access: "Revue bibliographique", details: "Seuils thermiques, degrés-jours, cycles (Tuta, Plutella, thrips)"}
+  - {id: plantvillage, domain: phyto, kind: open_data, personal: none, coverage: none, verified: "2026-11-01",
+     evidence: "https://github.com/spMohanty/PlantVillage-Dataset ; https://data.mendeley.com/datasets/tywbtsjrjv/1",
+     name: "PlantVillage",
+     licence: "Original sans licence (citation demandée) ; dérivé Mendeley CC0, chaîne de droits non établie",
+     commercial: unknown, cost: "Gratuit",
+     access: "Dépôts publics", details: "~54 000 images, 38 classes, fond uni de laboratoire"}
+  - {id: plantdoc, domain: phyto, kind: open_data, personal: none, coverage: none, verified: "2026-11-01",
+     evidence: "https://github.com/pratikkayal/PlantDoc-Dataset",
+     name: "PlantDoc", licence: "CC BY 4.0 (LICENSE.txt)", commercial: open, cost: "Gratuit",
+     access: "Dépôt public", details: "2 598 images de terrain, 13 espèces, 17 classes de maladies"}
+  - {id: gbif, domain: phyto, kind: open_data, personal: none, coverage: partial, verified: "2026-11-01",
+     evidence: "blog et actualités gbif.org (page des licences en 403)",
+     name: "GBIF (occurrences d'espèces)",
+     licence: "CC0, CC BY 4.0 ou CC BY-NC 4.0 par jeu ; un téléchargement prend la plus restrictive",
+     commercial: contract, cost: "Gratuit", access: "API GBIF avec filtre de licence (CC0, CC BY)",
+     details: "Occurrences géoréférencées ; iNaturalist research-grade en CC BY-NC, à exclure"}
+
+  # ---------------------------------------------------------------- Agronomie
+  - {id: crop_cycles_user, domain: agronomie, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: "Cycles culturaux déclarés", licence: "Interne", commercial: open, cost: "—", access: "API fields, campagnes",
+     details: "Culture, variété, semis ou repiquage, surface, système d'irrigation, densité"}
+  - {id: operations_log, domain: agronomie, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: "Journal des opérations", licence: "Interne", commercial: open, cost: "—", access: "Saisie mobile",
+     details: "Irrigations manuelles, fumure, désherbage, récolte"}
+  - {id: fao56_tables, domain: agronomie, kind: reference, personal: none, coverage: full, verified: null,
+     name: "FAO-56 (coefficients culturaux)", licence: "Coefficients publiés, citation", commercial: open, cost: "—",
+     access: "Publication FAO 56", details: "Kc ini/mi/fin, durées des stades, profondeur racinaire, p, Ky"}
+  - {id: fao_crop_calendar, domain: agronomie, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "FAO Crop Calendar", licence: "Aucune licence trouvée (hypothèse : CC BY-NC-SA 3.0 IGO de la FAO)",
+     commercial: unknown, cost: "Gratuit",
+     access: "Outil en ligne", details: "Calendriers par zone agroécologique"}
+  - {id: isra_cdh_references, domain: agronomie, kind: partner, personal: none, coverage: full, verified: null,
+     name: "Références ISRA, CDH, ANCAR", licence: "Convention de partenariat", commercial: contract,
+     cost: "Sur convention", access: "Fiches, catalogues, rapports",
+     details: "Calendriers, catalogue variétal, formules de fumure, itinéraires techniques"}
+  - {id: aquacrop, domain: agronomie, kind: reference, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://www.fao.org/aquacrop/software ; https://github.com/KUL-RSDA/AquaCrop",
+     name: "AquaCrop (FAO) / AquaCrop-OSPy",
+     licence: "Logiciel gratuit ; cœur Fortran open source (LICENSE non lu) ; manuels FAO non commerciaux",
+     commercial: unknown, cost: "Gratuit",
+     access: "Logiciel, bibliothèque Python", details: "Modèle de culture piloté par l'eau"}
+  - {id: sarra, domain: agronomie, kind: reference, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://github.com/SARRA-cropmodels/SARRA-Py ; https://github.com/SARRA-cropmodels/SARRA-O",
+     name: "SARRA-Py / SARRA-O (famille SARRA, CIRAD)",
+     licence: "SARRA-Py GPLv3 ; SARRA-O CeCILL-C (à confirmer) ; SARRA-H non publié (contact CIRAD)",
+     commercial: open, cost: "Gratuit (paramétrage local avec l'ISRA conseillé)", access: "Dépôts GitHub (Python)",
+     details: "Bilan hydrique et rendement des céréales sahéliennes ; SARRA-Py spatialisé sur grille"}
+  - {id: gyga, domain: agronomie, kind: open_data, personal: none, coverage: unknown, verified: "2026-11-01",
+     evidence: "https://yieldgap.com/ (redirection de www.yieldgap.org)",
+     name: "Yield Potential and Yield Gap Atlas (YPYGA, ex-GYGA)",
+     licence: "CC BY-NC-SA 4.0 ; usage commercial sur accord", commercial: restricted, cost: "Gratuit (non commercial)",
+     access: "Atlas en ligne, téléchargement", details: "Rendements potentiels et écarts ; 83 pays, Sénégal non vérifié"}
+
+  # ---------------------------------------------------------------- Économie
+  - {id: sim_csa, domain: economie, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "SIM du Commissariat à la sécurité alimentaire", licence: "Convention CSA", commercial: contract,
+     cost: "Sur convention", access: "Bulletins, fichiers", details: "Prix hebdomadaires par marché et produit"}
+  - {id: arm_prices, domain: economie, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "Agence de régulation des marchés (ARM)", licence: "Convention ARM", commercial: contract,
+     cost: "Sur convention", access: "Bulletins, fichiers", details: "Prix et volumes oignon, pomme de terre, carotte"}
+  - {id: fews_net, domain: economie, kind: open_data, personal: none, coverage: partial, verified: null,
+     name: "FEWS NET (prix de marché)", licence: "À confirmer", commercial: unknown, cost: "Gratuit",
+     access: "Portail, API", details: "Prix mensuels, perspectives de sécurité alimentaire"}
+  - {id: giews_fpma, domain: economie, kind: open_data, personal: none, coverage: partial, verified: null,
+     name: "FAO GIEWS FPMA", licence: "Licence non indiquée ; couverture Sénégal non vérifiée", commercial: unknown,
+     cost: "Gratuit",
+     access: "Outil FPMA", details: "Prix mensuels de gros et de détail"}
+  - {id: input_prices_survey, domain: economie, kind: internal, personal: none, coverage: partial, verified: null,
+     name: "Relevé des prix des intrants", licence: "Interne", commercial: open, cost: "Temps des animateurs",
+     access: "Enquête mensuelle (coopératives, fournisseurs)", details: "Engrais, semences, produits, carburant"}
+  - {id: energy_tariffs, domain: economie, kind: reference, personal: none, coverage: full, verified: null,
+     name: "Tarifs de l'électricité et des carburants", licence: "Textes publics", commercial: open, cost: "—",
+     access: "Arrêtés et grilles tarifaires", details: "Tarifs Senelec, prix des carburants ; à chaque révision"}
+  - {id: logistics_costs, domain: economie, kind: internal, personal: none, coverage: partial, verified: null,
+     name: "Coûts logistiques", licence: "Interne", commercial: open, cost: "Temps des animateurs",
+     access: "Enquête", details: "Transport parcelle → marché, pertes après récolte, stockage"}
+  - {id: farm_accounts, domain: economie, kind: user_input, personal: direct, coverage: partial, verified: null,
+     name: "Comptes d'exploitation déclarés", licence: "Consentement de l'utilisateur", commercial: open, cost: "—",
+     access: "Saisie mobile (V2)", details: "Charges, ventes, prix obtenus"}
+  - {id: payments, domain: economie, kind: internal, personal: direct, coverage: partial, verified: null,
+     name: "Paiements mobiles (Wave, Orange Money)", licence: "Interne", commercial: open, cost: "Frais de transaction",
+     access: "Webhooks des opérateurs", details: "Abonnements, locations ; jamais utilisés pour l'entraînement"}
+  - {id: cnaas_insurance, domain: economie, kind: partner, personal: indirect, coverage: partial, verified: null,
+     name: "CNAAS (assurance agricole)", licence: "Convention CNAAS", commercial: contract, cost: "Sur convention",
+     access: "Fichiers", details: "Produits indiciels, sinistres, indemnisations"}
+  - {id: mfi_credit_outcomes, domain: economie, kind: partner, personal: direct, coverage: partial, verified: null,
+     name: "Remboursements de crédit (institutions de microfinance)", licence: "Convention + consentement",
+     commercial: contract, cost: "Sur convention", access: "Fichiers", details: "Montants, échéances, retards, défauts"}
+
+  # ---------------------------------------------------------------- Géospatial
+  - {id: user_field_boundaries, domain: geo, kind: user_input, personal: direct, coverage: partial, verified: null,
+     name: "Contours des parcelles", licence: "Consentement de l'utilisateur", commercial: open, cost: "—",
+     access: "Dessin web (module 4), relevé GPS mobile", details: "GeoJSON ; à la création, puis corrections"}
+  - {id: geoboundaries, domain: geo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "geoBoundaries (limites administratives)", licence: "CC BY 4.0 (à confirmer)", commercial: open,
+     cost: "Gratuit", access: "API, GeoJSON", details: "ADM0–ADM3"}
+  - {id: ansd_admin, domain: geo, kind: partner, personal: none, coverage: full, verified: null,
+     name: "ANSD (limites officielles, recensement)",
+     licence: "« Licence ouverte » annoncée par l'ANSD (2024), conditions non lues", commercial: contract,
+     cost: "Sur demande", access: "Fichiers", details: "Codes administratifs, population"}
+  - {id: copernicus_dem, domain: geo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "Copernicus DEM GLO-30", licence: "Licence Copernicus DEM (libre, conditions)", commercial: open,
+     cost: "Gratuit", access: "AWS Open Data, CDSE", details: "30 m ; altitude, pente, exposition"}
+  - {id: worldcover, domain: geo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://esa-worldcover.org/en/data-access",
+     name: "ESA WorldCover", licence: "CC BY 4.0", commercial: open, cost: "Gratuit",
+     access: "COG (AWS, Zenodo)", details: "10 m ; 11 classes ; 2020 et 2021"}
+  - {id: jrc_gsw, domain: geo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://global-surface-water.appspot.com/download",
+     name: "JRC Global Surface Water v1.5", licence: "Copernicus : gratuit, sans restriction ; crédit EC JRC/Google",
+     commercial: open, cost: "Gratuit", access: "GEE, téléchargement",
+     details: "30 m ; 1984–2024 ; seule la série 1984–2015 est validée"}
+  - {id: hydrosheds, domain: geo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://www.hydrosheds.org/products/hydrorivers",
+     name: "HydroSHEDS / HydroRIVERS",
+     licence: "Licence HydroSHEDS : usage scientifique, éducatif et commercial, attribution", commercial: open,
+     cost: "Gratuit",
+     access: "Téléchargement", details: "Réseau hydrographique, bassins versants"}
+  - {id: osm, domain: geo, kind: open_data, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://www.openstreetmap.org/copyright",
+     name: "OpenStreetMap", licence: "ODbL 1.0 : attribution et partage à l'identique des bases dérivées diffusées",
+     commercial: contract, cost: "Gratuit (tuiles et API OSM non utilisables en production : auto-héberger)",
+     access: "Extraits Geofabrik, Overpass", details: "Routes, marchés, localités, points d'eau"}
+  - {id: field_boundaries_open, domain: geo, kind: open_data, personal: none, coverage: unknown, verified: null,
+     name: "Contours de parcelles ouverts (Fields of The World…)", licence: "À confirmer", commercial: unknown,
+     cost: "Gratuit", access: "Téléchargement", details: "Étiquettes de segmentation ; couverture Sénégal à vérifier"}
+
+  # ---------------------------------------------------------------- Eau
+  - {id: dgpre_groundwater, domain: eau, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "DGPRE (nappes, piézométrie, qualité)", licence: "Convention DGPRE", commercial: contract,
+     cost: "Sur convention", access: "Fichiers", details: "Niveaux des nappes, salinité, ouvrages ; Niayes"}
+  - {id: irrigation_water_quality, domain: eau, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Qualité de l'eau d'irrigation", licence: "Interne", commercial: open, cost: "Conductimètre (voir sols)",
+     access: "Saisie mobile du technicien", details: "CE, pH (nitrates en option) ; à l'installation puis mensuel en saison sèche"}
+  - {id: well_inventory, domain: eau, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: "Inventaire des ouvrages d'irrigation", licence: "Interne", commercial: open, cost: "—",
+     access: "Installation du kit (UC-01)", details: "Céane, puits, forage ; profondeur ; pompe solaire, thermique ou manuelle"}
+
+  # ---------------------------------------------------------------- Historique et statistiques
+  - {id: faostat, domain: historique, kind: open_data, personal: none, coverage: full, verified: null,
+     name: "FAOSTAT", licence: "CC BY 4.0 (à confirmer)", commercial: open, cost: "Gratuit",
+     access: "API, CSV", details: "Production, surfaces, rendements par pays ; annuel ; depuis 1961"}
+  - {id: dapsa_surveys, domain: historique, kind: partner, personal: none, coverage: full, verified: null,
+     name: "DAPSA (enquête agricole annuelle)", licence: "Convention", commercial: contract, cost: "Sur convention",
+     access: "Rapports, tableaux", details: "Surfaces, rendements, productions par département"}
+  - {id: ansd_stats, domain: historique, kind: partner, personal: none, coverage: full, verified: null,
+     name: "ANSD (statistiques)", licence: "« Licence ouverte » annoncée (2024), mentions légales non lues (TLS)",
+     commercial: unknown, cost: "Gratuit",
+     access: "Publications", details: "Recensements, prix à la consommation, conjoncture"}
+  - {id: farmer_harvests, domain: historique, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: "Récoltes déclarées", licence: "Interne", commercial: open, cost: "—",
+     access: "Saisie mobile, campagnes (module 11)", details: "Quantité récoltée, pertes, ventes, par cycle"}
+  - {id: research_trials, domain: historique, kind: partner, personal: none, coverage: partial, verified: null,
+     name: "Essais agronomiques (ISRA, AfricaRice, CIRAD)", licence: "Variable selon le jeu", commercial: contract,
+     cost: "Gratuit à sur convention", access: "Dataverse, conventions", details: "Variétés, fumure, irrigation, rendements"}
+
+  # ---------------------------------------------------------------- Utilisateurs
+  - {id: user_accounts, domain: utilisateurs, kind: internal, personal: direct, coverage: partial, verified: null,
+     name: "Comptes", licence: "Interne", commercial: open, cost: "—", access: "API auth, me",
+     details: "Téléphone, nom, langue, rôle, organisation"}
+  - {id: farm_registry, domain: utilisateurs, kind: internal, personal: direct, coverage: partial, verified: null,
+     name: "Exploitations et membres", licence: "Interne", commercial: open, cost: "—", access: "API farms",
+     details: "Exploitation, localité, surface, membres"}
+  - {id: consents, domain: utilisateurs, kind: internal, personal: direct, coverage: partial, verified: null,
+     name: "Consentements", licence: "Interne", commercial: open, cost: "—", access: "API (à créer)",
+     details: "Finalité, date, version du texte, retrait"}
+  - {id: reco_feedback, domain: utilisateurs, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Retours sur les recommandations", licence: "Interne", commercial: open, cost: "—",
+     access: "API recommendations feedback", details: "Affichée, acceptée, refusée, reportée, réalisée"}
+  - {id: app_usage, domain: utilisateurs, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: "Journal d'usage de l'application", licence: "Interne", commercial: open, cost: "—",
+     access: "Journaux applicatifs", details: "Sessions, synchronisations hors ligne, erreurs"}
+
+  # ---------------------------------------------------------------- Langue et connaissances
+  - {id: assistant_logs, domain: langue, kind: internal, personal: direct, coverage: partial, verified: null,
+     name: "Conversations de l'assistant", licence: "Interne", commercial: open, cost: "—", access: "API assistant/chat",
+     details: "Questions, réponses, outils appelés, notes ; texte libre"}
+  - {id: speech_consented, domain: langue, kind: user_input, personal: direct, identifying: true, coverage: partial,
+     verified: null, name: "Enregistrements vocaux consentis", licence: "Consentement explicite", commercial: open,
+     cost: "Hypothèse 3–8 k FCFA par heure transcrite", access: "Campagne de collecte (V2)",
+     details: "Wolof, pulaar, français ; 16 kHz ; transcriptions"}
+  - {id: common_voice, domain: langue, kind: open_data, personal: none, coverage: unknown, verified: null,
+     name: "Mozilla Common Voice", licence: "CC0", commercial: open, cost: "Gratuit",
+     access: "Téléchargement", details: "Disponibilité wolof et pulaar à vérifier"}
+  - {id: open_wolof_speech, domain: langue, kind: open_data, personal: none, coverage: partial, verified: null,
+     name: "Corpus vocaux wolof publics", licence: "Variable, à vérifier jeu par jeu", commercial: unknown,
+     cost: "Gratuit", access: "Dépôts publics", details: "Lecture et parole spontanée ; volumes modestes"}
+  - {id: technical_sheets, domain: connaissances, kind: reference, personal: none, coverage: full, verified: null,
+     name: "Fiches techniques (ANCAR, ISRA, CDH, FAO)", licence: "Droits de reproduction à obtenir",
+     commercial: contract, cost: "Sur convention", access: "PDF, documents", details: "Corpus de l'assistant (RAG)"}
+  - {id: agronomist_qa, domain: connaissances, kind: internal, personal: none, coverage: full, verified: null,
+     name: "Questions-réponses validées", licence: "Interne", commercial: open, cost: "Temps des agronomes",
+     access: "Outil de relecture", details: "Jeu de référence de l'assistant, corrections"}
+
+  # ---------------------------------------------------------------- Modèles pré-entraînés et API
+  - {id: claude_api, domain: langue, kind: pretrained, personal: none, coverage: full, verified: null,
+     name: "Anthropic Claude (claude-opus-5-5, claude-haiku-5-5)", licence: "Conditions commerciales Anthropic",
+     commercial: contract, cost: "Paiement à l'usage (jetons)", access: "API Messages",
+     details: "Assistant, outils, citations ; les questions partent hors du Sénégal : transfert à encadrer (CDP, DPA)"}
+  - {id: embedding_models, domain: langue, kind: pretrained, personal: none, coverage: partial, verified: null,
+     name: "Embeddings multilingues ouverts (multilingual-e5, BGE-M3)", licence: "MIT annoncé, non vérifié modèle par modèle",
+     commercial: unknown, cost: "Gratuit (auto-hébergé)", access: "Poids publics",
+     details: "Recherche du RAG ; français correct, wolof et pulaar faibles : évaluer sur le jeu de référence"}
+  - {id: mms_models, domain: langue, kind: pretrained, personal: none, coverage: partial, verified: "2026-11-01",
+     evidence: "https://huggingface.co/facebook/mms-1b-all",
+     name: "Meta MMS (ASR, TTS, identification de langue)", licence: "CC BY-NC 4.0",
+     commercial: restricted, cost: "Gratuit (non commercial)", access: "Poids publics",
+     details: "~1 100 langues ; wolof (wol) ; peul seulement « ful », ni fuc (pulaar) ni fuf"}
+  - {id: xlsr_models, domain: langue, kind: pretrained, personal: none, coverage: full, verified: "2026-11-01",
+     evidence: "https://huggingface.co/facebook/wav2vec2-xls-r-300m",
+     name: "wav2vec 2.0 XLS-R (300M à 2B)", licence: "Apache-2.0", commercial: open, cost: "Gratuit",
+     access: "Poids publics", details: "436 k h, 128 langues ; fine-tuning ASR obligatoire ; seule voie commerciale"}
+  - {id: nllb_models, domain: langue, kind: pretrained, personal: none, coverage: partial, verified: "2026-11-01",
+     evidence: "https://huggingface.co/facebook/nllb-200-distilled-600M",
+     name: "Meta NLLB-200 (traduction)", licence: "CC BY-NC 4.0", commercial: restricted,
+     cost: "Gratuit (non commercial)", access: "Poids publics",
+     details: "wol_Latn ; peul seulement fuv_Latn (Nigeria) : pulaar du Sénégal absent"}
+  - {id: vision_backbones, domain: phyto, kind: pretrained, personal: none, coverage: full, verified: null,
+     name: "Réseaux de vision pré-entraînés (timm, torchvision)", licence: "Variable selon le modèle",
+     commercial: contract, cost: "Gratuit", access: "Poids publics", details: "MobileNetV3, EfficientNet, ConvNeXt"}

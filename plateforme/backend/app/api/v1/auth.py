@@ -41,8 +41,15 @@ def login(body: LoginIn, session: Session = Depends(get_session), settings: Sett
 
 @router.post("/auth/refresh")
 def refresh(body: RefreshIn, session: Session = Depends(get_session), settings: Settings = Depends(get_settings),
-            now: datetime = Depends(get_now)) -> dict[str, Any]:
-    pair = auth.rotate_refresh_token(session, settings, body.refresh_token, now)
+            now: datetime = Depends(get_now), meta: RequestMeta = Depends(get_request_meta)) -> dict[str, Any]:
+    try:
+        pair = auth.rotate_refresh_token(session, settings, body.refresh_token, now)
+    except AppError as exc:
+        if exc.code == "REFRESH_TOKEN_REUSED":
+            record_audit(session, "auth.refresh_token_reused", meta=meta, details={"code": exc.code})
+            session.commit()
+        raise
+    record_audit(session, "auth.refresh", meta=meta)
     session.commit()
     return ok(asdict(pair))
 

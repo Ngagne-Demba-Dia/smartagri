@@ -1,0 +1,53 @@
+{
+  "mission": "IA-REAL-03",
+  "grid": {
+    "west": -17.6,
+    "east": -11.3,
+    "south": 12.25,
+    "north": 16.7,
+    "res_deg": 0.05,
+    "ncols": 126,
+    "nrows": 89
+  },
+  "cells": 6945,
+  "power_cells": 76,
+  "regions": [
+    "Dakar",
+    "Diourbel",
+    "Fatick",
+    "Kaffrine",
+    "Kaolack",
+    "Kedougou",
+    "Kolda",
+    "Louga",
+    "Matam",
+    "Saint Louis",
+    "Sedhiou",
+    "Tambacounda",
+    "Thies",
+    "Ziguinchor"
+  ],
+  "cells_per_region": {
+    "Tambacounda": 1502,
+    "Matam": 958,
+    "Louga": 821,
+    "Saint Louis": 751,
+    "Kedougou": 645,
+    "Kolda": 475,
+    "Kaffrine": 345,
+    "Ziguinchor": 289,
+    "Thies": 275,
+    "Sedhiou": 262,
+    "Fatick": 238,
+    "Kaolack": 228,
+    "Diourbel": 126,
+    "Dakar": 30
+  },
+  "validation_zone_cells": {
+    "richard_toll": 50,
+    "potou": 49,
+    "mboro": 45
+  },
+  "boundary_source": "Government of Senegal, OCHA ROWCA — Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
+  "note": "all_touched=True : toute cellule touchée par le territoire est incluse (les kits côtiers/frontaliers y sont rattachés)."
+}

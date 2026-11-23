@@ -26,14 +26,19 @@ def healthz() -> dict[str, Any]:
 
 
 @router.get("/readyz", response_model=None)
-def readyz(session: Session = Depends(get_session)) -> dict[str, Any] | JSONResponse:
-    """Disponibilité : la base de données répond à un ping."""
+def readyz(request: Request, session: Session = Depends(get_session)) -> dict[str, Any] | JSONResponse:
+    """Disponibilité : la base de données répond à un ping ; état du runtime IA reporté s'il est configuré."""
     try:
         session.execute(text("SELECT 1"))
     except SQLAlchemyError:
         logger.exception("readyz : base de données injoignable")
         return JSONResponse(fail("NOT_READY", "Base de données indisponible."), status_code=503)
-    return ok({"status": "ready", "database": "ok"})
+    payload: dict[str, Any] = {"status": "ready", "database": "ok"}
+    ai_client = getattr(request.app.state, "smartagri_ai_client", None)
+    if ai_client is not None and ai_client.enabled:
+        ai_health = ai_client.health()
+        payload["smartagri_ai"] = "ok" if (ai_health and ai_health.get("status") == "ok") else "degraded"
+    return ok(payload)
 
 
 @router.get("/metrics", include_in_schema=False)

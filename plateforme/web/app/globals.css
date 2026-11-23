@@ -490,7 +490,7 @@ body {
   }
   /* Capsule : pastille d'information (provenance, confiance, météo, alertes…). */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-glass-edge px-2.5 py-1 text-xs font-medium text-ink;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-glass-edge px-3 py-1 text-[13px] font-medium leading-snug text-ink;
     background: var(--surface-glass);
     box-shadow: inset 0 1px 0 var(--glass-rim);
   }
@@ -864,77 +864,175 @@ body {
  * Aucun fond de tuiles : le fond est la surface de la carte (CSP connect-src/img-src 'self').
  */
 .leaflet-container {
-  background: var(--card);
+  background-color: var(--surface) !important;
+  background-image:
+    radial-gradient(circle at 20% 25%, rgba(45, 106, 79, 0.14), transparent 55%),
+    radial-gradient(circle at 80% 75%, rgba(58, 124, 165, 0.14), transparent 55%),
+    linear-gradient(to right, rgba(45, 106, 79, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(45, 106, 79, 0.09) 1px, transparent 1px),
+    linear-gradient(to right, rgba(45, 106, 79, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(45, 106, 79, 0.04) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 100% 100%, 96px 96px, 96px 96px, 24px 24px, 24px 24px !important;
   color: var(--ink);
   font: inherit;
   border-radius: inherit;
 }
+.map-domain-frame {
+  fill: rgba(45, 106, 79, 0.05) !important;
+  stroke: var(--g) !important;
+  stroke-width: 2px !important;
+  stroke-opacity: 0.45 !important;
+  stroke-dasharray: 10 6 !important;
+}
+.map-senegal-border {
+  fill: rgba(244, 241, 228, 0.55) !important;
+  stroke: #1b4332 !important;
+  stroke-width: 3px !important;
+  stroke-opacity: 0.9 !important;
+}
+[data-theme="dark"] .map-senegal-border {
+  fill: rgba(24, 48, 34, 0.55) !important;
+  stroke: #74c69d !important;
+}
+.map-river {
+  fill: none !important;
+  stroke: #1d70b8 !important;
+  stroke-width: 3.5px !important;
+  stroke-opacity: 0.85 !important;
+  stroke-linecap: round !important;
+}
+.map-zone-niayes {
+  fill: #2d6a4f !important;
+  fill-opacity: 0.34 !important;
+  stroke: #1b4332 !important;
+  stroke-width: 2px !important;
+}
+.map-zone-vallee {
+  fill: #2b7bba !important;
+  fill-opacity: 0.32 !important;
+  stroke: #1d4e89 !important;
+  stroke-width: 2px !important;
+}
+.map-zone-arachide {
+  fill: #d97706 !important;
+  fill-opacity: 0.28 !important;
+  stroke: #b45309 !important;
+  stroke-width: 2px !important;
+}
+.map-zone-ferlo {
+  fill: #b5835a !important;
+  fill-opacity: 0.26 !important;
+  stroke: #7f5539 !important;
+  stroke-width: 1.8px !important;
+}
+.map-zone-oriental {
+  fill: #6a994e !important;
+  fill-opacity: 0.28 !important;
+  stroke: #386641 !important;
+  stroke-width: 1.8px !important;
+}
+.map-zone-casamance {
+  fill: #168aad !important;
+  fill-opacity: 0.34 !important;
+  stroke: #184e77 !important;
+  stroke-width: 2px !important;
+}
+.map-zone-selected {
+  fill-opacity: 0.52 !important;
+  stroke-width: 3.5px !important;
+}
+.map-pipe {
+  fill: none !important;
+  stroke: #2b7bba !important;
+  stroke-width: 3px !important;
+  stroke-opacity: 0.78 !important;
+  stroke-dasharray: 8 5 !important;
+}
+.map-pump-station {
+  fill: #1d4e89 !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.5px !important;
+  fill-opacity: 1 !important;
+}
 .map-field {
-  stroke: var(--ink);
-  stroke-width: 1.5px;
-  stroke-opacity: 0.6;
-  fill-opacity: 0.85;
+  stroke: var(--ink) !important;
+  stroke-width: 2px !important;
+  stroke-opacity: 0.75 !important;
+  fill-opacity: 0.88 !important;
+  transition: fill-opacity 180ms ease, stroke-width 180ms ease;
+}
+.map-field:hover {
+  fill-opacity: 0.96 !important;
 }
 .map-fill-0 {
-  fill: var(--bg);
-  fill-opacity: 0.7;
-  stroke-dasharray: 4 3;
+  fill: var(--bg) !important;
+  fill-opacity: 0.78 !important;
+  stroke-dasharray: 5 3 !important;
 }
 .map-fill-1 {
-  fill: var(--ramp-1);
+  fill: var(--ramp-1) !important;
 }
 .map-fill-2 {
-  fill: var(--ramp-2);
+  fill: var(--ramp-2) !important;
 }
 .map-fill-3 {
-  fill: var(--ramp-3);
+  fill: var(--ramp-3) !important;
 }
 .map-fill-4 {
-  fill: var(--ramp-4);
+  fill: var(--ramp-4) !important;
 }
 .map-fill-5 {
-  fill: var(--ramp-5);
+  fill: var(--ramp-5) !important;
 }
 .map-fill-neutral {
-  fill: var(--line);
-  fill-opacity: 0.8;
+  fill: var(--line) !important;
+  fill-opacity: 0.82 !important;
 }
 .map-selected {
-  stroke: var(--ink);
-  stroke-width: 4px;
-  stroke-opacity: 1;
+  stroke: var(--ink) !important;
+  stroke-width: 4.5px !important;
+  stroke-opacity: 1 !important;
 }
 .map-boundary {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.5px;
-  stroke-dasharray: 6 4;
+  fill: none !important;
+  stroke: var(--ink) !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: 6 4 !important;
+}
+.map-kit-halo {
+  fill: var(--g) !important;
+  fill-opacity: 0.22 !important;
+  stroke: var(--g) !important;
+  stroke-width: 1.5px !important;
+  stroke-opacity: 0.5 !important;
 }
 .map-kit {
-  stroke: var(--card);
-  stroke-width: 2px;
-  fill-opacity: 1;
+  stroke: #ffffff !important;
+  stroke-width: 2.5px !important;
+  fill-opacity: 1 !important;
 }
 .map-kit-active {
-  fill: var(--g);
+  fill: var(--g) !important;
 }
 .map-kit-off {
-  fill: var(--mute);
+  fill: var(--mute) !important;
 }
 .map-kit-estimated {
-  stroke: var(--ink);
-  stroke-dasharray: 3 2;
+  stroke: var(--ink) !important;
+  stroke-dasharray: 3 2 !important;
 }
 .leaflet-tooltip.map-tooltip,
 .leaflet-tooltip.map-label {
-  background: var(--card);
-  border-color: var(--line);
-  color: var(--ink);
+  background: var(--glass-strong) !important;
+  border: 1px solid var(--glass-edge) !important;
+  border-radius: 10px !important;
+  color: var(--ink) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14) !important;
 }
 .leaflet-tooltip.map-label {
-  box-shadow: none;
-  font-size: 0.75rem;
-  padding: 1px 6px;
+  font-size: 0.78rem !important;
+  line-height: 1.25 !important;
+  padding: 4px 8px !important;
 }
 
 /* Sélecteur de fichier : bouton vert cohérent avec le reste du verre. */

@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    ai,
     alerts,
     assistant,
     auth,
@@ -18,5 +19,5 @@ from app.api.v1 import (
 
 api_router = APIRouter(prefix="/v1")
 for _module in (auth, farms, fields, devices, telemetry, alerts, diagnoses, assistant, campaigns, equipment,
-                reports):
+                reports, ai):
     api_router.include_router(_module.router)

@@ -94,7 +94,7 @@ def device_health_view(session: Session, settings: Settings, device: Device, now
         else:
             bat_state, bat_since = "ok", None
     else:
-        bat_state, bat_since = ("degraded", iso_utc(last_seen)) if inactive else ("ok", None)
+        bat_state, bat_since = ("absent", None)
 
     sensors = [
         {"sensor": "soil", "state": soil_state, "since": soil_since},

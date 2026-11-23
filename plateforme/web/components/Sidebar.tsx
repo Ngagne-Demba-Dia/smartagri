@@ -4,10 +4,10 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useMe } from "@/hooks/places";
 import type { Locale } from "@/i18n/routing";
-import { MODULES, NAV_GROUPS } from "@/lib/modules";
 import { localePath } from "@/lib/nav";
-import { SERVICE_SCREENS } from "@/lib/service-screens";
+import { displayRole, visibleNavItems } from "@/lib/roles";
 
 import { Icon, type IconName } from "./Icon";
 
@@ -40,13 +40,16 @@ function NavLink({
   );
 }
 
-/** Navigation par groupes (doc 10 §3.1) ; les modules hors MVP portent leur étiquette de version. */
+/** Navigation par groupes filtrée selon le rôle actif (visibleNavItems, MISSION FRONT-RBAC-02). */
 export function Sidebar() {
   const t = useTranslations("nav");
   const tm = useTranslations("modules");
   const tv = useTranslations("versions");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
+  const me = useMe();
+  const role = displayRole(me.data);
+  const groups = visibleNavItems(role);
   const isActive = (slug: string) => {
     const base = localePath(locale, `/${slug}`);
     return pathname === base || pathname.startsWith(`${base}/`);
@@ -54,23 +57,23 @@ export function Sidebar() {
 
   return (
     <nav aria-label={t("main")} className="flex flex-col gap-5 p-3">
-      {NAV_GROUPS.map((group) => (
+      {groups.map(({ group, extraSlugs, modules, services }) => (
         <div key={group} className="flex flex-col gap-1">
           <h2 className="px-3 text-xs font-semibold uppercase tracking-wide text-mute">
             {t(`groups.${group}`)}
           </h2>
           <ul className="flex flex-col gap-0.5">
-            {group === "pilotage" ? (
-              <li>
+            {extraSlugs.map((slug) => (
+              <li key={slug}>
                 <NavLink
-                  href={localePath(locale, "/alertes")}
-                  icon="bell"
-                  label={t("alerts")}
-                  active={isActive("alertes")}
+                  href={localePath(locale, `/${slug}`)}
+                  icon={slug === "alertes" ? "bell" : "chat"}
+                  label={slug === "alertes" ? t("alerts") : t("community")}
+                  active={isActive(slug)}
                 />
               </li>
-            ) : null}
-            {MODULES.filter((m) => m.group === group).map((m) => (
+            ))}
+            {modules.map((m) => (
               <li key={m.slug}>
                 <NavLink
                   href={localePath(locale, `/${m.slug}`)}
@@ -81,7 +84,7 @@ export function Sidebar() {
                 />
               </li>
             ))}
-            {SERVICE_SCREENS.filter((s) => s.group === group).map((s) => (
+            {services.map((s) => (
               <li key={s.slug}>
                 <NavLink
                   href={localePath(locale, `/${s.slug}`)}

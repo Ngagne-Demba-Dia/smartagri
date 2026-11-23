@@ -7,7 +7,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildCsp, createNonce } from "@/lib/csp";
 import { MOCK_BASE, MOCK_SCENARIOS, isMockMode } from "@/lib/mock-config";
 import { MOBILE_TABS, MODULES, NAV_GROUPS, moduleBySlug } from "@/lib/modules";
-import { canAckAlerts, canEditThresholds, canGiveFeedback, displayRole, hasRoleIn } from "@/lib/roles";
+import {
+  canAccessRoute,
+  canAckAlerts,
+  canEditThresholds,
+  canGiveFeedback,
+  displayRole,
+  hasRoleIn,
+  visibleNavItems,
+} from "@/lib/roles";
 import { ACCESS_COOKIE, REFRESH_COOKIE, REFRESH_MAX_AGE_S, cookieOptions } from "@/lib/session-cookies";
 import type { Me, Role } from "@/lib/types";
 
@@ -54,6 +62,49 @@ describe("roles", () => {
 
   it("rôle affiché : celui de la première adhésion", () => {
     expect(displayRole(me(["org-a", "coop_manager"], ["org-b", "admin"]))).toBe("coop_manager");
+  });
+
+  it("canAccessRoute et visibleNavItems filtrent les routes par rôle (MISSION FRONT-RBAC-02)", () => {
+    expect(canAccessRoute("farmer", "tableau")).toBe(true);
+    expect(canAccessRoute("farmer", "parcelles")).toBe(true);
+    expect(canAccessRoute("farmer", "exploitations")).toBe(false);
+    expect(canAccessRoute("farmer", "rapports")).toBe(false);
+    expect(canAccessRoute("farmer", "kit")).toBe(false);
+    expect(canAccessRoute("farmer", "equipements")).toBe(false);
+
+    expect(canAccessRoute("coop_manager", "exploitations")).toBe(true);
+    expect(canAccessRoute("coop_manager", "rapports")).toBe(true);
+    expect(canAccessRoute("coop_manager", "equipements")).toBe(true);
+    expect(canAccessRoute("coop_manager", "kit")).toBe(false);
+    expect(canAccessRoute("coop_manager", "vegetation")).toBe(false);
+
+    expect(canAccessRoute("agronomist", "vegetation")).toBe(true);
+    expect(canAccessRoute("agronomist", "previsions")).toBe(true);
+    expect(canAccessRoute("agronomist", "kit")).toBe(true);
+    expect(canAccessRoute("agronomist", "equipements")).toBe(false);
+
+    expect(canAccessRoute("admin", "kit")).toBe(true);
+    expect(canAccessRoute("admin", "equipements")).toBe(true);
+    expect(canAccessRoute("admin", "vegetation")).toBe(true);
+
+    const farmerSlugs = visibleNavItems("farmer").flatMap((g) => [
+      ...g.extraSlugs,
+      ...g.modules.map((m) => m.slug),
+      ...g.services.map((s) => s.slug),
+    ]);
+    expect(farmerSlugs).toContain("tableau");
+    expect(farmerSlugs).toContain("communaute");
+    expect(farmerSlugs).not.toContain("rapports");
+    expect(farmerSlugs).not.toContain("kit");
+
+    const adminSlugs = visibleNavItems("admin").flatMap((g) => [
+      ...g.extraSlugs,
+      ...g.modules.map((m) => m.slug),
+      ...g.services.map((s) => s.slug),
+    ]);
+    expect(adminSlugs).toContain("rapports");
+    expect(adminSlugs).toContain("kit");
+    expect(adminSlugs).toContain("equipements");
   });
 });
 

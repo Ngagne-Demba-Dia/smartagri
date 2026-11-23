@@ -1,0 +1,21 @@
+query,category,hit,top_score,top_source,top_domain
+Quelle est l'humidité du sol prédite pour demain ?,sol,1,0.1608519378696248,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol
+Comment le modèle SoilNowcast fonctionne-t-il ?,sol,1,0.1135719577193023,projet:62_smartagri_rag_design.md,architecture_ia
+Variables importantes pour prédire l'humidité du sol,sol,1,0.1555481203072662,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol
+Pluviométrie moyenne au Sénégal en saison des pluies,pluie,0,0.2142043891595356,bundle:wfp_senegal_markets.parquet.manifest.json,marchés
+Comment interpréter les données CHIRPS ?,pluie,0,0.1160561952006789,projet:56_real_ai_portfolio.md,modélisation
+Cumuls de pluie 7 et 14 jours du modèle,pluie,1,0.0998865401812242,bundle:53_kit_data_model_mapping.md,modélisation
+Coefficient cultural Kc pour le riz irrigué au Sénégal,irrigation,1,0.1998564521154691,bundle:wfp_senegal_markets.parquet.manifest.json,marchés
+Calculer évapotranspiration ET0 Penman-Monteith,irrigation,1,0.2357325472724409,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures
+Cultures cultivées au Sénégal et rendements récents,cultures,1,0.2131180388987297,bundle:wfp_senegal_markets.parquet.manifest.json,marchés
+Marchés agricoles suivis par le WFP au Sénégal,marchés,1,0.4832083700347723,bundle:wfp_senegal_markets.parquet.manifest.json,marchés
+Prix moyen de l'oignon sur les marchés sénégalais,marchés,1,0.2530412222276467,bundle:44_real_data_acquisition_plan.md,général
+Propriétés du sol mesurées par iSDAsoil,sol,1,0.1861963326200204,projet:rapport_analyse_bundle_smartagri92.md,général
+Détecter une anomalie de sécheresse satellite,anomalie,1,0.1146177306621187,projet:56_real_ai_portfolio.md,modélisation
+Résolution spatiale grille nationale du Sénégal,géospatial,0,0.1530583844480196,bundle:46_real_data_enrichment.md,général
+NDVI pour suivre la santé des cultures,télédétection,0,0.1573077537655528,bundle:octopus_upload_order.md,général
+Algorithmes machine learning de SmartAgri,ia,1,0.0848107989573614,projet:62_smartagri_rag_design.md,architecture_ia
+Sources de données ouvertes utilisées par SmartAgri,données,1,0.0926810972330504,bundle:README.md,général
+Fonctionnement du RAG SmartAgri Knowledge,ia,1,0.282998652730849,projet:62_smartagri_rag_design.md,architecture_ia
+Ravageurs menaçant les cultures maraîchères au Sénégal,cultures,0,0.1679472655883961,bundle:wfp_senegal_markets.parquet.manifest.json,marchés
+Adapter irrigation en fonction humidité du sol prédite,irrigation,1,0.1941630263109674,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol

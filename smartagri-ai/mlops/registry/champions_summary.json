@@ -1,0 +1,50 @@
+{
+  "A1_SoilNowcast": {
+    "champion": "LightGBM",
+    "r2": 0.8353,
+    "rmse": 7.447,
+    "mae": 5.9614
+  },
+  "A2_ET0_Forecast": {
+    "champion": "CatBoost",
+    "r2": 0.9997,
+    "rmse": 0.039,
+    "mae": 0.0284
+  },
+  "A3_Yield_Forecast": {
+    "champion": "CatBoost",
+    "r2": 0.9509,
+    "rmse": 2.0083
+  },
+  "A4_Rain_Intelligence": {
+    "champion": "CatBoost",
+    "auc": 0.9625,
+    "f1": 0.7642,
+    "brier": 0.0611
+  },
+  "A5_Price_Forecast": {
+    "champion": "XGBoost",
+    "r2": 0.8995,
+    "rmse": 66.67
+  },
+  "A6_Crop_Calendar": {
+    "champion": "CatBoost",
+    "f1_macro": 0.9799,
+    "accuracy": 0.9811
+  },
+  "A7_NDVI_Anomaly": {
+    "champion": "LightGBM",
+    "f1_macro": 0.9943,
+    "accuracy": 0.9976
+  },
+  "A8_Anomaly_Intelligence": {
+    "champion": "One-Class SVM",
+    "f1": 0.0969,
+    "precision": 0.09,
+    "recall": 0.1981
+  },
+  "A9_Market_Clustering": {
+    "champion": "KMeans k=7",
+    "silhouette": 0.3597
+  }
+}

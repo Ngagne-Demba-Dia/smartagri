@@ -7,13 +7,14 @@ import { Icon } from "@/components/Icon";
 import { CropArt, Furrows } from "@/components/Illustrations";
 import { Meter } from "@/components/Meter";
 import { StatusTag } from "@/components/StatusTag";
-import { TimeAgo } from "@/components/TimeAgo";
 import type { Locale } from "@/i18n/routing";
 import { formatNumber, formatPct } from "@/lib/format";
+import { waterQualityForField } from "@/lib/irrigation";
 import { localePath } from "@/lib/nav";
 import type { FieldOverview } from "@/lib/overview";
-import type { MoistureVerdict } from "@/lib/status";
+import type { MoistureVerdict, Tone } from "@/lib/status";
 import { VERDICT_TONE } from "@/lib/status";
+import { useIrrigationNeed } from "@/services/ai/irrigation-need";
 
 /**
  * Une seule photo existe : chaque parcelle en montre un autre cadrage (choisi par son identifiant), pour que
@@ -88,14 +89,45 @@ function MoistureRing({ moisture, verdict }: { moisture: number | null; verdict:
   );
 }
 
-/** Carte « vivante » d'une parcelle : photo, verdict, humidité, culture, conseil IA et alertes. */
+/** Carte « vivante » d'une parcelle (allégée P0) : verdict explicite, 1 phrase d'action, 3 mesures clés, 1 bouton principal. */
 export function FieldLiveCard({ row }: { row: FieldOverview }) {
   const t = useTranslations("dashboard");
   const locale = useLocale() as Locale;
+  const need = useIrrigationNeed(row.fieldId);
+  const wq = waterQualityForField(row.fieldId);
   const detail = localePath(locale, `/parcelles/${encodeURIComponent(row.fieldId)}`);
+
+  const badgeTone: Tone =
+    row.deviceId === null
+      ? "info"
+      : row.freshness === "silent"
+        ? "warn"
+        : VERDICT_TONE[row.verdict];
+
+  const badgeLabel =
+    row.deviceId === null
+      ? t("verdict.noKit")
+      : row.freshness === "silent"
+        ? t("freshness.silent")
+        : t(`verdict.${row.verdict}`);
+
+  const actionSentence =
+    row.deviceId === null
+      ? t("cardAction.noKit")
+      : row.freshness === "silent"
+        ? t("cardAction.silent")
+        : need.data?.defer
+          ? t("cardAction.deferred", { mm: formatNumber(need.data.rain_expected_mm, 1) })
+          : need.data && need.data.need_mm > 0
+            ? t("cardAction.irrigate", {
+                mm: formatNumber(need.data.need_mm, 1),
+                m3: formatNumber(need.data.volume_m3, 1),
+              })
+            : t("cardAction.ok");
+
   return (
-    <li className="card card-link group flex flex-col overflow-hidden !p-0 sm:!p-0">
-      <div className="relative isolate h-44 overflow-hidden">
+    <li className="card card-link group flex h-full flex-col justify-between overflow-hidden !p-0 sm:!p-0">
+      <div className="relative isolate h-40 overflow-hidden">
         <div className="absolute inset-0 -z-20 transition-transform duration-[900ms] ease-out group-hover:scale-110">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -107,17 +139,17 @@ export function FieldLiveCard({ row }: { row: FieldOverview }) {
             className={`h-full w-full object-cover saturate-[1.25] contrast-[1.05] ${cropFor(row.fieldId)}`}
           />
         </div>
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/5 to-white/5" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/75 via-black/15 to-white/5" />
         <Furrows className="absolute inset-x-0 bottom-0 -z-10 h-16 w-full text-white" />
         <div className="flex h-full flex-col justify-between p-3 text-white">
           <div className="flex items-start justify-between gap-2">
             <span
-              className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/60 bg-white/70 shadow-pop backdrop-blur-sm transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105"
+              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/60 bg-white/75 shadow-pop backdrop-blur-sm transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105"
               aria-hidden="true"
             >
-              <CropArt crop={row.crop} size={44} />
+              <CropArt crop={row.crop} size={38} />
             </span>
-            <StatusTag tone={VERDICT_TONE[row.verdict]} label={t(`verdict.${row.verdict}`)} />
+            <StatusTag tone={badgeTone} label={badgeLabel} />
           </div>
           <div>
             <h2 className="text-xl font-bold leading-tight text-white drop-shadow-[0_2px_8px_rgb(0_0_0/0.5)]">
@@ -131,70 +163,76 @@ export function FieldLiveCard({ row }: { row: FieldOverview }) {
         </div>
         <span className={`absolute inset-x-0 bottom-0 h-1 ${VERDICT_EDGE[row.verdict]}`} aria-hidden="true" />
       </div>
-      <div className="flex flex-col gap-3 p-4">
-        <div className="flex items-center gap-3">
-          <MoistureRing moisture={row.moisture} verdict={row.verdict} />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm text-mute">{t("moisture")}</p>
-            {row.moisture !== null ? (
-              <Meter
-                value={row.moisture}
-                label={t("moistureMeter", { field: row.name })}
-                valueText={formatPct(row.moisture)}
-                marks={
-                  row.thresholds
-                    ? [
-                        {
-                          value: row.thresholds.start_pct,
-                          label: t("markStart", { value: row.thresholds.start_pct }),
-                        },
-                        {
-                          value: row.thresholds.stop_pct,
-                          label: t("markStop", { value: row.thresholds.stop_pct }),
-                        },
-                      ]
-                    : []
-                }
-              />
-            ) : null}
+
+      <div className="flex flex-1 flex-col justify-between gap-3 p-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <MoistureRing moisture={row.moisture} verdict={row.verdict} />
+            <div className="min-w-0 flex-1">
+              <p className="m-0 text-sm font-semibold text-ink">{t("moisture")}</p>
+              {row.moisture !== null ? (
+                <Meter
+                  value={row.moisture}
+                  label={t("moistureMeter", { field: row.name })}
+                  valueText={formatPct(row.moisture)}
+                  marks={
+                    row.thresholds
+                      ? [
+                          {
+                            value: row.thresholds.start_pct,
+                            label: t("markStart", { value: row.thresholds.start_pct }),
+                          },
+                          {
+                            value: row.thresholds.stop_pct,
+                            label: t("markStop", { value: row.thresholds.stop_pct }),
+                          },
+                        ]
+                      : []
+                  }
+                />
+              ) : (
+                <p className="m-0 text-sm text-mute">{t("verdict.noKit")}</p>
+              )}
+            </div>
           </div>
-        </div>
-        <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-          <li className="chip">
-            <Icon name="kit" size={14} />
-            <span className="chip-label">{t("kit")}</span>
-            {row.freshness ? (
-              <span className="font-semibold">{t(`freshness.${row.freshness}`)}</span>
+
+          <p className="m-0 rounded-btn bg-surface px-3 py-2 text-sm font-medium text-ink">{actionSentence}</p>
+
+          <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+            <li className="chip">
+              <Icon name="drop" size={14} />
+              <span className="font-semibold tabular-nums">
+                {need.data
+                  ? need.data.defer
+                    ? t("telemetry.needDeferred")
+                    : t("telemetry.need24h", {
+                        mm: formatNumber(need.data.need_mm, 1),
+                        m3: formatNumber(need.data.volume_m3, 1),
+                      })
+                  : t("noKit")}
+              </span>
+            </li>
+            <li className="chip">
+              <Icon name="kit" size={14} />
+              <span className="tabular-nums">{t("telemetry.ph", { ph: formatNumber(wq.ph, 1) })}</span>
+            </li>
+            {row.openAlerts > 0 ? (
+              <li className="chip !border-bad-ink font-semibold !text-bad-ink">
+                <Icon name="bell" size={14} />
+                {t("openAlerts", { count: row.openAlerts })}
+              </li>
             ) : (
-              <span className="font-semibold">{t("noKit")}</span>
+              <li className="chip">
+                <Icon name="check" size={14} />
+                <span>{row.deviceSerial ? `${row.deviceSerial} · ${t(`freshness.${row.freshness ?? "fresh"}`)}` : t("noKit")}</span>
+              </li>
             )}
-          </li>
-          <li className="chip">
-            <Icon name="clock" size={14} />
-            <TimeAgo value={row.lastSeenAt} />
-          </li>
-          <li className={`chip ${row.openAlerts > 0 ? "!border-bad-ink font-semibold !text-bad-ink" : ""}`}>
-            <Icon name={row.openAlerts > 0 ? "bell" : "check"} size={14} />
-            {t("openAlerts", { count: row.openAlerts })}
-          </li>
-        </ul>
-        {row.thresholds ? (
-          <p className="m-0 text-sm tabular-nums text-mute">
-            <span className="font-semibold text-ink">{t("thresholds")}</span>{" "}
-            {t("thresholdsValue", { start: row.thresholds.start_pct, stop: row.thresholds.stop_pct })}
-            {row.syncStatus === "pending" ? ` · ${t("pendingSync")}` : ""}
-          </p>
-        ) : null}
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href={detail} className="btn-secondary min-h-touch">
+          </ul>
+        </div>
+
+        <div className="pt-1">
+          <Link href={detail} className="btn-secondary min-h-touch w-full justify-center">
             {t("details")}
-          </Link>
-          <Link
-            href={`${localePath(locale, "/recommandations")}?parcelle=${encodeURIComponent(row.fieldId)}`}
-            className="btn-ai min-h-touch"
-          >
-            <Icon name="sparkles" size={16} />
-            {t("adviceLink")}
           </Link>
         </div>
       </div>

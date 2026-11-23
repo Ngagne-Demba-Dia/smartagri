@@ -1,0 +1,99 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "rain",
+  "file_name": "chirps_v3_national_daily_2023.parquet",
+  "relative_path": "data/real/rain/chirps_v3_national_daily_2023.parquet",
+  "source_id": "chirps",
+  "owner": "UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/",
+  "description": "Pluie quotidienne CHIRPS v3 2023 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat').",
+  "fetched_at_utc": "2026-11-16T09:20:37+00:00",
+  "sha256": "53097063410ce6c694f2f6ea0aa9d1fa513d64f65571bcafcc380e3c024fb824",
+  "size_bytes": 11893482,
+  "rows": 2319630,
+  "columns": [
+    "date",
+    "cell_id",
+    "rain_mm",
+    "is_provisional"
+  ],
+  "dtypes": {
+    "date": "datetime64[ns]",
+    "cell_id": "int32",
+    "rain_mm": "float32",
+    "is_provisional": "bool"
+  },
+  "quality": {
+    "completeness_pct": 99.676,
+    "null_cells_by_column": {
+      "rain_mm": 30060
+    },
+    "duplicate_key_rows": 0,
+    "key": [
+      "cell_id",
+      "date"
+    ],
+    "checks": {
+      "download_failures": [
+        "2023-12-01",
+        "2023-12-02",
+        "2023-12-03",
+        "2023-12-04",
+        "2023-12-05",
+        "2023-12-06",
+        "2023-12-07",
+        "2023-12-08",
+        "2023-12-09",
+        "2023-12-10",
+        "2023-12-11",
+        "2023-12-12",
+        "2023-12-13",
+        "2023-12-14",
+        "2023-12-15",
+        "2023-12-16",
+        "2023-12-17",
+        "2023-12-18",
+        "2023-12-19",
+        "2023-12-20",
+        "2023-12-21",
+        "2023-12-22",
+        "2023-12-23",
+        "2023-12-24",
+        "2023-12-25",
+        "2023-12-26",
+        "2023-12-27",
+        "2023-12-28",
+        "2023-12-29",
+        "2023-12-30",
+        "2023-12-31"
+      ],
+      "rain_max_mm": 101.46011352539062,
+      "rain_negative_rows": 0
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2023-01-01 00:00:00",
+    "max": "2023-11-30 00:00:00",
+    "unique_periods": 334,
+    "expected_days": 334,
+    "missing_days": 0
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "grid",
+    "cells_present": 6945,
+    "cells_expected": 6945,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.325,
+    "lat_max": 16.675,
+    "lon_min": -17.525,
+    "lon_max": -11.325
+  }
+}

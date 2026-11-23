@@ -34,6 +34,8 @@ x-backend: &backend
     MODEL_BUNDLE_DIR: /models
     OCTOPUS_BASE_URL: ${OCTOPUS_BASE_URL:-https://octopus.ml}
     OCTOPUS_API_KEY: ${OCTOPUS_API_KEY:-}
+    SMARTAGRI_AI_URL: ${SMARTAGRI_AI_URL:-}
+    SMARTAGRI_AI_API_KEY: ${SMARTAGRI_AI_API_KEY:-}
     CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
     METRICS_ENABLED: "true"
   depends_on:
@@ -152,7 +154,15 @@ services:
 
   api:
     <<: *backend
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+    command:
+      - "uvicorn"
+      - "app.main:app"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8000"
+      - "--proxy-headers"
+      - "--forwarded-allow-ips=127.0.0.1,172.16.0.0/12,10.0.0.0/8"
     environment:
       <<: *backend-env
       MQTT_USERNAME: ${MQTT_API_USER:-api}
@@ -180,6 +190,12 @@ services:
       <<: *backend-env
       MQTT_USERNAME: ${MQTT_INGESTOR_USER:-ingestor}
       MQTT_PASSWORD: ${MQTT_INGESTOR_PASSWORD:?MQTT_INGESTOR_PASSWORD manquant dans .env}
+
+  alert-sweep:
+    <<: *backend
+    command: ["python", "-m", "app.jobs.alert_sweep", "--interval", "900"]
+    environment:
+      <<: *backend-env
 
   mlflow:
     build:

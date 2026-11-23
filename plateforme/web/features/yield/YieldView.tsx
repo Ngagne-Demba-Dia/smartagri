@@ -103,7 +103,7 @@ export function YieldView({ initialFieldId }: { initialFieldId: string | null })
   const forecast = useYieldForecast(fieldId);
 
   return (
-    <ModuleShell title={tm("yield")} description={t("description")} version="V3">
+    <ModuleShell title={tm("yield")} description={t("description")} version="MVP">
       <QueryState
         isPending={all.isPending}
         error={all.error}

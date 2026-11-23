@@ -1,0 +1,98 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "sentinel2_ndvi",
+  "file_name": "s2_ndvi_national_grid_monthly_2025.parquet",
+  "relative_path": "data/real/sentinel2_ndvi/s2_ndvi_national_grid_monthly_2025.parquet",
+  "source_id": "deafrica",
+  "owner": "Digital Earth Africa (Sentinel-2 L2A COG)",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://explorer.digitalearth.africa/stac/search",
+  "description": "NDVI moyen par cellule 0,05° sur tout le Sénégal, composites mensuels (meilleure scène par tuile, masque SCL végétation/sol nu, lecture des overviews ≈ 160 m). Cellules couvertes seulement quand un pixel valide existe.",
+  "fetched_at_utc": "2026-11-14T20:15:44+00:00",
+  "sha256": "706955aea7a432129bbe324a2c2f2bbe5b1f9968185749a8f7c9c48b4d79facd",
+  "size_bytes": 437231,
+  "rows": 26198,
+  "columns": [
+    "cell_id",
+    "month",
+    "ndvi_mean",
+    "ndvi_std",
+    "n_valid_px",
+    "valid_fraction"
+  ],
+  "dtypes": {
+    "cell_id": "int32",
+    "month": "str",
+    "ndvi_mean": "float64",
+    "ndvi_std": "float64",
+    "n_valid_px": "int32",
+    "valid_fraction": "float64"
+  },
+  "quality": {
+    "completeness_pct": 100.0,
+    "null_cells_by_column": {},
+    "duplicate_key_rows": 0,
+    "key": [
+      "cell_id",
+      "month"
+    ],
+    "checks": {
+      "per_month": {
+        "2025-02": {
+          "tiles_requested": 54,
+          "tiles_read": 54,
+          "cells_with_ndvi": 6616,
+          "cells_total": 6945,
+          "seconds": 97
+        },
+        "2025-05": {
+          "tiles_requested": 54,
+          "tiles_read": 54,
+          "cells_with_ndvi": 6454,
+          "cells_total": 6945,
+          "seconds": 41
+        },
+        "2025-08": {
+          "tiles_requested": 54,
+          "tiles_read": 54,
+          "cells_with_ndvi": 6535,
+          "cells_total": 6945,
+          "seconds": 37
+        },
+        "2025-11": {
+          "tiles_requested": 54,
+          "tiles_read": 54,
+          "cells_with_ndvi": 6593,
+          "cells_total": 6945,
+          "seconds": 34
+        }
+      },
+      "ndvi_range": [
+        -0.0632,
+        0.9671
+      ]
+    }
+  },
+  "temporal_coverage": {
+    "column": "month",
+    "min": "2025-02-01 00:00:00",
+    "max": "2025-11-01 00:00:00",
+    "unique_periods": 4
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "grid",
+    "cells_present": 6818,
+    "cells_expected": 6945,
+    "coverage_pct": 98.17,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.325,
+    "lat_max": 16.675,
+    "lon_min": -17.525,
+    "lon_max": -11.325
+  }
+}

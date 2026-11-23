@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0.0",
+  "mission": "IA-REAL-01",
+  "created_at": "2026-11-14T18:45:00Z",
+  "target_country": "SN",
+  "pilot_zones": [
+    {
+      "id": "niayes_mboro",
+      "name": "Zone des Niayes — Mboro (Thiès)",
+      "latitude": 15.1503,
+      "longitude": -16.8797,
+      "bbox_wgs84": [-17.15, 14.70, -16.70, 15.35]
+    },
+    {
+      "id": "niayes_sangalkam",
+      "name": "Zone des Niayes — Sangalkam / Lac Mbawane (Dakar/Thiès)",
+      "latitude": 14.7833,
+      "longitude": -17.2167,
+      "bbox_wgs84": [-17.30, 14.70, -17.10, 14.90]
+    },
+    {
+      "id": "vallee_richard_toll",
+      "name": "Vallée du Fleuve Sénégal — Richard-Toll / Dagana (Saint-Louis)",
+      "latitude": 16.4625,
+      "longitude": -15.7008,
+      "bbox_wgs84": [-16.10, 16.20, -15.40, 16.65]
+    }
+  ],
+  "domains": {
+    "meteo": {
+      "directory": "ml/data/real/meteo",
+      "tier_a_sources": ["nasa_power", "ecmwf_open_data", "noaa_gfs"],
+      "tier_b_sources": ["era5_land", "agera5", "open_meteo"],
+      "tier_c_sources": ["anacim_stations", "tahmo"]
+    },
+    "rain": {
+      "directory": "ml/data/real/rain",
+      "tier_a_sources": ["chirps", "tamsat", "nasa_power"],
+      "tier_b_sources": ["imerg", "era5_land"],
+      "tier_c_sources": ["anacim_stations", "agrhymet_presass"]
+    },
+    "et0": {
+      "directory": "ml/data/real/et0",
+      "tier_a_sources": ["fao56_hargreaves_nasa_power"],
+      "tier_b_sources": ["agera5", "era5_land", "wapor"],
+      "tier_c_sources": ["anacim_stations"]
+    },
+    "soil_moisture": {
+      "directory": "ml/data/real/soil_moisture",
+      "tier_a_sources": ["nasa_power"],
+      "tier_b_sources": ["era5_land", "sentinel1", "kit_telemetry"],
+      "tier_c_sources": []
+    },
+    "soil_properties": {
+      "directory": "ml/data/real/soil_properties",
+      "tier_a_sources": ["isdasoil", "soilgrids"],
+      "tier_b_sources": ["soil_lab_analyses", "soil_field_kits"],
+      "tier_c_sources": ["inp_soil_map"]
+    },
+    "sentinel2_ndvi": {
+      "directory": "ml/data/real/sentinel2_ndvi",
+      "tier_a_sources": ["deafrica", "sentinel2"],
+      "tier_b_sources": ["hls", "modis_viirs", "landsat"],
+      "tier_c_sources": ["planetscope"]
+    },
+    "crops_senegal": {
+      "directory": "ml/data/real/crops_senegal",
+      "tier_a_sources": ["fao56_tables", "worldcover", "csp_pesticides"],
+      "tier_b_sources": ["crop_cycles_user", "plantdoc"],
+      "tier_c_sources": ["isra_cdh_references", "dpv_alerts"]
+    },
+    "yields": {
+      "directory": "ml/data/real/yields",
+      "tier_a_sources": ["faostat"],
+      "tier_b_sources": ["farmer_harvests", "sarra"],
+      "tier_c_sources": ["dapsa_surveys", "ansd_stats", "research_trials"]
+    },
+    "market_prices": {
+      "directory": "ml/data/real/market_prices",
+      "tier_a_sources": ["hdx_wfp_senegal", "energy_tariffs"],
+      "tier_b_sources": ["input_prices_survey", "fews_net", "giews_fpma"],
+      "tier_c_sources": ["sim_csa", "arm_prices", "ansd_stats"]
+    }
+  }
+}

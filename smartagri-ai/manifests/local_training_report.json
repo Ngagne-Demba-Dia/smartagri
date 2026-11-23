@@ -1,0 +1,166 @@
+{
+  "A2_ET0_Forecast": {
+    "champion": "CatBoost",
+    "r2": 0.9997,
+    "rmse": 0.0387,
+    "mae": 0.0281,
+    "rows": 329156,
+    "features": [
+      "t_min_c",
+      "t_max_c",
+      "t_mean_c",
+      "rh_mean_pct",
+      "wind_2m_ms",
+      "solar_rad_mj_m2",
+      "pressure_hpa",
+      "rain_mm",
+      "ra_mj_m2",
+      "et0_hargreaves_mm",
+      "doy_sin",
+      "doy_cos",
+      "month",
+      "t_range_c",
+      "lat",
+      "lon"
+    ],
+    "artifact": "models/et0/a2_et0_champion.cbm",
+    "elapsed_s": 1272.0
+  },
+  "A4_Rain_Intelligence": {
+    "champion": "CatBoost",
+    "targets": {
+      "rain_1d": {
+        "auc": 0.9826,
+        "f1": 0.8926,
+        "brier": 0.0452,
+        "artifact": "models/rain_intelligence/rain_1d_champion.cbm"
+      },
+      "rain_2d": {
+        "auc": 0.9768,
+        "f1": 0.8752,
+        "brier": 0.0522,
+        "artifact": "models/rain_intelligence/rain_2d_champion.cbm"
+      },
+      "rain_3d": {
+        "auc": 0.9755,
+        "f1": 0.868,
+        "brier": 0.0536,
+        "artifact": "models/rain_intelligence/rain_3d_champion.cbm"
+      }
+    },
+    "features": [
+      "doy_cos",
+      "doy_sin",
+      "solar_rad_mj_m2",
+      "wind_2m_ms",
+      "rain_chirps_sum_14d_mm",
+      "t_min_c",
+      "rain_mm",
+      "rain_nasa_sum_3d_mm",
+      "pressure_hpa",
+      "rain_chirps_sum_7d_mm",
+      "rain_chirps_sum_3d_mm",
+      "et0_pm_mean_7d_mm",
+      "rain_nasa_sum_14d_mm",
+      "rain_nasa_sum_7d_mm",
+      "rain_chirps_mm",
+      "t_max_c",
+      "t_mean_c",
+      "rh_mean_pct",
+      "et0_pm_mm",
+      "ph_h2o",
+      "soc_g_kg",
+      "bulk_density_g_cm3",
+      "share_crop",
+      "share_tree",
+      "sand_pct",
+      "share_built",
+      "share_bare",
+      "clay_pct",
+      "fc_ptf_pct",
+      "wp_ptf_pct"
+    ],
+    "elapsed_s": 521.4
+  },
+  "A6_Crop_Calendar": {
+    "champion": "CatBoost",
+    "accuracy": 0.9822,
+    "f1_macro": 0.9812,
+    "stages": [
+      "arriere_saison",
+      "developpement",
+      "initial",
+      "mi_saison"
+    ],
+    "crops": [
+      "cabbage",
+      "carrot",
+      "lettuce",
+      "onion",
+      "pepper",
+      "potato",
+      "tomato"
+    ],
+    "features": [
+      "crop_enc",
+      "day_after_planting",
+      "season_days",
+      "kc",
+      "kc_ini",
+      "kc_mid",
+      "kc_end"
+    ],
+    "artifact": "models/clustering/a6_crop_calendar_champion.cbm",
+    "elapsed_s": 17.43
+  },
+  "A7_NDVI_Anomaly": {
+    "champion": "LightGBM",
+    "accuracy": 0.9978,
+    "f1_macro": 0.9948,
+    "rows": 26198,
+    "features": [
+      "cell_id",
+      "month_num",
+      "ndvi_mean",
+      "ndvi_std",
+      "n_valid_px",
+      "valid_fraction",
+      "share_tree",
+      "share_shrub",
+      "share_grass",
+      "share_crop",
+      "share_built",
+      "share_bare",
+      "share_water",
+      "share_wetland",
+      "share_mangrove"
+    ],
+    "artifact": "models/clustering/a7_ndvi_anomaly_champion.txt",
+    "elapsed_s": 7.4
+  },
+  "A8_Anomaly_Intelligence": {
+    "champion": "IsolationForest + OneClassSVM + AutoEncoder",
+    "features": [
+      "t_min_c",
+      "t_max_c",
+      "t_mean_c",
+      "rh_mean_pct",
+      "wind_2m_ms",
+      "solar_rad_mj_m2",
+      "pressure_hpa",
+      "rain_mm",
+      "rain_chirps_mm",
+      "et0_pm_mm",
+      "soil_wetness_root_pct"
+    ],
+    "train_samples": 40000,
+    "iso_anomaly_rate_pct": 0.04,
+    "ae_mean_reconstruction_mse": 11.0715,
+    "artifacts": [
+      "models/anomaly/isolation_forest_champion.pkl",
+      "models/anomaly/ocsvm_champion.pkl",
+      "models/anomaly/autoencoder_champion.pkl"
+    ],
+    "elapsed_s": 11.72
+  }
+}

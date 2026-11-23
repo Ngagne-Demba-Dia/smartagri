@@ -2,6 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -9,7 +10,7 @@ import { useMe } from "@/hooks/places";
 import type { Locale } from "@/i18n/routing";
 import { api } from "@/lib/client";
 import { LOGIN_SLUG, localePath } from "@/lib/nav";
-import { displayRole } from "@/lib/roles";
+import { canAccessRoute, displayRole } from "@/lib/roles";
 import { sceneForPath } from "@/lib/scene";
 
 import { BottomBar } from "./BottomBar";
@@ -141,7 +142,28 @@ export function AppShell({ children, banner }: { children: ReactNode; banner?: R
           tabIndex={-1}
           className="mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-5 md:px-6 md:pb-10"
         >
-          {children}
+          {role && !canAccessRoute(role, pathname) ? (
+            <section
+              data-testid="rbac-forbidden"
+              aria-labelledby="rbac-forbidden-title"
+              className="card reveal mx-auto my-8 max-w-2xl p-6"
+            >
+              <p className="eyebrow">{t("forbiddenEyebrow")}</p>
+              <h1 id="rbac-forbidden-title" className="mt-1 text-2xl font-bold text-ink">
+                {t("forbiddenTitle")}
+              </h1>
+              <p className="mt-2 text-sm text-mute">
+                {t("forbiddenBody", { role: t(`roles.${role}`) })}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link href={localePath(locale, "/tableau")} className="btn-primary">
+                  {t("forbiddenBack")}
+                </Link>
+              </div>
+            </section>
+          ) : (
+            children
+          )}
         </main>
       </div>
       <BottomBar onMenu={() => setMenuOpen(true)} menuOpen={menuOpen} />

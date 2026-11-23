@@ -60,6 +60,9 @@ class Settings:
     octopus_base_url: str = "https://octopus.ml"
     octopus_api_key: str = ""
     octopus_timeout_s: float = 60.0
+    smartagri_ai_url: str = ""
+    smartagri_ai_api_key: str = ""
+    smartagri_ai_timeout_s: float = 5.0
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
     rate_limit_default_per_min: int = 120
     rate_limit_auth_per_min: int = 10
@@ -156,6 +159,9 @@ def _read_env(env: Mapping[str, str]) -> Settings:
         octopus_base_url=_get(env, "OCTOPUS_BASE_URL", Settings.octopus_base_url) or Settings.octopus_base_url,
         octopus_api_key=_get(env, "OCTOPUS_API_KEY"),
         octopus_timeout_s=_float(env, "OCTOPUS_TIMEOUT_S", 60.0),
+        smartagri_ai_url=_get(env, "SMARTAGRI_AI_URL", ""),
+        smartagri_ai_api_key=_get(env, "SMARTAGRI_AI_API_KEY", ""),
+        smartagri_ai_timeout_s=_float(env, "SMARTAGRI_AI_TIMEOUT_S", 5.0),
         cors_origins=_csv(env, "CORS_ORIGINS", Settings.cors_origins),
         rate_limit_default_per_min=_int(env, "RATE_LIMIT_DEFAULT_PER_MIN", 120),
         rate_limit_auth_per_min=_int(env, "RATE_LIMIT_AUTH_PER_MIN", 10),

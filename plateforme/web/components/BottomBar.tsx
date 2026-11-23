@@ -4,9 +4,11 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useMe } from "@/hooks/places";
 import type { Locale } from "@/i18n/routing";
 import { MOBILE_TABS } from "@/lib/modules";
 import { localePath } from "@/lib/nav";
+import { canAccessRoute, displayRole } from "@/lib/roles";
 
 import { Icon } from "./Icon";
 
@@ -18,6 +20,9 @@ export function BottomBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: 
   const tc = useTranslations("common");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
+  const me = useMe();
+  const role = displayRole(me.data);
+  const tabs = MOBILE_TABS.filter((tab) => canAccessRoute(role, tab.slug));
 
   return (
     <nav
@@ -25,7 +30,7 @@ export function BottomBar({ onMenu, menuOpen }: { onMenu: () => void; menuOpen: 
       className="glass glass-strong fixed inset-x-3 bottom-3 z-20 overflow-hidden !rounded-[26px] md:hidden"
     >
       <ul className="flex">
-        {MOBILE_TABS.map((tab) => {
+        {tabs.map((tab) => {
           const href = localePath(locale, `/${tab.slug}`);
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (

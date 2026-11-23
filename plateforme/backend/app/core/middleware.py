@@ -51,16 +51,33 @@ class RateRule:
 
 
 class SlidingWindowLimiter:
-    """Fenêtre glissante d'une minute par (règle, client). Thread-safe."""
+    """Fenêtre glissante d'une minute par (règle, client). Thread-safe avec purge périodique."""
+
+    _PRUNE_EVERY = 256
+    _MAX_KEYS = 4096
 
     def __init__(self) -> None:
         self._hits: dict[tuple[str, str], deque[float]] = {}
         self._lock = threading.Lock()
+        self._ops = 0
+
+    def _prune(self, now: float) -> None:
+        stale = [k for k, w in self._hits.items() if not w or now - w[-1] >= WINDOW_SECONDS]
+        for k in stale:
+            del self._hits[k]
+        if len(self._hits) > self._MAX_KEYS:
+            overflow = len(self._hits) - self._MAX_KEYS
+            for k in list(self._hits)[:overflow]:
+                del self._hits[k]
 
     def hit(self, rule: RateRule, client: str, now: float) -> float | None:
         """Enregistre un appel ; renvoie le délai d'attente (s) si la limite est atteinte."""
         key = (rule.prefix, client)
         with self._lock:
+            self._ops += 1
+            if self._ops >= self._PRUNE_EVERY or len(self._hits) > self._MAX_KEYS:
+                self._prune(now)
+                self._ops = 0
             window = self._hits.setdefault(key, deque())
             while window and now - window[0] >= WINDOW_SECONDS:
                 window.popleft()
@@ -94,11 +111,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
 
 class BodySizeLimitMiddleware(BaseHTTPMiddleware):
-    """Refuse (413) une requête dont Content-Length dépasse la limite.
-
-    Les corps envoyés en « chunked » (sans Content-Length) ne sont pas mesurés ici : la limite
-    qui fait foi est celle de l'ingress (`client_max_body_size`).
-    """
+    """Refuse (413) une requête dont le corps dépasse la limite (Content-Length et chunked)."""
 
     def __init__(self, app: ASGIApp, max_bytes: int) -> None:
         super().__init__(app)
@@ -109,4 +122,9 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
         if declared.isdigit() and int(declared) > self._max_bytes:
             body = fail("PAYLOAD_TOO_LARGE", "Corps de requête trop volumineux.")
             return JSONResponse(body, status_code=413)
+        if not declared and request.method in ("POST", "PUT", "PATCH"):
+            raw = await request.body()
+            if len(raw) > self._max_bytes:
+                body = fail("PAYLOAD_TOO_LARGE", "Corps de requête trop volumineux.")
+                return JSONResponse(body, status_code=413)
         return await call_next(request)

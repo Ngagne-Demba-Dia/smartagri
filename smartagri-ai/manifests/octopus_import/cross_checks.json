@@ -1,0 +1,21 @@
+{
+  "isdasoil_vs_soilgrids_0_20cm": {
+    "sand": {
+      "pearson_r": 0.8302,
+      "mean_abs_diff_pct": 5.99,
+      "n_cells": 6911
+    },
+    "clay": {
+      "pearson_r": 0.7534,
+      "mean_abs_diff_pct": 2.97,
+      "n_cells": 6911
+    }
+  },
+  "chirps_vs_nasa_precip_daily_power_cells": {
+    "n_rows": 316844,
+    "pearson_r_daily": 0.3793,
+    "mean_nasa_mm_day": 2.4764,
+    "mean_chirps_mm_day": 1.8963,
+    "annual_mean_ratio_chirps_over_nasa": 0.7657
+  }
+}

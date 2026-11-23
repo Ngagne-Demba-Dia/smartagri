@@ -1,0 +1,17 @@
+{
+  "snapshot": "data/curated/octopus/soil_nowcast_proxy_national/v=20261114-natl01",
+  "manifest_sha256": "20a4a2777411a03fcc257eb49165ecce78edad500f363a2fe91096b8a5d46c7f",
+  "train_rows": 258440,
+  "test_rows": 25915,
+  "holdout_temporal_rows": 22294,
+  "holdout_spatial_rows": 21660,
+  "train_cells": 71,
+  "validation_power_cells": [
+    "pw_15.0_-16.875",
+    "pw_15.5_-16.250",
+    "pw_15.5_-16.875",
+    "pw_16.0_-16.250",
+    "pw_16.5_-15.625"
+  ],
+  "n_features": 30
+}

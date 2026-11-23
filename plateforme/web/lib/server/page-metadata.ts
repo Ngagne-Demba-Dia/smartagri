@@ -27,7 +27,8 @@ export type ModuleTitleKey =
   | "irrigationPlan"
   | "traps"
   | "vegetation"
-  | "markets";
+  | "markets"
+  | "community";
 
 /** Titre d'onglet propre à chaque écran (WCAG 2.4.2), complété par le gabarit « … · SmartAgri92 » du layout racine. */
 export async function moduleMetadata(key: ModuleTitleKey): Promise<Metadata> {

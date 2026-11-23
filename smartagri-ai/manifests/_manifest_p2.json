@@ -1,0 +1,241 @@
+{
+  "tables": [
+    {
+      "name": "soilnowcast_all_metrics.csv",
+      "rows": 45,
+      "cols": 7
+    },
+    {
+      "name": "soilnowcast_feature_importance_all.csv",
+      "rows": 30,
+      "cols": 4
+    },
+    {
+      "name": "soilnowcast_group_errors.csv",
+      "rows": 639,
+      "cols": 8
+    },
+    {
+      "name": "wx_rain_prob_all_metrics.csv",
+      "rows": 45,
+      "cols": 11
+    },
+    {
+      "name": "wx_rain_prob_feature_importance_all.csv",
+      "rows": 30,
+      "cols": 4
+    },
+    {
+      "name": "wx_rain_prob_shap_summary.csv",
+      "rows": 30,
+      "cols": 2
+    },
+    {
+      "name": "wx_rain_prob_fold_stability.csv",
+      "rows": 45,
+      "cols": 6
+    },
+    {
+      "name": "wx_rain_prob_group_errors.csv",
+      "rows": 213,
+      "cols": 7
+    },
+    {
+      "name": "et0_forecast_all_metrics.csv",
+      "rows": 15,
+      "cols": 7
+    },
+    {
+      "name": "et0_forecast_feature_importance.csv",
+      "rows": 16,
+      "cols": 4
+    },
+    {
+      "name": "et0_forecast_group_errors.csv",
+      "rows": 45,
+      "cols": 8
+    },
+    {
+      "name": "yield_forecast_all_metrics.csv",
+      "rows": 15,
+      "cols": 7
+    },
+    {
+      "name": "yield_forecast_feature_importance.csv",
+      "rows": 5,
+      "cols": 4
+    },
+    {
+      "name": "price_forecast_all_metrics.csv",
+      "rows": 15,
+      "cols": 7
+    },
+    {
+      "name": "price_forecast_feature_importance.csv",
+      "rows": 10,
+      "cols": 4
+    },
+    {
+      "name": "price_forecast_group_errors.csv",
+      "rows": 39,
+      "cols": 6
+    },
+    {
+      "name": "remaining_models_all_metrics.csv",
+      "rows": 39,
+      "cols": 6
+    },
+    {
+      "name": "market_cluster_assignments.csv",
+      "rows": 67,
+      "cols": 2
+    },
+    {
+      "name": "market_clustering_results.csv",
+      "rows": 6,
+      "cols": 5
+    },
+    {
+      "name": "anomaly_intelligence_metrics.csv",
+      "rows": 30,
+      "cols": 8
+    },
+    {
+      "name": "anomaly_intelligence_feature_importance.csv",
+      "rows": 34,
+      "cols": 4
+    },
+    {
+      "name": "smartagri_knowledge_chunks.csv",
+      "rows": 527,
+      "cols": 7
+    },
+    {
+      "name": "smartagri_knowledge_eval.csv",
+      "rows": 20,
+      "cols": 6
+    },
+    {
+      "name": "lgb_fold_metrics.csv",
+      "rows": 18,
+      "cols": 7
+    },
+    {
+      "name": "lgb_feature_importance.csv",
+      "rows": 30,
+      "cols": 2
+    }
+  ],
+  "documents": [
+    {
+      "name": "56_real_ai_portfolio.md",
+      "bytes": 31745
+    },
+    {
+      "name": "56_classe_a_fiches_detaillees.md",
+      "bytes": 15073
+    },
+    {
+      "name": "57_first_octopus_projects.md",
+      "bytes": 12983
+    },
+    {
+      "name": "58_plan_A1_soil_nowcast.md",
+      "bytes": 21168
+    },
+    {
+      "name": "80_smartagri_ai_orchestrator.md",
+      "bytes": 12355
+    },
+    {
+      "name": "81_ai_execution_flows.md",
+      "bytes": 12869
+    },
+    {
+      "name": "82_class_b_readiness.md",
+      "bytes": 32834
+    },
+    {
+      "name": "rapport_analyse_bundle_smartagri92.md",
+      "bytes": 30609
+    },
+    {
+      "name": "86_smartagri_feature_store.md",
+      "bytes": 14626
+    },
+    {
+      "name": "87_smartagri_retraining_strategy.md",
+      "bytes": 24320
+    },
+    {
+      "name": "88_smartagri_demo_app.md",
+      "bytes": 8451
+    },
+    {
+      "name": "88_smartagri_digital_agronomist.md",
+      "bytes": 12970
+    },
+    {
+      "name": "89_smartagri_knowledge_graph.md",
+      "bytes": 12921
+    },
+    {
+      "name": "90_smartagri_copilot.md",
+      "bytes": 14199
+    },
+    {
+      "name": "91_smartagri_scenario_simulator.md",
+      "bytes": 17213
+    },
+    {
+      "name": "92_smartagri_export_manifest.md",
+      "bytes": 14538
+    },
+    {
+      "name": "93_smartagri_full_project_export_manifest.md",
+      "bytes": 14475
+    },
+    {
+      "name": "85_smartagri_model_registry.md",
+      "bytes": 12102
+    }
+  ],
+  "models": [
+    {
+      "name": "A2_ET0_Forecast_models.zip",
+      "bytes": 8427
+    },
+    {
+      "name": "A3_Yield_A5_Price_models.zip",
+      "bytes": 9214
+    },
+    {
+      "name": "A6_A7_A9_models.zip",
+      "bytes": 8465
+    }
+  ],
+  "configs": [
+    {
+      "name": "lgb_config.json",
+      "bytes": 1229
+    },
+    {
+      "name": "analysis_part1.json",
+      "bytes": 27573
+    }
+  ],
+  "figures": [
+    {
+      "name": "lgb_feature_importance.png",
+      "bytes": 64799
+    }
+  ],
+  "other": [
+    {
+      "name": "quality_issues.csv"
+    },
+    {
+      "name": "inventaire_datasets.csv"
+    }
+  ]
+}

@@ -77,7 +77,7 @@ export function EquipmentView() {
   const rows = equipment.data ?? [];
 
   return (
-    <ModuleShell title={tm("equipment")} description={t("description")} version="V1_1">
+    <ModuleShell title={tm("equipment")} description={t("description")} version="MVP">
       <QueryState
         isPending={equipment.isPending}
         error={equipment.error}

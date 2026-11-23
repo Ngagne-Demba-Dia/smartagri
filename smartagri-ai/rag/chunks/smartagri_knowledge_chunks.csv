@@ -1,0 +1,1748 @@
+chunk_id,doc_source,domain,chunk_index,tokens_est,chars,text_preview
+d_c2564efd_c000,data:esa_worldcover_national_grid_0p05.parquet,géospatial,0,194,779,"# Dataset : esa_worldcover_national_grid_0p05.parquet
+Lignes : 6945
+Colonnes : cell_id, lat, lon, n_samples, share_tree, share_shrub, share_grass, share_crop, share_built, share_bare, share_water, share_wetland, share_mangrove
+  cell_id: min=49, max=11069, moy=5929.50
+  lat: min=12.325, max=16.675, "
+d_03b03a69_c000,data:fao56_crop_coefficients_daily.parquet,cultures,0,170,683,"# Dataset : fao56_crop_coefficients_daily.parquet
+Lignes : 900
+Colonnes : crop_code, crop_name_fr, day_after_planting, season_days, growth_stage, kc, kc_ini, kc_mid, kc_end
+  crop_code: 7 uniques, ex: ['onion', 'tomato', 'cabbage', 'potato', 'carrot']
+  crop_name_fr: 7 uniques, ex: ['Oignon (bulbe s"
+d_39fe22c8_c000,data:senegal_grid_0p05.parquet,géospatial,0,167,668,"# Dataset : senegal_grid_0p05.parquet
+Lignes : 6945
+Colonnes : cell_id, row, col, lat, lon, region_adm1, power_cell_id, validation_zone, area_km2
+  cell_id: min=49, max=11069, moy=5929.50
+  row: min=0, max=87, moy=46.57
+  col: min=1, max=125, moy=61.94
+  lat: min=12.325, max=16.675, moy=14.35
+  lon:"
+d_1742b397_c000,data:wfp_senegal_markets.parquet,marchés,0,136,545,"# Dataset : wfp_senegal_markets.parquet
+Lignes : 79
+Colonnes : market_id, market, region, department, lat, lon, source_id
+  market_id: min=405, max=12092, moy=2371.87
+  market: 79 uniques, ex: ['Bakel', 'Bambey', 'Bignona', 'Castors', 'Dagana']
+  region: 14 uniques, ex: ['Tambacounda', 'Diourbel', '"
+d_3449ede7_c000,data:isdasoil_national_grid_0p05.parquet,sol,0,377,1509,"# Dataset : isdasoil_national_grid_0p05.parquet
+Lignes : 13890
+Colonnes : cell_id, lat, lon, depth_cm, sand_pct, clay_pct, silt_pct, ph_h2o, soc_g_kg, n_total_g_kg, p_mg_kg, k_mg_kg, cec_cmol_kg, bulk_density_g_cm3, fc_ptf_pct, wp_ptf_pct, awc_ptf_mm_per_m, sg_sand_pct_5_15cm, sg_clay_pct_5_15cm
+  c"
+d_04137047_c000,data:faostat_senegal_crops_1961_2024.parquet,cultures,0,200,802,"# Dataset : faostat_senegal_crops_1961_2024.parquet
+Lignes : 956
+Colonnes : year, season, crop, crop_fao_name, fao_item_code, area_ha, yield_t_ha, yield_kg_ha, production_t, scale, source_id
+  year: min=1961, max=2024, moy=1994.85
+  season: 1 uniques, ex: ['annual']
+  crop: 18 uniques, ex: ['cabbage"
+z_9471abcd_c000,bundle:41_data_inventory.md,général,0,206,824,"# 41 — Inventaire Complet des Données (Réelles, Simulées, Manquantes) & Feuille de Route IA 10 Jours
+
+**Date** : 14 novembre 2026  
+**Statut** : Référence d'entrée en Phase IA Réelle (Post-clôture Web E6 & Backend D8) — *Confidentiel — réservé aux partenaires de travail.*  
+**Périmètre** : Audit exh"
+z_9471abcd_c001,bundle:41_data_inventory.md,général,1,512,2048,"## 1. Synthèse exécutive : ce que contient réellement le dépôt aujourd'hui
+
+L'inspection physique du dépôt et de la base de données montre une séparation nette entre trois catégories de données :
+
+1. **Données réelles disponibles immédiatement (Référentiels, API live & Corpus local)** :
+   - **Flux "
+z_9471abcd_c002,bundle:41_data_inventory.md,général,2,411,1647,"< 80` mg/kg) et sécurité pompe (`10 min` marche max / `30 min` repos).
+2. **Données simulées / synthétiques (présentes sur disque pour les tests de bout en bout)** :
+   - **5 jeux synthétiques ML** générés par [`ml/scripts/make_synthetic.py`](../ml/scripts/make_synthetic.py) dans `ml/data/synthetic/"
+z_9471abcd_c003,bundle:41_data_inventory.md,général,3,512,2048,"### 2.1 Données dynamiques et référentiels techniques actifs dans le code
+
+| Identifiant / Fichier | Domaine | Nature exacte de la donnée | Volume / Couverture actuelle | Statut licence & conformité | Usage IA / Moteur actuel |
+|---|---|---|---|---|---|
+| [`backend/app/services/weather.py`](../backe"
+z_9471abcd_c004,bundle:41_data_inventory.md,général,4,399,1596,"(`bas`, `moyen`, `eleve`) |
+| [`backend/app/services/assistant/knowledge/*.md`](../backend/app/services/assistant/knowledge/) | Connaissances (`connaissances`) | 4 fiches techniques rédigées en français : `irrigation.md` (2 655 o), `protection.md` (2 296 o), `sols_niayes.md` (1 915 o), `kit.md` (1 8"
+z_9471abcd_c005,bundle:41_data_inventory.md,général,5,561,2247,"### 2.2 Sources ouvertes externes immédiatement téléchargeables sans convention (identifiées dans `sources.yaml`)
+
+Ces sources ne sont pas stockées en masse dans le dépôt Git, mais sont **publiques, gratuites et commercialement exploitables (`commercial: open`)** dès l'ouverture du chantier d'ingest"
+z_9471abcd_c006,bundle:41_data_inventory.md,général,6,123,492,"## 3. Inventaire détaillé des données SIMULÉES (présentes dans le dépôt)
+
+> [!WARNING]
+> **Règle absolue (`ml/RESULTS_SMOKE.md` l. 5–7)** : Aucune des données ci-dessous ne provient du terrain. Elles ont été construites pour prouver que la chaîne `agriml` (validation sans fuite, sélection, empilemen"
+z_9471abcd_c007,bundle:41_data_inventory.md,général,7,654,2617,"### 3.1 Jeux synthétiques ML (`plateforme/ml/data/synthetic/`)
+
+Générés de façon déterministe par [`ml/scripts/make_synthetic.py`](../ml/scripts/make_synthetic.py) (`--seed 42`) :
+
+| Sous-dossier & Fichier | Lignes | Colonnes | Taille | Grain & Structure | Artefacts / Bundles déjà générés sur disque"
+z_9471abcd_c008,bundle:41_data_inventory.md,général,8,238,955,"### 3.2 Données de démonstration Backend (`plateforme/backend/app/seed.py`) et Mocks BFF (`plateforme/web/mocks/`)
+
+- **`backend/app/seed.py`** : crée uniquement le squelette relationnel de démonstration (`Coopérative démo des Niayes`, `Exploitation démo de Mboro`, `Parcelle oignon 1` de 0,5 ha sur "
+z_9471abcd_c009,bundle:41_data_inventory.md,général,9,511,2047,"## 4. Inventaire détaillé des données MANQUANTES (et volume minimal requis)
+
+| Catégorie manquante | Table SQL / Jeu du catalogue cible | Ce qui manque exactement aujourd'hui | Modèles & Services bloqués | Volume minimal pour un 1er modèle réel (Pilote V1.1 / V2) |
+|---|---|---|---|---|
+| **1. Télém"
+z_9471abcd_c010,bundle:41_data_inventory.md,général,10,512,2048,"points de %. |
+| **4. Mesures de débitmètre sur les pompes** | `kit_flowmeter` → `iot.irrigation_events` → `features.irrigation_need` | Le kit v1.1 ne possède pas de débitmètre à impulsions : on ne connaît que `pump_on` (booléen) et le débit nominal déclaratif (`flow_m3h`). Le volume réellement appo"
+z_9471abcd_c011,bundle:41_data_inventory.md,général,11,274,1097,"25\,\%$), puis pulaar. |
+| **8. Rendements pesés multi-campagnes & Prix SIM/CSA** | `crop_cycles.yield_kg` → `features.yield` ; `economie.prices_weekly` → `features.price_forecast` | Pesées de récolte réelles sur au moins 4 campagnes complètes (*leave-one-campaign-out*) et séries hebdomadaires de pr"
+z_9471abcd_c012,bundle:41_data_inventory.md,général,12,512,2048,"## 5. Confirmation du premier modèle IA réellement réalisable (relecture de `33_readiness_ia_reelle.md`)
+
+Après relecture croisée de [`33_readiness_ia_reelle.md`](./33_readiness_ia_reelle.md), de [`16_architecture_octopus.md`](./16_architecture_octopus.md) et du code de [`ml/src/agriml/forecast/soil"
+z_9471abcd_c013,bundle:41_data_inventory.md,général,13,307,1228,", 29 variables de retard/fenêtres/cycle diurne, validation walk-forward purgée avec `gap_hours: 72`) fonctionne déjà de bout en bout.
+   - Le programme OctOpus [`soil_moisture_nowcast.yaml`](../ml/src/agriml/octopus/programs/soil_moisture_nowcast.yaml) est déjà présent et synchronisé avec le catalog"
+z_9471abcd_c014,bundle:41_data_inventory.md,général,14,449,1798,"### Catégorie A — Faisable immédiatement (dès J1–J10, avec les données et outils actuels)
+
+| Modèle / Service | Type | Pourquoi c'est faisable immédiatement | Action requise (sans modifier Frontend/Backend/Doc 16) |
+|---|---|---|---|
+| **Qualification de bout en bout de `soil_nowcast` (`soil_moistur"
+z_9471abcd_c015,bundle:41_data_inventory.md,général,15,583,2334,"### Catégorie B — Faisable avec données supplémentaires à court/moyen terme (Collecte pilote ou validation agronomique)
+
+| Modèle / Service | Donnée supplémentaire requise | Délai d'acquisition réaliste | Jalon d'activation |
+|---|---|---|---|
+| **`fert_reco` (`#6 fertilization`) & `risk_rules` (`#9"
+z_9471abcd_c016,bundle:41_data_inventory.md,général,16,619,2478,"### Catégorie C — Bloqué (Dépendance matérielle absente, multi-saisons ou partenariats externes lourds)
+
+| Modèle / Service | Nature précise du blocage | Condition de déblocage |
+|---|---|---|
+| **`irr_need_24h` (`#3 irrigation_need` palier ML)** & **`water_savings` (`#14` certifié)** | **Blocage ma"
+z_9471abcd_c017,bundle:41_data_inventory.md,général,17,512,2048,"## 7. Feuille de route IA sur 10 jours (Préparation des données, durcissement MLOps & Onboarding OctOpus)
+
+> [!NOTE]
+> Conformément aux contraintes fixées, **cette feuille de route sur 10 jours prépare intégralement le terrain, les contrats de données, les garde-fous `agriml.octopus` et la qualifica"
+z_9471abcd_c018,bundle:41_data_inventory.md,général,18,512,2048,"ection des écarts P0 de l'exporteur OctOpus (Recommandation R7 de Doc 16 § 8)** | - Mise à niveau de `agriml/octopus/exporter.py` et création du registre `ml/octopus/compliance.yaml` : vérification effective de C1 (`octopus.licence`) et C2–C4 (pour `agri92-pilot`), retrait physique des lignes tomban"
+z_9471abcd_c019,bundle:41_data_inventory.md,général,19,400,1603,"t, versionné par manifeste SHA-256). | Fichier Parquet réel présent localement, contrôlé sans valeurs manquantes ni fuite temporelle. |
+| **J8** | **Protocole terrain d'étalonnage gravimétrique (`sm_calibration`) & Barèmes ISRA** | - Préparation du gabarit de saisie CSV `ml/data/templates/sm_calibra"
+z_5b00241b_c000,bundle:42_octopus_onboarding_plan.md,général,0,222,891,"# 42 — Plan d'Onboarding et d'Intégration OctOpus ML
+
+**Date** : 14 novembre 2026  
+**Statut** : Plan opérationnel d'onboarding OctOpus ML (Phase IA Réelle) — *Confidentiel — réservé aux partenaires de travail.*  
+**Références** : [`09_octopus_ml.md`](./09_octopus_ml.md), [`16_architecture_octopus.m"
+z_5b00241b_c001,bundle:42_octopus_onboarding_plan.md,général,1,512,2048,"## 1. Principes directeurs de l'intégration OctOpus ML
+
+Conformément à [`09_octopus_ml.md`](./09_octopus_ml.md) § 1 et [`16_architecture_octopus.md`](./16_architecture_octopus.md) § 0–1, l'intégration d'OctOpus ML repose sur cinq règles d'architecture non négociables :
+
+1. **OctOpus est un challenge"
+z_5b00241b_c002,bundle:42_octopus_onboarding_plan.md,général,2,316,1266,"sans lien avec OctOpus ML (risque de chaîne d'approvisionnement). Seul notre client interne [`agriml/octopus/client.py`](../ml/src/agriml/octopus/client.py) construit sur `httpx` est autorisé.
+4. **Inférence souveraine en production avec chaîne de repli à 3 paliers** :
+   - En production, l'API Fast"
+z_5b00241b_c003,bundle:42_octopus_onboarding_plan.md,général,3,660,2640,"## 2. État des composants techniques OctOpus déjà livrés dans le dépôt
+
+L'audit du code montre que toute la plomberie logicielle est déjà en place et testée unitairement :
+
+| Composant | Fichier | État actuel | Tests existants |
+|---|---|---|---|
+| **Client HTTP OctOpus** | [`ml/src/agriml/octopus/c"
+z_5b00241b_c004,bundle:42_octopus_onboarding_plan.md,général,4,440,1762,"## 3. Le premier projet à créer dans OctOpus : `soil_moisture_nowcast`
+
+### 3.1 Pourquoi `soil_moisture_nowcast` est le premier projet OctOpus à ouvrir
+
+Conformément à [`33_readiness_ia_reelle.md`](./33_readiness_ia_reelle.md) § 2 et [`41_data_inventory.md`](./41_data_inventory.md) § 5, le premier p"
+z_5b00241b_c005,bundle:42_octopus_onboarding_plan.md,général,5,573,2295,"### 3.2 Fiche technique complète du premier projet OctOpus (`soil_moisture_nowcast`)
+
+| Paramètre OctOpus | Valeur en Phase A (Qualification immédiate J1–J10) | Valeur en Phase B (Pilote terrain réel) |
+|---|---|---|
+| **Nom du projet / programme** | `soil_moisture_nowcast` | `soil_moisture_nowcast`"
+z_5b00241b_c006,bundle:42_octopus_onboarding_plan.md,général,6,347,1389,"### 3.3 Schéma exact de l'instantané envoyé à OctOpus (`octopus/soil_nowcast/v=<version>/`)
+
+L'exporteur [`agriml/octopus/exporter.py`](../ml/src/agriml/octopus/exporter.py) produit quatre fichiers immuables :
+1. **`train.parquet`** : lignes d'entraînement antérieures à la fenêtre de holdout, avec l"
+z_5b00241b_c007,bundle:42_octopus_onboarding_plan.md,général,7,277,1109,"### 4.1 Variables d'environnement et secrets requis
+
+| Variable | Où la configurer | Valeur / Règle de sécurité |
+|---|---|---|
+| `OCTOPUS_BASE_URL` | Environnement `agriml` & Backend | `https://octopus.ml` (HTTPS vérifié par `check_base_url` ; redirections HTTP désactivées `follow_redirects=False` "
+z_5b00241b_c008,bundle:42_octopus_onboarding_plan.md,général,8,679,2718,"### 4.2 Écarts P0 du code `plateforme/ml/` à lever pendant les 10 jours (identifiés dans Doc 16 § 7–8)
+
+Avant de lancer le premier run réel dans OctOpus, les **6 écarts P0** documentés au § 8 de [`16_architecture_octopus.md`](./16_architecture_octopus.md) doivent être appliqués dans `plateforme/ml/`"
+z_5b00241b_c009,bundle:42_octopus_onboarding_plan.md,général,9,384,1537,"### 4.3 Les 5 contrôles de conformité avant passage de `agri92-sandbox` à `agri92-pilot`
+
+Conformément à [`16_architecture_octopus.md`](./16_architecture_octopus.md) § 2.3 :
+- **En espace `agri92-sandbox` (J1–J10)** : seuls des jeux synthétiques (`make_synthetic.py`) ou des jeux 100 % publics (`feat"
+z_5b00241b_c010,bundle:42_octopus_onboarding_plan.md,général,10,392,1568,"## 5. Procédure opérationnelle pas-à-pas du premier run OctOpus (`soil_moisture_nowcast`)
+
+Une fois la préparation des données (J1–J9) achevée et le feu vert donné pour l'entraînement :
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant DS as Data Scientist (CLI agriml)
+    participant AG as"
+z_5b00241b_c011,bundle:42_octopus_onboarding_plan.md,général,11,447,1789,"### Commandes exactes associées (à exécuter uniquement après validation de la phase de préparation)
+
+1. **Vérification du catalogue et de la lignée de `soil_nowcast`** :
+   ```powershell
+   cd plateforme/ml
+   $env:PYTHONPATH=""src""
+   python -m agriml.catalog check
+   python -m agriml.catalog lineag"
+z_5b00241b_c012,bundle:42_octopus_onboarding_plan.md,général,12,404,1616,"### 6.1 Synthèse du classement des projets OctOpus
+
+| Statut | Projets / Programmes OctOpus | Justification |
+|---|---|---|
+| **1. Faisable immédiatement (Espace `agri92-sandbox`)** | - **`soil_moisture_nowcast`** (sur jeu synthétique calibré + météo réelle)<br>- **`rain_event_probability`** (sur do"
+z_5b00241b_c013,bundle:42_octopus_onboarding_plan.md,général,13,584,2338,"### 6.2 Feuille de route d'exécution sur 10 jours (Phase de préparation — sans entraînement immédiat)
+
+1. **J1** : Validation de l'inventaire des données ([`41_data_inventory.md`](./41_data_inventory.md)) et du présent plan d'onboarding ([`42_octopus_onboarding_plan.md`](./42_octopus_onboarding_plan"
+z_82f27b5e_c000,bundle:44_real_data_acquisition_plan.md,général,0,454,1816,"# 44 — Plan d'Acquisition des Données Réelles (`IA-REAL-01`)
+
+**Date** : 14 novembre 2026  
+**Mission** : `IA-REAL-01` — Constitution des premiers jeux de données réels de SmartAgri92  
+**Statut** : Référence d'acquisition de données réelles — *Confidentiel — réservé aux partenaires de travail.*  
+*"
+z_82f27b5e_c001,bundle:44_real_data_acquisition_plan.md,général,1,178,715,"### Zones d'extraction prioritaires au Sénégal (`manifests/sources_registry.json`)
+Toutes les requêtes spatiales et ponctuelles ciblent en priorité nos trois bassins maraîchers de référence :
+- **Zone 1 — Niayes Nord (Mboro, région de Thiès)** : `lat = 15.1503`, `lon = -16.8797`, `bbox = [-17.15, 14"
+z_82f27b5e_c002,bundle:44_real_data_acquisition_plan.md,général,2,512,2048,"### 2.1 Météo, Pluie et $ET_0$
+
+| Source (`id` catalogue) | Propriétaire / Producteur | Licence & Droit commercial | Variables disponibles (Codes exacts & Unités) | Format & Fréquence de mise à jour | Mode d'accès (API ou Téléchargement) | Difficulté d'intégration | Qualité attendue au Sénégal | Niv"
+z_82f27b5e_c003,bundle:44_real_data_acquisition_plan.md,général,3,512,2048,"t, latence ~2–3 j) | **Téléchargement HTTP direct** (`https://www.tamsat.org.uk/data`) | **Faible** | **Très élevée** ($0,0375^\circ \approx 4\text{ km}$), calibrée spécifiquement sur les pluviomètres africains | **Niveau A** |
+| **ECMWF Open Data (IFS / AIFS)** (`ecmwf_open_data`) | Centre Européen"
+z_82f27b5e_c004,bundle:44_real_data_acquisition_plan.md,général,4,620,2482,"(C3S / ECMWF) | **Licence Copernicus libre** (`commercial: open`, attribution) | Horaire $0,1^\circ$ (~9 km) : `t2m`, `d2m`, `tp`, `ssrd`, `pev` (évaporation potentielle), `evavt`, `u10`, `v10` | **NetCDF / GRIB / Zarr ARCO** — Horaire (ERA5-Land) / Quotidien (AgERA5), depuis 1950/1979, latence ~5 j"
+z_82f27b5e_c005,bundle:44_real_data_acquisition_plan.md,général,5,511,2047,"### 2.2 Humidité du Sol et Propriétés Physico-Chimiques des Sols
+
+| Source (`id` catalogue) | Propriétaire / Producteur | Licence & Droit commercial | Variables disponibles (Codes exacts & Unités) | Format & Fréquence de mise à jour | Mode d'accès (API ou Téléchargement) | Difficulté d'intégration |"
+z_82f27b5e_c006,bundle:44_real_data_acquisition_plan.md,général,6,613,2455,"(`wv0033`) et 1500 kPa (`wv1500`) utiles pour la réserve utile (RU) | **Niveau A** |
+| **NASA POWER Humidité du Sol** (`nasa_power`) | NASA | **Ouverte NASA** (`commercial: open`) | `GWETTOP` (humidité relative de surface `0–5 cm`, ratio `0..1`), `GWETROOT` (humidité zone racinaire `0–100 cm`, ratio"
+z_82f27b5e_c007,bundle:44_real_data_acquisition_plan.md,général,7,512,2048,"### 2.3 NDVI, Sentinel-2 et Télédétection Satellite
+
+| Source (`id` catalogue) | Propriétaire / Producteur | Licence & Droit commercial | Variables disponibles (Codes exacts & Unités) | Format & Fréquence de mise à jour | Mode d'accès (API ou Téléchargement) | Difficulté d'intégration | Qualité atte"
+z_82f27b5e_c008,bundle:44_real_data_acquisition_plan.md,général,8,299,1198,"au A** |
+| **Copernicus Data Space (CDSE) — Sentinel-2 & Sentinel-1** (`sentinel2`, `sentinel1`) | Commission Européenne / ESA | **Licence Copernicus libre** (`commercial: open`) | Optique `S2MSI2A` (10–60 m, 5 j) et Radar SAR bande C `S1_GRD` (`VV`, `VH` à 10 m, 6–12 j, insensible aux nuages d'hive"
+z_82f27b5e_c009,bundle:44_real_data_acquisition_plan.md,général,9,512,2048,"### 2.4 Cultures Maraîchères du Sénégal, Rendements et Prix Agricoles
+
+| Source (`id` catalogue) | Propriétaire / Producteur | Licence & Droit commercial | Variables disponibles (Codes exacts & Unités) | Format & Fréquence de mise à jour | Mode d'accès (API ou Téléchargement) | Difficulté d'intégrat"
+z_82f27b5e_c010,bundle:44_real_data_acquisition_plan.md,général,10,512,2048,"a.org/dataset/wfp-food-prices-for-senegal` | **Faible** (CSV propre directement lisible par `pandas`) | **Élevée** : contient les séries réelles de prix sénégalais en FCFA et les coordonnées GPS exactes des marchés, issues de la collecte conjointe SIM/CSA–PAM | **Niveau A** |
+| **Tables FAO-56 & Lis"
+z_82f27b5e_c011,bundle:44_real_data_acquisition_plan.md,général,11,326,1304,"lic GitHub `https://github.com/SARRA-cropmodels/SARRA-Py` | **Moyenne** (calibrage des paramètres variétaux) | **Élevée** pour générer un prior physique de rendement (`yield_crop_model`) avant d'avoir 4 campagnes de pesées | **Niveau B** |
+| **Référentiels ISRA / CDH, Alertes DPV, Enquêtes DAPSA, Me"
+z_82f27b5e_c012,bundle:44_real_data_acquisition_plan.md,général,12,511,2047,"## 3. Données réellement téléchargeables IMMÉDIATEMENT (Action 4)
+
+Sans attendre aucune signature de convention, aucune clé API payante ni aucun déploiement matériel, **7 jeux de données réels, gratuits et autorisés pour un usage commercial (`commercial: open`) sont téléchargeables dès aujourd'hui**"
+z_82f27b5e_c013,bundle:44_real_data_acquisition_plan.md,général,13,303,1213,"au point de flétrissement (`wv1500`).
+5. **Séries temporelles Sentinel-2 L2A (10 m) et indices NDVI / EVI / NDWI / SAVI** sur les polygones de Mboro, Sangalkam et Richard-Toll via **Digital Earth Africa STAC (`https://explorer.digitalearth.africa/stac`, CC BY 4.0)** :
+   - Accès direct anonyme (`aws"
+z_82f27b5e_c014,bundle:44_real_data_acquisition_plan.md,général,14,432,1730,"### Niveau A — Utilisable aujourd'hui (0 partenaire, 0 clé payante, licence commerciale ouverte, téléchargeable immédiatement)
+
+| Rang | Jeu de données réel à constituer dans `ml/data/real/` | Source(s) Niveau A combinées | Modèles SmartAgri92 directement alimentés |
+|---|---|---|---|
+| **A1** | `me"
+z_82f27b5e_c015,bundle:44_real_data_acquisition_plan.md,général,15,519,2076,"### Niveau B — Nécessite préparation technique ou collecte pilote (1 à 8 semaines, sans blocage institutionnel)
+
+| Rang | Jeu de données réel | Nature de la préparation requise | Délai estimé |
+|---|---|---|---|
+| **B1** | `meteo/era5_land_hourly_senegal.parquet` & `soil_moisture/era5_land_swvl.parq"
+z_82f27b5e_c016,bundle:44_real_data_acquisition_plan.md,général,16,490,1961,"### Niveau C — Nécessite partenariat formel ou convention institutionnelle (Moyen / Long terme)
+
+| Rang | Jeu de données partenaire | Institution propriétaire (Sénégal / Sous-région) | Rôle métier et modèles débloqués |
+|---|---|---|---|
+| **C1** | Barèmes de fumure NPK & Fiches variétales (`isra_cd"
+z_82f27b5e_c017,bundle:44_real_data_acquisition_plan.md,général,17,512,2048,"## 5. Arborescence préparée dans `plateforme/ml/data/real/` (Action 6)
+
+L'arborescence complète a été créée et documentée dans [`plateforme/ml/data/real/`](../ml/data/real/) avec son registre machine [`manifests/sources_registry.json`](../ml/data/real/manifests/sources_registry.json) et un contrat d"
+z_82f27b5e_c018,bundle:44_real_data_acquisition_plan.md,général,18,278,1115,"d](file:///c:/Users/ngdia/Documents/projet_agri/plateforme/ml/data/real/sentinel2_ndvi/SCHEMA.md)** : réflectances Sentinel-2 L2A 10 m et séries NDVI/EVI/NDWI/SAVI (`deafrica` STAC, `sentinel2`).
+- **[ml/data/real/crops_senegal/SCHEMA.md](file:///c:/Users/ngdia/Documents/projet_agri/plateforme/ml/da"
+z_6c1d3b34_c000,bundle:45_real_data_lake_ready.md,général,0,179,717,"# 45 — Data Lake Réel National SmartAgri92 Prêt pour OctOpus (`IA-REAL-03`)
+
+**Date** : 16 novembre 2026  
+**Mission** : `IA-REAL-03` — Refonte à l'échelle nationale du Sénégal (toutes régions, généralisation à tout futur kit)  
+**Statut** : `READY_FOR_OCTOPUS` — *Confidentiel — réservé aux partenai"
+z_6c1d3b34_c001,bundle:45_real_data_lake_ready.md,général,1,381,1525,"## 1. Changement de paradigme : du pilote 6 sites au Data Lake National
+
+Conformément à la révision du plan IA réel (`IA-REAL-03`), le Data Lake ne repose plus sur une poignée de sites pilotes choisis manuellement :
+
+1. **Grille nationale unique (`0,05° × 0,05°`, ≈ 5,5 km)** couvrant **100 % du terr"
+z_6c1d3b34_c002,bundle:45_real_data_lake_ready.md,général,2,157,628,"## 2. Bilan Quantitatif du Data Lake National (`ml/data/real/`)
+
+| Indicateur global | Valeur vérifiée |
+| :--- | :--- |
+| **Nombre de tables Parquet actives** | **23 fichiers Parquet** (+ 23 manifestes `.manifest.json` SHA-256) |
+| **Volume total de lignes** | **30 066 374 lignes** |
+| **Volume dis"
+z_6c1d3b34_c003,bundle:45_real_data_lake_ready.md,général,3,512,2048,"### Répartition par domaine
+
+| Domaine | Fichiers | Lignes | Taille | Couverture & Contenu |
+| :--- | :---: | ---: | ---: | :--- |
+| **Référentiel géo (`geo/`)** | 2 | 7 021 | 60,5 Ko | [`senegal_grid_0p05.parquet`](../ml/data/real/geo/senegal_grid_0p05.parquet) (6 945 cellules, 14 régions), [`power"
+z_6c1d3b34_c004,bundle:45_real_data_lake_ready.md,général,4,304,1216,".parquet) (**20 722 scènes** sur tout le Sénégal) + [`s2_ndvi_national_grid_monthly_2025.parquet`](../ml/data/real/sentinel2_ndvi/s2_ndvi_national_grid_monthly_2025.parquet) (**26 198 lignes**, composites mensuels 2025 sur 54 tuiles S2). |
+| **Cultures & Occupation (`crops_senegal/`)** | 2 | 7 845 |"
+z_6c1d3b34_c005,bundle:45_real_data_lake_ready.md,général,5,249,998,"## 3. Contrôles Croisés & Qualité Vérifiés (`cross_checks.json`)
+
+1. **Sols (`iSDAsoil` 0–20 cm vs `SoilGrids 2.0` 5–15 cm sur 6 911 cellules)** :
+   - Sable (`sand_pct`) : corrélation de Pearson **$r = 0,8302$**, écart absolu moyen **$5,99\,\%$**.
+   - Argile (`clay_pct`) : corrélation de Pearson *"
+z_6c1d3b34_c006,bundle:45_real_data_lake_ready.md,général,6,355,1423,"## 4. Instantané National Prêt pour OctOpus ML (`v=20261114-natl01`)
+
+Généré par [`agriml.octopus.exporter`](../ml/src/agriml/octopus/exporter.py) sous [`plateforme/ml/data/curated/octopus/soil_nowcast_proxy_national/v=20261114-natl01/`](../ml/data/curated/octopus/soil_nowcast_proxy_national/v=20261"
+z_43ab253b_c000,bundle:46_real_data_enrichment.md,général,0,115,460,"# 46 — Plan d'Enrichissement National et Stratégie de Généralisation (`IA-REAL-03`)
+
+**Date** : 16 novembre 2026  
+**Statut** : Feuille de route d'enrichissement du Data Lake National — *Confidentiel — réservé aux partenaires de travail.*  
+**Références** : [`44_real_data_acquisition_plan.md`](./44_"
+z_43ab253b_c001,bundle:46_real_data_enrichment.md,général,1,506,2025,"## 1. Principe directeur : Généralisation à tout kit installé au Sénégal
+
+Les kits SmartAgri92 pourront être déployés dans n'importe quelle région du Sénégal (Niayes, Vallée du Fleuve, Bassin Arachidier, Sénégal Oriental, Casamance). Aucun modèle ne doit dépendre d'identifiants de sites pilotes ni d"
+z_43ab253b_c002,bundle:46_real_data_enrichment.md,général,2,403,1612,"### 2.1 Enrichissements techniques immédiats (Niveau B — sans partenariat)
+
+| Priorité | Domaine | Source à intégrer | Apport pour la généralisation nationale |
+| :---: | :--- | :--- | :--- |
+| **P1** | **Météo & Prévisions *As-Of*** | **ECMWF Open Data (IFS 0,25° GRIB2)** + **NOAA GFS** (via `ecmwf"
+z_43ab253b_c003,bundle:46_real_data_enrichment.md,général,3,385,1542,"### 2.2 Enrichissements terrain & partenariats nationaux (Niveau C)
+
+| Priorité | Donnée attendue | Partenaire / Source | Modèle ou service débloqué à l'échelle nationale |
+| :---: | :--- | :--- | :--- |
+| **C1** | **Télémétrie horaire des kits ESP32-S3 + étalonnage gravimétrique** | Déploiement kit"
+z_05b56c76_c000,bundle:53_kit_data_model_mapping.md,modélisation,0,248,994,"# 53 — Cartographie Matériel Kit Smart-Agri92 ↔ Données ↔ Modèles IA (`IA-REAL-05`)
+
+**Date** : 16 novembre 2026  
+**Statut** : Référentiel matériel & capacité IA — *Confidentiel — réservé aux partenaires de travail.*  
+**Sources analysées** :
+- [`Liste_materiel_Kit_Smart_Agri92.pdf`](../../Liste_ma"
+z_05b56c76_c001,bundle:53_kit_data_model_mapping.md,modélisation,1,511,2047,"## 1. Inventaire Matériel Réel & Spécifications par Capteur
+
+D'après [`Liste_materiel_Kit_Smart_Agri92.pdf`](../../Liste_materiel_Kit_Smart_Agri92.pdf), le Kit Smart-Agri92 (v1.1) repose sur un microcontrôleur **Adafruit Feather ESP32-S3 (No PSRAM)**, un écran TFT SPI 3.5"" 480×320 (tactile et lecteu"
+z_05b56c76_c002,bundle:53_kit_data_model_mapping.md,modélisation,2,567,2269,"prolongé) ou poussière d'harmattan sur la membrane. |
+| **DFRobot SEN0500 — Pression atmosphérique** | `pressure_hpa` (`pres`) + `bme_ok` | **5 min** → agrégation **`1 h`** | `hPa` | `[800.0, 1100.0] hPa` | - Plage attendue au Sénégal (basse altitude) : `1000–1022 hPa`. Toute valeur hors `[980, 1035"
+z_05b56c76_c003,bundle:53_kit_data_model_mapping.md,modélisation,3,512,2048,"## 2. Cartographie par Modèle IA : Variables Disponibles, Manquantes et Impact
+
+Grâce au **Data Lake National (`IA-REAL-03`, `14/14` régions)**, tout kit géolocalisé `(lat, lon)` reçoit automatiquement les variables satellitaires et climatiques de sa cellule (`cell_id` `0,05°`, `power_cell_id`), com"
+z_05b56c76_c004,bundle:53_kit_data_model_mapping.md,modélisation,4,703,2812,"* : exige l'abri ventilé SEN0500 (sinon biais solaire) et 2–3 mois d'historique apparié. |
+| **`irr_need_24h`** (`#3 irrigation_need` ML) & **`water_savings`** (`#14`) | `soil_moisture_pct`, `pump_on` (durée), `threshold_*` | $ET_0$ FAO-56, courbes $K_c$, réserve utile `iSDAsoil`, pluie `CHIRPS` | *"
+z_05b56c76_c005,bundle:53_kit_data_model_mapping.md,modélisation,5,612,2448,"## 3. Classement Opérationnel des Modèles (Horizons Réalistes)
+
+| Palier temporel | Modèles & Services IA | Condition exacte de mise en œuvre |
+| :--- | :--- | :--- |
+| **1. Faisable dès les premiers kits (Jour 1 / Immédiat)** | - **Moteurs déterministes Backend** : `irr_water_balance` (`#3`), `irr_"
+z_05b56c76_c006,bundle:53_kit_data_model_mapping.md,modélisation,6,627,2509,"## 4. Recommandations Matérielles Futures (Révisions v1.2 & v2)
+
+Pour lever les blocages ci-dessus tout en maintenant un coût compatible avec l'agriculture maraîchère au Sénégal et une couverture nationale hors-ligne :
+
+| Priorité | Ajout / Évolution matérielle | Ce qu'il débloque immédiatement | Co"
+z_4ebbce60_c000,bundle:real_data_lake_README.md,général,0,508,2033,"# `ml/data/real/` — Référentiel des Jeux de Données Réels SmartAgri92
+
+**Statut** : Phase IA Réelle (`IA-REAL-01`) — *Confidentiel — réservé aux partenaires de travail.*  
+**Règle absolue** : Ce répertoire est **exclusivement réservé aux données réelles** (issues d'API ouvertes vérifiées, de produit"
+z_4ebbce60_c001,bundle:real_data_lake_README.md,général,1,526,2107,"## 2. Règles de dépôt et de traçabilité (Data Provenance)
+
+Chaque jeu déposé dans un sous-dossier de `ml/data/real/<domaine>/` doit respecter les 5 règles suivantes :
+
+1. **Format normalisé** :
+   - Séries tabulaires et temporelles : **Apache Parquet** (`.parquet`, compression `snappy` ou `zstd`) ou"
+z_5eff9d99_c000,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,0,13,54,"file_name: ""esa_worldcover_national_grid_0p05.parquet"""
+z_5eff9d99_c001,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,1,20,82,"relative_path: ""data/real/crops_senegal/esa_worldcover_national_grid_0p05.parquet"""
+z_5eff9d99_c002,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,2,20,81,"source_url: ""https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/"""
+z_5eff9d99_c003,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,3,32,129,"description: ""Fractions d'occupation du sol (cultures, arbres, bâti, eau, zones humides…) par cellule 0,05° sur tout le Sénégal."""
+z_5eff9d99_c004,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,4,18,74,"sha256: ""43935c971f181c2ae0aa0ea91fe0f800d2451145b65e22f343b27725a1910b30"""
+z_5eff9d99_c005,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,5,46,184,"columns: [""cell_id"", ""lat"", ""lon"", ""n_samples"", ""share_tree"", ""share_shrub"", ""share_grass"", ""share_crop"", ""share_built"", ""share_bare"", ""share_water"", ""share_wetland"", ""share_mangrove""]"
+z_5eff9d99_c006,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,6,80,322,"dtypes: {""cell_id"": ""int32"", ""lat"": ""float64"", ""lon"": ""float64"", ""n_samples"": ""int32"", ""share_tree"": ""float64"", ""share_shrub"": ""float64"", ""share_grass"": ""float64"", ""share_crop"": ""float64"", ""share_built"": ""float64"", ""share_bare"": ""float64"", ""share_water"": ""float64"", ""share_wetland"": ""float64"", ""share"
+z_5eff9d99_c007,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,7,72,289,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""cell_id""], ""checks"": {""cropland_cells_over_10pct"": 2269, ""national_cropland_share_pct"": 18.08, ""sampling"": ""nearest 10×10 échantillons par cellule 0,05° (≈ 100 sur 360 000 pixels de 10 m)""}}"
+z_5eff9d99_c008,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,8,13,55,"temporal_coverage: {""type"": ""static_or_not_applicable""}"
+z_5eff9d99_c009,bundle:esa_worldcover_national_grid_0p05.parquet.manifest.json,géospatial,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_df49baf2_c000,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,0,19,78,"relative_path: ""data/real/crops_senegal/fao56_crop_coefficients_daily.parquet"""
+z_df49baf2_c001,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,1,22,88,"owner: ""FAO-56 (Allen et al., 1998) tel qu'encodé dans backend/app/services/agronomy.py"""
+z_df49baf2_c002,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,2,13,55,"source_url: ""https://www.fao.org/3/x0490e/x0490e00.htm"""
+z_df49baf2_c003,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,3,37,149,"description: ""Courbe Kc journalière par culture maraîchère, générée par le code du backend (aucune saisie manuelle). Kc non ajustés au climat local."""
+z_df49baf2_c004,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,4,18,74,"sha256: ""669bf1e8fab1e439a46450561b5552ef7b3dde2c90993c4a8cd89f7f095adccf"""
+z_df49baf2_c005,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,5,31,127,"columns: [""crop_code"", ""crop_name_fr"", ""day_after_planting"", ""season_days"", ""growth_stage"", ""kc"", ""kc_ini"", ""kc_mid"", ""kc_end""]"
+z_df49baf2_c006,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,6,52,209,"dtypes: {""crop_code"": ""str"", ""crop_name_fr"": ""str"", ""day_after_planting"": ""int64"", ""season_days"": ""int64"", ""growth_stage"": ""str"", ""kc"": ""float64"", ""kc_ini"": ""float64"", ""kc_mid"": ""float64"", ""kc_end"": ""float64""}"
+z_df49baf2_c007,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,7,33,133,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""crop_code"", ""day_after_planting""]}"
+z_df49baf2_c008,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,8,13,55,"temporal_coverage: {""type"": ""static_or_not_applicable""}"
+z_df49baf2_c009,bundle:fao56_crop_coefficients_daily.parquet.manifest.json,cultures,9,25,102,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": null, ""note"": ""table non spatialisée par cellule""}"
+z_2be58e15_c000,bundle:cross_checks.json,général,0,45,180,"isdasoil_vs_soilgrids_0_20cm: {""sand"": {""pearson_r"": 0.8302, ""mean_abs_diff_pct"": 5.99, ""n_cells"": 6911}, ""clay"": {""pearson_r"": 0.7534, ""mean_abs_diff_pct"": 2.97, ""n_cells"": 6911}}"
+z_2be58e15_c001,bundle:cross_checks.json,général,1,47,190,"chirps_vs_nasa_precip_daily_power_cells: {""n_rows"": 316844, ""pearson_r_daily"": 0.3793, ""mean_nasa_mm_day"": 2.4764, ""mean_chirps_mm_day"": 1.8963, ""annual_mean_ratio_chirps_over_nasa"": 0.7657}"
+z_52f06fca_c000,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,0,15,63,"relative_path: ""data/real/et0/fao56_et0_national_daily.parquet"""
+z_52f06fca_c001,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,1,14,58,"owner: ""NASA POWER + FAO Irrigation and Drainage Paper 56"""
+z_52f06fca_c002,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,2,12,51,"licence: ""NASA Open Data + méthode FAO-56 publique"""
+z_52f06fca_c003,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,3,19,79,"source_url: ""https://power.larc.nasa.gov/api/temporal/daily/point?community=AG"""
+z_52f06fca_c004,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,4,46,186,"description: ""ET0 FAO-56 calculée (Ra éq. 21, Hargreaves éq. 52, Penman-Monteith éq. 6) depuis NASA POWER, sans imputation : et0_pm_mm reste vide quand le rayonnement ou le vent manque."""
+z_52f06fca_c005,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,5,18,74,"sha256: ""d40abcc581c12f247d5c5335360e58ebd782a1a5de4906fdd83554bfbd990c41"""
+z_52f06fca_c006,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,6,23,94,"columns: [""power_cell_id"", ""lat"", ""lon"", ""date"", ""ra_mj_m2"", ""et0_hargreaves_mm"", ""et0_pm_mm""]"
+z_52f06fca_c007,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,7,43,173,"dtypes: {""power_cell_id"": ""str"", ""lat"": ""float64"", ""lon"": ""float64"", ""date"": ""datetime64[us]"", ""ra_mj_m2"": ""float64"", ""et0_hargreaves_mm"": ""float64"", ""et0_pm_mm"": ""float64""}"
+z_52f06fca_c008,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,8,70,283,"quality: {""completeness_pct"": 99.997, ""null_cells_by_column"": {""et0_pm_mm"": 76}, ""duplicate_key_rows"": 0, ""key"": [""power_cell_id"", ""date""], ""checks"": {""et0_pm_range_mm"": [0.5072409695342269, 15.802051257436956], ""et0_pm_median_mm"": 5.83070939716678, ""pm_vs_hargreaves_corr"": 0.8058}}"
+z_52f06fca_c009,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,9,40,163,"temporal_coverage: {""column"": ""date"", ""min"": ""2015-01-01 00:00:00"", ""max"": ""2026-11-10 00:00:00"", ""unique_periods"": 4332, ""expected_days"": 4332, ""missing_days"": 0}"
+z_52f06fca_c010,bundle:fao56_et0_national_daily.parquet.manifest.json,cultures,10,60,241,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""power"", ""cells_present"": 76, ""cells_expected"": 76, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.5, ""lat_max"": 16.5, ""lon_min"": -17.5, ""lon_max"": -11.25}"
+z_bbc975df_c000,bundle:grid_info.json,géospatial,0,27,111,"grid: {""west"": -17.6, ""east"": -11.3, ""south"": 12.25, ""north"": 16.7, ""res_deg"": 0.05, ""ncols"": 126, ""nrows"": 89}"
+z_bbc975df_c001,bundle:grid_info.json,géospatial,1,41,166,"regions: [""Dakar"", ""Diourbel"", ""Fatick"", ""Kaffrine"", ""Kaolack"", ""Kedougou"", ""Kolda"", ""Louga"", ""Matam"", ""Saint Louis"", ""Sedhiou"", ""Tambacounda"", ""Thies"", ""Ziguinchor""]"
+z_bbc975df_c002,bundle:grid_info.json,géospatial,2,61,245,"cells_per_region: {""Tambacounda"": 1502, ""Matam"": 958, ""Louga"": 821, ""Saint Louis"": 751, ""Kedougou"": 645, ""Kolda"": 475, ""Kaffrine"": 345, ""Ziguinchor"": 289, ""Thies"": 275, ""Sedhiou"": 262, ""Fatick"": 238, ""Kaolack"": 228, ""Diourbel"": 126, ""Dakar"": 30}"
+z_bbc975df_c003,bundle:grid_info.json,géospatial,3,17,69,"validation_zone_cells: {""richard_toll"": 50, ""potou"": 49, ""mboro"": 45}"
+z_bbc975df_c004,bundle:grid_info.json,géospatial,4,33,135,"boundary_source: ""Government of Senegal, OCHA ROWCA — Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)"""
+z_bbc975df_c005,bundle:grid_info.json,géospatial,5,31,127,"note: ""all_touched=True : toute cellule touchée par le territoire est incluse (les kits côtiers/frontaliers y sont rattachés)."""
+z_3b75de24_c000,bundle:lake_audit_report.json,général,0,16,64,"constraints: {""models_trained"": 0, ""synthetic_data_used"": false}"
+z_3b75de24_c001,bundle:lake_audit_report.json,général,1,235,942,"grid: {""mission"": ""IA-REAL-03"", ""grid"": {""west"": -17.6, ""east"": -11.3, ""south"": 12.25, ""north"": 16.7, ""res_deg"": 0.05, ""ncols"": 126, ""nrows"": 89}, ""cells"": 6945, ""power_cells"": 76, ""regions"": [""Dakar"", ""Diourbel"", ""Fatick"", ""Kaffrine"", ""Kaolack"", ""Kedougou"", ""Kolda"", ""Louga"", ""Matam"", ""Saint Louis"","
+z_3b75de24_c002,bundle:lake_audit_report.json,général,2,14,58,"totals: {""files"": 23, ""rows"": 30066374, ""size_mb"": 162.58}"
+z_3b75de24_c003,bundle:lake_audit_report.json,général,3,151,604,"by_domain: {""crops_senegal"": {""files"": 2, ""rows"": 7845, ""size_bytes"": 125650}, ""et0"": {""files"": 1, ""rows"": 329232, ""size_bytes"": 4012173}, ""market_prices"": {""files"": 2, ""rows"": 55362, ""size_bytes"": 1002342}, ""meteo"": {""files"": 1, ""rows"": 329232, ""size_bytes"": 10849340}, ""rain"": {""files"": 12, ""rows"":"
+z_3b75de24_c004,bundle:lake_audit_report.json,général,4,98,392,"cross_checks: {""isdasoil_vs_soilgrids_0_20cm"": {""sand"": {""pearson_r"": 0.8302, ""mean_abs_diff_pct"": 5.99, ""n_cells"": 6911}, ""clay"": {""pearson_r"": 0.7534, ""mean_abs_diff_pct"": 2.97, ""n_cells"": 6911}}, ""chirps_vs_nasa_precip_daily_power_cells"": {""n_rows"": 316844, ""pearson_r_daily"": 0.3793, ""mean_nasa_m"
+z_3b75de24_c005,bundle:lake_audit_report.json,général,5,113,452,"octopus_snapshot: {""snapshot"": ""data/curated/octopus/soil_nowcast_proxy_national/v=20261114-natl01"", ""manifest_sha256"": ""20a4a2777411a03fcc257eb49165ecce78edad500f363a2fe91096b8a5d46c7f"", ""train_rows"": 258440, ""test_rows"": 25915, ""holdout_temporal_rows"": 22294, ""holdout_spatial_rows"": 21660, ""train_"
+z_3b75de24_c006,bundle:lake_audit_report.json,général,6,107,431,"holdouts: [{""relative_path"": ""data/curated/holdout/soil_nowcast_proxy_national/holdout_spatial_validation_zones_all_dates.parquet"", ""rows"": 21660, ""sha256"": ""1abc2c9e82774acdc460867fc285089f302df5c2dab97143fb5f48c0b7d3c3d9""}, {""relative_path"": ""data/curated/holdout/soil_nowcast_proxy_national/holdou"
+z_3b75de24_c007,bundle:lake_audit_report.json,général,7,514,2058,"datasets: [{""relative_path"": ""data/real/crops_senegal/esa_worldcover_national_grid_0p05.parquet"", ""domain"": ""crops_senegal"", ""source_id"": ""worldcover"", ""licence"": ""CC BY 4.0"", ""commercial_use"": ""open"", ""rows"": 6945, ""size_bytes"": 115997, ""sha256"": ""43935c971f181c2ae0aa0ea91fe0f800d2451145b65e22f343b"
+z_7f47e6cd_c000,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,0,18,72,"relative_path: ""data/real/market_prices/wfp_senegal_food_prices.parquet"""
+z_7f47e6cd_c001,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,1,18,74,"source_url: ""https://data.humdata.org/dataset/wfp-food-prices-for-senegal"""
+z_7f47e6cd_c002,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,2,33,135,"description: ""Prix de marché au Sénégal. price_fcfa_kg n'est calculé que pour les unités de masse (KG, 50/90/100 KG, MT) ; sinon vide."""
+z_7f47e6cd_c003,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,3,18,74,"sha256: ""18464e6f1871354fc5735ebea2cc10296198cbfeeb263299c9bfc87d3fc605f8"""
+z_7f47e6cd_c004,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,4,51,207,"columns: [""date"", ""market_id"", ""market"", ""region"", ""department"", ""lat"", ""lon"", ""category"", ""crop"", ""unit"", ""price_flag"", ""price_type"", ""currency"", ""price_fcfa_raw"", ""price_usd"", ""price_fcfa_kg"", ""source_id""]"
+z_7f47e6cd_c005,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,5,86,347,"dtypes: {""date"": ""str"", ""market_id"": ""Int64"", ""market"": ""str"", ""region"": ""str"", ""department"": ""str"", ""lat"": ""float64"", ""lon"": ""float64"", ""category"": ""str"", ""crop"": ""str"", ""unit"": ""str"", ""price_flag"": ""str"", ""price_type"": ""str"", ""currency"": ""str"", ""price_fcfa_raw"": ""float64"", ""price_usd"": ""float64"", "
+z_7f47e6cd_c006,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,6,63,253,"quality: {""completeness_pct"": 99.979, ""null_cells_by_column"": {""price_fcfa_kg"": 195}, ""duplicate_key_rows"": 0, ""key"": [""date"", ""market_id"", ""crop"", ""unit"", ""price_type""], ""checks"": {""units"": {""KG"": 55088, ""Head"": 195}, ""rows_with_price_fcfa_kg"": 55088}}"
+z_7f47e6cd_c007,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,7,30,120,"temporal_coverage: {""column"": ""date"", ""min"": ""2000-01-15 00:00:00"", ""max"": ""2026-09-15 00:00:00"", ""unique_periods"": 320}"
+z_7f47e6cd_c008,bundle:wfp_senegal_food_prices.parquet.manifest.json,marchés,8,25,102,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": null, ""note"": ""table non spatialisée par cellule""}"
+z_84ee6709_c000,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,0,17,68,"relative_path: ""data/real/market_prices/wfp_senegal_markets.parquet"""
+z_84ee6709_c001,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,1,18,74,"source_url: ""https://data.humdata.org/dataset/wfp-food-prices-for-senegal"""
+z_84ee6709_c002,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,2,19,79,"description: ""Répertoire géolocalisé des marchés suivis par le PAM au Sénégal."""
+z_84ee6709_c003,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,3,18,74,"sha256: ""f962b7473bfe806c1f41ade9f0dbe4b80fa2a73fad0a5d68749aba844231302b"""
+z_84ee6709_c004,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,4,20,83,"columns: [""market_id"", ""market"", ""region"", ""department"", ""lat"", ""lon"", ""source_id""]"
+z_84ee6709_c005,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,5,35,141,"dtypes: {""market_id"": ""Int64"", ""market"": ""str"", ""region"": ""str"", ""department"": ""str"", ""lat"": ""float64"", ""lon"": ""float64"", ""source_id"": ""str""}"
+z_84ee6709_c006,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,6,27,111,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""market_id""]}"
+z_84ee6709_c007,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,7,13,55,"temporal_coverage: {""type"": ""static_or_not_applicable""}"
+z_84ee6709_c008,bundle:wfp_senegal_markets.parquet.manifest.json,marchés,8,25,102,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": null, ""note"": ""table non spatialisée par cellule""}"
+z_7c079a32_c000,bundle:nasa_power_national_daily.parquet.manifest.json,météo,0,16,66,"relative_path: ""data/real/meteo/nasa_power_national_daily.parquet"""
+z_7c079a32_c001,bundle:nasa_power_national_daily.parquet.manifest.json,météo,1,23,92,"owner: ""NASA Langley Research Center — POWER (MERRA-2 / CERES), maille native 0,5° × 0,625°"""
+z_7c079a32_c002,bundle:nasa_power_national_daily.parquet.manifest.json,météo,2,14,57,"licence: ""NASA Open Data (libre, citation POWER requise)"""
+z_7c079a32_c003,bundle:nasa_power_national_daily.parquet.manifest.json,météo,3,19,79,"source_url: ""https://power.larc.nasa.gov/api/temporal/daily/point?community=AG"""
+z_7c079a32_c004,bundle:nasa_power_national_daily.parquet.manifest.json,météo,4,26,106,"description: ""Météo quotidienne observée/réanalysée, toutes les mailles NASA POWER du Sénégal, 2015-2026."""
+z_7c079a32_c005,bundle:nasa_power_national_daily.parquet.manifest.json,météo,5,18,74,"sha256: ""45d69fbed8e0f43e044090b8b921e7a2a28f9be6abdce6c8631d3c4a422ae5ce"""
+z_7c079a32_c006,bundle:nasa_power_national_daily.parquet.manifest.json,météo,6,39,157,"columns: [""power_cell_id"", ""lat"", ""lon"", ""date"", ""t_min_c"", ""t_max_c"", ""t_mean_c"", ""rh_mean_pct"", ""wind_2m_ms"", ""solar_rad_mj_m2"", ""pressure_hpa"", ""rain_mm""]"
+z_7c079a32_c007,bundle:nasa_power_national_daily.parquet.manifest.json,météo,7,72,291,"dtypes: {""power_cell_id"": ""str"", ""lat"": ""float64"", ""lon"": ""float64"", ""date"": ""datetime64[us]"", ""t_min_c"": ""float64"", ""t_max_c"": ""float64"", ""t_mean_c"": ""float64"", ""rh_mean_pct"": ""float64"", ""wind_2m_ms"": ""float64"", ""solar_rad_mj_m2"": ""float64"", ""pressure_hpa"": ""float64"", ""rain_mm"": ""float64""}"
+z_7c079a32_c008,bundle:nasa_power_national_daily.parquet.manifest.json,météo,8,82,330,"quality: {""completeness_pct"": 99.998, ""null_cells_by_column"": {""solar_rad_mj_m2"": 76}, ""duplicate_key_rows"": 0, ""key"": [""power_cell_id"", ""date""], ""checks"": {""tmin_le_tmax_share_pct"": 100.0, ""rh_in_0_100_share_pct"": 100.0, ""rain_non_negative_share_pct"": 100.0, ""t_max_range_c"": [18.36, 47.46], ""solar_"
+z_7c079a32_c009,bundle:nasa_power_national_daily.parquet.manifest.json,météo,9,40,163,"temporal_coverage: {""column"": ""date"", ""min"": ""2015-01-01 00:00:00"", ""max"": ""2026-11-10 00:00:00"", ""unique_periods"": 4332, ""expected_days"": 4332, ""missing_days"": 0}"
+z_7c079a32_c010,bundle:nasa_power_national_daily.parquet.manifest.json,météo,10,60,241,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""power"", ""cells_present"": 76, ""cells_expected"": 76, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.5, ""lat_max"": 16.5, ""lon_min"": -17.5, ""lon_max"": -11.25}"
+z_f37d6e50_c000,bundle:octopus_snapshot_info.json,général,0,19,78,"snapshot: ""data/curated/octopus/soil_nowcast_proxy_national/v=20261114-natl01"""
+z_f37d6e50_c001,bundle:octopus_snapshot_info.json,général,1,20,83,"manifest_sha256: ""20a4a2777411a03fcc257eb49165ecce78edad500f363a2fe91096b8a5d46c7f"""
+z_f37d6e50_c002,bundle:octopus_snapshot_info.json,général,2,29,119,"validation_power_cells: [""pw_15.0_-16.875"", ""pw_15.5_-16.250"", ""pw_15.5_-16.875"", ""pw_16.0_-16.250"", ""pw_16.5_-15.625""]"
+z_067fca9a_c000,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2015.parquet"""
+z_067fca9a_c001,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_067fca9a_c002,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_067fca9a_c003,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2015 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_067fca9a_c004,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""0561704e3b30d72c8bff4f51de8a0e7199ab377228ea2c9be0b9df6b4e7fea8e"""
+z_067fca9a_c005,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_067fca9a_c006,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_067fca9a_c007,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,7,57,230,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32850}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 121.5451431274414, ""rain_negative_rows"": 0}}"
+z_067fca9a_c008,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2015-01-01 00:00:00"", ""max"": ""2015-12-31 00:00:00"", ""unique_periods"": 365, ""expected_days"": 365, ""missing_days"": 0}"
+z_067fca9a_c009,bundle:chirps_v3_national_daily_2015.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_517bda88_c000,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2016.parquet"""
+z_517bda88_c001,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_517bda88_c002,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_517bda88_c003,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2016 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_517bda88_c004,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""b01871acb97fa12d5d530c4f866469930954cb1479c6b82521417890b0a6754f"""
+z_517bda88_c005,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_517bda88_c006,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_517bda88_c007,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,7,53,214,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 116.32357788085938, ""rain_negative_rows"": 0}}"
+z_517bda88_c008,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2016-01-01 00:00:00"", ""max"": ""2016-12-31 00:00:00"", ""unique_periods"": 366, ""expected_days"": 366, ""missing_days"": 0}"
+z_517bda88_c009,bundle:chirps_v3_national_daily_2016.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_8bef731e_c000,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2017.parquet"""
+z_8bef731e_c001,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_8bef731e_c002,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_8bef731e_c003,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2017 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_8bef731e_c004,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""773a071a2825a05af25a42d0c1061b87ae86a2fca7399cface0aef1d7b6bdefa"""
+z_8bef731e_c005,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_8bef731e_c006,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_8bef731e_c007,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,7,57,231,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32850}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 119.27289581298828, ""rain_negative_rows"": 0}}"
+z_8bef731e_c008,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2017-01-01 00:00:00"", ""max"": ""2017-12-31 00:00:00"", ""unique_periods"": 365, ""expected_days"": 365, ""missing_days"": 0}"
+z_8bef731e_c009,bundle:chirps_v3_national_daily_2017.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_7b299716_c000,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2018.parquet"""
+z_7b299716_c001,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_7b299716_c002,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_7b299716_c003,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2018 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_7b299716_c004,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""7caa8012c0f5b951db0d11342d761338077104f92ca7045d3bfa5e106cddf273"""
+z_7b299716_c005,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_7b299716_c006,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_7b299716_c007,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,7,57,231,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32850}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 112.23735046386719, ""rain_negative_rows"": 0}}"
+z_7b299716_c008,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2018-01-01 00:00:00"", ""max"": ""2018-12-31 00:00:00"", ""unique_periods"": 365, ""expected_days"": 365, ""missing_days"": 0}"
+z_7b299716_c009,bundle:chirps_v3_national_daily_2018.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_be4bc50d_c000,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2019.parquet"""
+z_be4bc50d_c001,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_be4bc50d_c002,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_be4bc50d_c003,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2019 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_be4bc50d_c004,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""8c4cf9731df89d6129958b4731c312e32b986bfbe81a40f1923550c6c00ed294"""
+z_be4bc50d_c005,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_be4bc50d_c006,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_be4bc50d_c007,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,7,57,231,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32850}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 106.81645202636719, ""rain_negative_rows"": 0}}"
+z_be4bc50d_c008,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2019-01-01 00:00:00"", ""max"": ""2019-12-31 00:00:00"", ""unique_periods"": 365, ""expected_days"": 365, ""missing_days"": 0}"
+z_be4bc50d_c009,bundle:chirps_v3_national_daily_2019.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_17b38a1a_c000,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2020.parquet"""
+z_17b38a1a_c001,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_17b38a1a_c002,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_17b38a1a_c003,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2020 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_17b38a1a_c004,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""c5a8c08c8e1c6d9cfa93d7dc316f76abb68ca25b6fa7bd838525f47db34a1018"""
+z_17b38a1a_c005,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_17b38a1a_c006,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_17b38a1a_c007,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,7,57,231,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32940}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 108.63700866699219, ""rain_negative_rows"": 0}}"
+z_17b38a1a_c008,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2020-01-01 00:00:00"", ""max"": ""2020-12-31 00:00:00"", ""unique_periods"": 366, ""expected_days"": 366, ""missing_days"": 0}"
+z_17b38a1a_c009,bundle:chirps_v3_national_daily_2020.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_f1abecd3_c000,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2021.parquet"""
+z_f1abecd3_c001,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_f1abecd3_c002,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_f1abecd3_c003,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2021 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_f1abecd3_c004,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""825eaf52a312b4eb99ec65ea513e67a200a3738a2b9a1cc588da7f6b5b155a1f"""
+z_f1abecd3_c005,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_f1abecd3_c006,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_f1abecd3_c007,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,7,57,229,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32850}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 96.9662857055664, ""rain_negative_rows"": 0}}"
+z_f1abecd3_c008,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2021-01-01 00:00:00"", ""max"": ""2021-12-31 00:00:00"", ""unique_periods"": 365, ""expected_days"": 365, ""missing_days"": 0}"
+z_f1abecd3_c009,bundle:chirps_v3_national_daily_2021.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_7d8874aa_c000,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2022.parquet"""
+z_7d8874aa_c001,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_7d8874aa_c002,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_7d8874aa_c003,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2022 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_7d8874aa_c004,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""85947b07a8fa491016fe580f3e30e037c02e5556e5f28c60621bd61661091a44"""
+z_7d8874aa_c005,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_7d8874aa_c006,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_7d8874aa_c007,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,7,162,649,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 30150}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [""2022-06-01"", ""2022-06-02"", ""2022-06-03"", ""2022-06-04"", ""2022-06-05"", ""2022-06-06"", ""2022-06-07"", ""2022-06-08"", ""2022-06-09"", ""2022-"
+z_7d8874aa_c008,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,8,40,162,"temporal_coverage: {""column"": ""date"", ""min"": ""2022-01-01 00:00:00"", ""max"": ""2022-12-31 00:00:00"", ""unique_periods"": 335, ""expected_days"": 365, ""missing_days"": 30}"
+z_7d8874aa_c009,bundle:chirps_v3_national_daily_2022.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_f0f6f91a_c000,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2023.parquet"""
+z_f0f6f91a_c001,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_f0f6f91a_c002,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_f0f6f91a_c003,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2023 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_f0f6f91a_c004,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""53097063410ce6c694f2f6ea0aa9d1fa513d64f65571bcafcc380e3c024fb824"""
+z_f0f6f91a_c005,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_f0f6f91a_c006,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_f0f6f91a_c007,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,7,165,663,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 30060}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [""2023-12-01"", ""2023-12-02"", ""2023-12-03"", ""2023-12-04"", ""2023-12-05"", ""2023-12-06"", ""2023-12-07"", ""2023-12-08"", ""2023-12-09"", ""2023-"
+z_f0f6f91a_c008,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2023-01-01 00:00:00"", ""max"": ""2023-11-30 00:00:00"", ""unique_periods"": 334, ""expected_days"": 334, ""missing_days"": 0}"
+z_f0f6f91a_c009,bundle:chirps_v3_national_daily_2023.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_86d80f74_c000,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2024.parquet"""
+z_86d80f74_c001,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_86d80f74_c002,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_86d80f74_c003,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2024 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_86d80f74_c004,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""5927495abbb43a50eb347176002abfb4991b2b58fa0a05259f6f256298d1fc5c"""
+z_86d80f74_c005,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_86d80f74_c006,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_86d80f74_c007,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,7,270,1081,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 27450}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [""2024-07-01"", ""2024-07-02"", ""2024-07-03"", ""2024-07-04"", ""2024-07-05"", ""2024-07-06"", ""2024-07-07"", ""2024-07-08"", ""2024-07-09"", ""2024-"
+z_86d80f74_c008,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,8,40,162,"temporal_coverage: {""column"": ""date"", ""min"": ""2024-01-01 00:00:00"", ""max"": ""2024-12-31 00:00:00"", ""unique_periods"": 305, ""expected_days"": 366, ""missing_days"": 61}"
+z_86d80f74_c009,bundle:chirps_v3_national_daily_2024.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_12149357_c000,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2025.parquet"""
+z_12149357_c001,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_12149357_c002,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_12149357_c003,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2025 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_12149357_c004,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""700a6d84de19228b38d90b9e7ddfc7e05fcc8658d691bbfce54fa68d2223b109"""
+z_12149357_c005,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_12149357_c006,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_12149357_c007,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,7,57,231,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 32850}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [], ""rain_max_mm"": 102.07453155517578, ""rain_negative_rows"": 0}}"
+z_12149357_c008,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2025-01-01 00:00:00"", ""max"": ""2025-12-31 00:00:00"", ""unique_periods"": 365, ""expected_days"": 365, ""missing_days"": 0}"
+z_12149357_c009,bundle:chirps_v3_national_daily_2025.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_9478817e_c000,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,0,17,69,"relative_path: ""data/real/rain/chirps_v3_national_daily_2026.parquet"""
+z_9478817e_c001,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,1,14,57,"owner: ""UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°"""
+z_9478817e_c002,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,2,16,67,"source_url: ""https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/"""
+z_9478817e_c003,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,3,35,142,"description: ""Pluie quotidienne CHIRPS v3 2026 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat')."""
+z_9478817e_c004,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,4,18,74,"sha256: ""f0cbd699b3bb0a82a45c3a065ff1a261508d8e464dd452f9d2292ded91f92909"""
+z_9478817e_c005,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,5,14,57,"columns: [""date"", ""cell_id"", ""rain_mm"", ""is_provisional""]"
+z_9478817e_c006,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,6,25,102,"dtypes: {""date"": ""datetime64[ns]"", ""cell_id"": ""int32"", ""rain_mm"": ""float32"", ""is_provisional"": ""bool""}"
+z_9478817e_c007,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,7,200,802,"quality: {""completeness_pct"": 99.676, ""null_cells_by_column"": {""rain_mm"": 24570}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""date""], ""checks"": {""download_failures"": [""2026-10-01"", ""2026-10-02"", ""2026-10-03"", ""2026-10-04"", ""2026-10-05"", ""2026-10-06"", ""2026-10-07"", ""2026-10-08"", ""2026-10-09"", ""2026-"
+z_9478817e_c008,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,8,40,161,"temporal_coverage: {""column"": ""date"", ""min"": ""2026-01-01 00:00:00"", ""max"": ""2026-09-30 00:00:00"", ""unique_periods"": 273, ""expected_days"": 273, ""missing_days"": 0}"
+z_9478817e_c009,bundle:chirps_v3_national_daily_2026.parquet.manifest.json,pluviométrie,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_91e7a30f_c000,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,0,16,65,"file_name: ""deafrica_s2_national_scene_catalog_2024_2026.parquet"""
+z_91e7a30f_c001,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,1,23,94,"relative_path: ""data/real/sentinel2_ndvi/deafrica_s2_national_scene_catalog_2024_2026.parquet"""
+z_91e7a30f_c002,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,2,16,66,"owner: ""Digital Earth Africa (Sentinel-2 L2A COG, ESA/Copernicus)"""
+z_91e7a30f_c003,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,3,15,62,"source_url: ""https://explorer.digitalearth.africa/stac/search"""
+z_91e7a30f_c004,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,4,32,129,"description: ""Catalogue de TOUTES les scènes Sentinel-2 L2A touchant le Sénégal (2024-2026), avec liens COG directs B04/B08/SCL."""
+z_91e7a30f_c005,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,5,18,74,"sha256: ""c2ae4964bf0ee8f9b337e41d05f9a001c3c0139279b8821176059cd50a16b047"""
+z_91e7a30f_c006,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,6,35,142,"columns: [""item_id"", ""datetime_utc"", ""date"", ""tile"", ""epsg"", ""cloud_pct"", ""data_coverage_pct"", ""x0"", ""y0"", ""b04_href"", ""b08_href"", ""scl_href""]"
+z_91e7a30f_c007,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,7,63,254,"dtypes: {""item_id"": ""str"", ""datetime_utc"": ""str"", ""date"": ""datetime64[us]"", ""tile"": ""str"", ""epsg"": ""int64"", ""cloud_pct"": ""float64"", ""data_coverage_pct"": ""float64"", ""x0"": ""float64"", ""y0"": ""float64"", ""b04_href"": ""str"", ""b08_href"": ""str"", ""scl_href"": ""str""}"
+z_91e7a30f_c008,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,8,44,179,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""item_id""], ""checks"": {""tiles"": 54, ""scenes"": 20722, ""median_cloud_pct"": 23.545}}"
+z_91e7a30f_c009,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,9,30,120,"temporal_coverage: {""column"": ""date"", ""min"": ""2024-01-01 00:00:00"", ""max"": ""2026-11-13 00:00:00"", ""unique_periods"": 883}"
+z_91e7a30f_c010,bundle:deafrica_s2_national_scene_catalog_2024_2026.parquet.manifest.json,télédétection,10,25,102,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": null, ""note"": ""table non spatialisée par cellule""}"
+z_b2a22f24_c000,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,0,13,55,"file_name: ""s2_ndvi_national_grid_monthly_2025.parquet"""
+z_b2a22f24_c001,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,1,21,84,"relative_path: ""data/real/sentinel2_ndvi/s2_ndvi_national_grid_monthly_2025.parquet"""
+z_b2a22f24_c002,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,2,15,62,"source_url: ""https://explorer.digitalearth.africa/stac/search"""
+z_b2a22f24_c003,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,3,58,233,"description: ""NDVI moyen par cellule 0,05° sur tout le Sénégal, composites mensuels (meilleure scène par tuile, masque SCL végétation/sol nu, lecture des overviews ≈ 160 m). Cellules couvertes seulement quand un pixel valide existe."""
+z_b2a22f24_c004,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,4,18,74,"sha256: ""706955aea7a432129bbe324a2c2f2bbe5b1f9968185749a8f7c9c48b4d79facd"""
+z_b2a22f24_c005,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,5,21,86,"columns: [""cell_id"", ""month"", ""ndvi_mean"", ""ndvi_std"", ""n_valid_px"", ""valid_fraction""]"
+z_b2a22f24_c006,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,6,35,143,"dtypes: {""cell_id"": ""int32"", ""month"": ""str"", ""ndvi_mean"": ""float64"", ""ndvi_std"": ""float64"", ""n_valid_px"": ""int32"", ""valid_fraction"": ""float64""}"
+z_b2a22f24_c007,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,7,159,638,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""cell_id"", ""month""], ""checks"": {""per_month"": {""2025-02"": {""tiles_requested"": 54, ""tiles_read"": 54, ""cells_with_ndvi"": 6616, ""cells_total"": 6945, ""seconds"": 97}, ""2025-05"": {""tiles_requested"": 54, ""tiles"
+z_b2a22f24_c008,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,8,29,119,"temporal_coverage: {""column"": ""month"", ""min"": ""2025-02-01 00:00:00"", ""max"": ""2025-11-01 00:00:00"", ""unique_periods"": 4}"
+z_b2a22f24_c009,bundle:s2_ndvi_national_grid_monthly_2025.parquet.manifest.json,télédétection,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6818, ""cells_expected"": 6945, ""coverage_pct"": 98.17, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_7e471ac6_c000,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,0,14,59,"file_name: ""nasa_power_soil_wetness_national_daily.parquet"""
+z_7e471ac6_c001,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,1,21,87,"relative_path: ""data/real/soil_moisture/nasa_power_soil_wetness_national_daily.parquet"""
+z_7e471ac6_c002,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,2,23,92,"owner: ""NASA Langley Research Center — POWER (MERRA-2 / CERES), maille native 0,5° × 0,625°"""
+z_7e471ac6_c003,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,3,14,57,"licence: ""NASA Open Data (libre, citation POWER requise)"""
+z_7e471ac6_c004,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,4,19,79,"source_url: ""https://power.larc.nasa.gov/api/temporal/daily/point?community=AG"""
+z_7e471ac6_c005,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,5,52,208,"description: ""Humidité du sol MODÉLISÉE (GEOS/MERRA-2) : taux de saturation relatif [0-1] en surface (0-5 cm), zone racinaire (0-100 cm) et profil. Ce n'est PAS une mesure de capteur ni une teneur volumique."""
+z_7e471ac6_c006,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,6,18,74,"sha256: ""41c7819de3f2b5682610dd9f4ebbe1f3f15f216ab0826d9d9bd6727a8e8622c6"""
+z_7e471ac6_c007,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,7,25,101,"columns: [""power_cell_id"", ""lat"", ""lon"", ""date"", ""gwettop_ratio"", ""gwetroot_ratio"", ""gwetprof_ratio""]"
+z_7e471ac6_c008,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,8,45,180,"dtypes: {""power_cell_id"": ""str"", ""lat"": ""float64"", ""lon"": ""float64"", ""date"": ""datetime64[us]"", ""gwettop_ratio"": ""float64"", ""gwetroot_ratio"": ""float64"", ""gwetprof_ratio"": ""float64""}"
+z_7e471ac6_c009,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,9,42,169,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""power_cell_id"", ""date""], ""checks"": {""ratios_in_0_1_share_pct"": 100.0}}"
+z_7e471ac6_c010,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,10,40,163,"temporal_coverage: {""column"": ""date"", ""min"": ""2015-01-01 00:00:00"", ""max"": ""2026-11-10 00:00:00"", ""unique_periods"": 4332, ""expected_days"": 4332, ""missing_days"": 0}"
+z_7e471ac6_c011,bundle:nasa_power_soil_wetness_national_daily.parquet.manifest.json,sol,11,60,241,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""power"", ""cells_present"": 76, ""cells_expected"": 76, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.5, ""lat_max"": 16.5, ""lon_min"": -17.5, ""lon_max"": -11.25}"
+z_98020fbd_c000,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,0,19,78,"relative_path: ""data/real/soil_properties/isdasoil_national_grid_0p05.parquet"""
+z_98020fbd_c001,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,1,18,74,"owner: ""iSDA / ICRAF / Rothamsted (iSDAsoil 30 m) ; ISRIC (SoilGrids 2.0)"""
+z_98020fbd_c002,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,2,14,58,"source_url: ""https://isdasoil.s3.amazonaws.com/soil_data/"""
+z_98020fbd_c003,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,3,48,194,"description: ""Propriétés des sols agrégées à 0,05° sur tout le Sénégal depuis iSDAsoil 30 m (vue pyramide ~1,9 km, moyenne). fc/wp/awc sont DÉRIVÉS par pédotransfert Saxton-Rawls (non mesurés)."""
+z_98020fbd_c004,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,4,18,74,"sha256: ""f459ea7d72151d79dfab62031b3272fb646591bc6ee747fd8ec315d93c4f889b"""
+z_98020fbd_c005,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,5,67,271,"columns: [""cell_id"", ""lat"", ""lon"", ""depth_cm"", ""sand_pct"", ""clay_pct"", ""silt_pct"", ""ph_h2o"", ""soc_g_kg"", ""n_total_g_kg"", ""p_mg_kg"", ""k_mg_kg"", ""cec_cmol_kg"", ""bulk_density_g_cm3"", ""fc_ptf_pct"", ""wp_ptf_pct"", ""awc_ptf_mm_per_m"", ""sg_sand_pct_5_15cm"", ""sg_clay_pct_5_15cm""]"
+z_98020fbd_c006,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,6,118,473,"dtypes: {""cell_id"": ""int32"", ""lat"": ""float64"", ""lon"": ""float64"", ""depth_cm"": ""str"", ""sand_pct"": ""float32"", ""clay_pct"": ""float32"", ""silt_pct"": ""float32"", ""ph_h2o"": ""float32"", ""soc_g_kg"": ""float32"", ""n_total_g_kg"": ""float32"", ""p_mg_kg"": ""float32"", ""k_mg_kg"": ""float32"", ""cec_cmol_kg"": ""float32"", ""bulk_"
+z_98020fbd_c007,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,7,196,784,"quality: {""completeness_pct"": 94.484, ""null_cells_by_column"": {""sand_pct"": 48, ""clay_pct"": 48, ""silt_pct"": 48, ""ph_h2o"": 48, ""soc_g_kg"": 48, ""n_total_g_kg"": 48, ""p_mg_kg"": 48, ""k_mg_kg"": 48, ""cec_cmol_kg"": 48, ""bulk_density_g_cm3"": 48, ""fc_ptf_pct"": 48, ""wp_ptf_pct"": 48, ""awc_ptf_mm_per_m"": 48, ""sg_"
+z_98020fbd_c008,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,8,13,55,"temporal_coverage: {""type"": ""static_or_not_applicable""}"
+z_98020fbd_c009,bundle:isdasoil_national_grid_0p05.parquet.manifest.json,sol,9,62,251,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": ""grid"", ""cells_present"": 6945, ""cells_expected"": 6945, ""coverage_pct"": 100.0, ""regions_covered"": 14, ""regions_total"": 14, ""lat_min"": 12.325, ""lat_max"": 16.675, ""lon_min"": -17.525, ""lon_max"": -11.325}"
+z_8d7cc28b_c000,bundle:sources_registry.json,général,0,135,541,"pilot_zones: [{""id"": ""niayes_mboro"", ""name"": ""Zone des Niayes — Mboro (Thiès)"", ""latitude"": 15.1503, ""longitude"": -16.8797, ""bbox_wgs84"": [-17.15, 14.7, -16.7, 15.35]}, {""id"": ""niayes_sangalkam"", ""name"": ""Zone des Niayes — Sangalkam / Lac Mbawane (Dakar/Thiès)"", ""latitude"": 14.7833, ""longitude"": -17"
+z_8d7cc28b_c001,bundle:sources_registry.json,général,1,469,1876,"domains: {""meteo"": {""directory"": ""ml/data/real/meteo"", ""tier_a_sources"": [""nasa_power"", ""ecmwf_open_data"", ""noaa_gfs""], ""tier_b_sources"": [""era5_land"", ""agera5"", ""open_meteo""], ""tier_c_sources"": [""anacim_stations"", ""tahmo""]}, ""rain"": {""directory"": ""ml/data/real/rain"", ""tier_a_sources"": [""chirps"", ""t"
+z_ccd7bc06_c000,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,0,13,52,"file_name: ""faostat_senegal_crops_1961_2024.parquet"""
+z_ccd7bc06_c001,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,1,18,73,"relative_path: ""data/real/yields/faostat_senegal_crops_1961_2024.parquet"""
+z_ccd7bc06_c002,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,2,23,94,"source_url: ""https://bulks-faostat.fao.org/production/Production_Crops_Livestock_E_Africa.zip"""
+z_ccd7bc06_c003,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,3,31,125,"description: ""Surfaces, rendements, productions nationales 1961-2024. Échelle NATIONALE uniquement (pas de maille spatiale)."""
+z_ccd7bc06_c004,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,4,18,74,"sha256: ""6ff29cc1905a0a75287c6c4d9ed542c6de6f9c8e4b18c45c54a8fccb140cea42"""
+z_ccd7bc06_c005,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,5,36,147,"columns: [""year"", ""season"", ""crop"", ""crop_fao_name"", ""fao_item_code"", ""area_ha"", ""yield_t_ha"", ""yield_kg_ha"", ""production_t"", ""scale"", ""source_id""]"
+z_ccd7bc06_c006,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,6,60,243,"dtypes: {""year"": ""int64"", ""season"": ""str"", ""crop"": ""str"", ""crop_fao_name"": ""str"", ""fao_item_code"": ""int64"", ""area_ha"": ""float64"", ""yield_t_ha"": ""float64"", ""yield_kg_ha"": ""float64"", ""production_t"": ""float64"", ""scale"": ""str"", ""source_id"": ""str""}"
+z_ccd7bc06_c007,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,7,52,209,"quality: {""completeness_pct"": 100.0, ""null_cells_by_column"": {}, ""duplicate_key_rows"": 0, ""key"": [""crop"", ""year""], ""checks"": {""scale"": ""national"", ""note"": ""pas de rendement régional/parcellaire en open data""}}"
+z_ccd7bc06_c008,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,8,13,55,"temporal_coverage: {""type"": ""static_or_not_applicable""}"
+z_ccd7bc06_c009,bundle:faostat_senegal_crops_1961_2024.parquet.manifest.json,cultures,9,25,102,"geographic_coverage: {""country"": ""SN"", ""cell_kind"": null, ""note"": ""table non spatialisée par cellule""}"
+z_4761c3a4_c000,bundle:octopus_datasets_inventory.csv,général,0,500,2000,"wave,wave_label,domain,dataset_name,relative_path,rows,size_bytes,size_mb,completeness_pct,licence,commercial_use,source_id,time_min,time_max,regions_covered,sha256
+1,""Vague 1 — Météo, Pluie, ET0, Humidité sol"",et0,fao56_et0_national_daily,datasets/et0/fao56_et0_national_daily.parquet,329232,401217"
+z_4761c3a4_c001,bundle:octopus_datasets_inventory.csv,général,1,443,1774,"1,""Vague 1 — Météo, Pluie, ET0, Humidité sol"",rain,chirps_v3_national_daily_2017,datasets/rain/chirps_v3_national_daily_2017.parquet,2534925,12732135,12.1423,99.676,CC BY 4.0,open,chirps,2017-01-01 00:00:00,2017-12-31 00:00:00,14,773a071a2825a05af25a42d0c1061b87ae86a2fca7399cface0aef1d7b6bdefa
+1,""V"
+z_4761c3a4_c002,bundle:octopus_datasets_inventory.csv,général,2,462,1848,"1,""Vague 1 — Météo, Pluie, ET0, Humidité sol"",rain,chirps_v3_national_daily_2023,datasets/rain/chirps_v3_national_daily_2023.parquet,2319630,11893482,11.3425,99.676,CC BY 4.0,open,chirps,2023-01-01 00:00:00,2023-11-30 00:00:00,14,53097063410ce6c694f2f6ea0aa9d1fa513d64f65571bcafcc380e3c024fb824
+1,""V"
+z_4761c3a4_c003,bundle:octopus_datasets_inventory.csv,général,3,507,2030,"2,Vague 2 — Sols & Occupation du sol (WorldCover),crops_senegal,fao56_crop_coefficients_daily,datasets/crops_senegal/fao56_crop_coefficients_daily.parquet,900,9653,0.0092,100.0,Référence scientifique publiée,open,fao56_tables,static,static,,669bf1e8fab1e439a46450561b5552ef7b3dde2c90993c4a8cd89f7f095"
+z_ff3c29ad_c000,bundle:OCTOPUS_IMPORT_README.md,général,0,491,1967,"# Package d'Import OctOpus — SmartAgri92 (`OCTOPUS-PACK-01`)
+
+**Date de génération** : 2026-11-16 10:28 UTC  
+**Périmètre** : Data Lake Réel National du Sénégal (`14/14` régions, grille `0,05°`, `0` donnée synthétique, `0` modèle entraîné).
+
+---
+
+## 1. Contenu du Package (`octopus_import/`)
+"
+z_ff3c29ad_c001,bundle:OCTOPUS_IMPORT_README.md,général,1,275,1100,"## 3. Dépendances & Clés de Jointure
+
+- **Clé spatiale fine (`0,05°`, ≈ 5,5 km)** : `cell_id` (`0..6944` sur les 14 régions, définie dans `datasets/geo/senegal_grid_0p05.parquet`).
+- **Clé spatiale météo (`0,5° × 0,625°`)** : `power_cell_id` (`76` mailles, table de correspondance incluse dans `se"
+z_1455d957_c000,bundle:octopus_upload_order.md,général,0,424,1696,"# Ordre d'Import Recommandé dans OctOpus ML (`OCTOPUS-PACK-01`)
+
+**Principe** : Importer les jeux par vagues progressives afin de respecter les dépendances de jointure spatiale (`cell_id` 0,05° et `power_cell_id` 0,5°×0,625°) et d'isoler strictement les zones de validation spatiale (**Mboro, Potou"
+z_1455d957_c001,bundle:octopus_upload_order.md,général,1,463,1855,"## Vague 2 — Propriétés des Sols & Occupation du Sol (`soils`, `worldcover`)
+
+*Dépend des `cell_id` de la Vague 1 pour enrichir chaque cellule climatique avec les constantes pédologiques et agricoles.*
+
+1. **`soils` (`soil_properties/`)** :
+   - `datasets/soil_properties/isdasoil_national_grid_"
+z_f98be441_c000,bundle:datasets.yaml,général,0,494,1978,"# Catalogue des JEUX DE DONNÉES du lac (raw → curated → features). Confidentiel - réservé aux partenaires de travail.
+# Contrôlé par `python -m agriml.catalog check` (voir ml/catalog/README.md). Champs :
+#   zone            raw (immuable, entrées = sources) | curated (entrées = raw ou curated)
+# "
+z_f98be441_c001,bundle:datasets.yaml,général,1,483,1933,"- {id: raw.iot.events, zone: raw, domain: iot, available: MVP, classification: confidentielle,
+     inputs: [kit_events],
+     content: ""Événements du kit : démarrage/arrêt pompe, défauts, redémarrages, OTA ; actions depuis la page locale
+       ou l'app (seuils modifiés, mode auto/manuel, comman"
+z_f98be441_c002,bundle:datasets.yaml,général,2,498,1995,"inputs: [drone_rgb, drone_multispectral, drone_thermal], content: ""Images de vol brutes RGB, multispectrales, thermiques"",
+     grain: ""vol × image"", refresh: ""campagne (2–4 vols/saison/site)"", retention: ""2 ans, orthomosaïques conservées"",
+     volume: ""2–5 Go par vol de 50 ha ⇒ 20 sites × 4 vols"
+z_f98be441_c003,bundle:datasets.yaml,général,3,505,2020,"- {id: raw.meteo.stations, zone: raw, domain: meteo, available: V2, classification: confidentielle,
+     inputs: [tahmo, anacim_stations], content: ""Observations de stations partenaires (sous convention)"",
+     grain: ""station × 5–60 min"", refresh: ""horaire à quotidien"", retention: ""selon conventi"
+z_f98be441_c004,bundle:datasets.yaml,général,4,504,2017,"- {id: raw.satellite.optical, zone: raw, domain: satellite, available: V2, classification: publique,
+     inputs: [sentinel2, landsat, hls], content: ""Scènes L2A optiques (références STAC, découpes COG sur les AOI)"",
+     grain: ""scène × bande"", refresh: ""à chaque passage (2–5 j)"", retention: ""déc"
+z_f98be441_c005,bundle:datasets.yaml,général,5,505,2023,"grain: ""diagnostic"", refresh: ""à la demande"", retention: ""illimitée (vérité terrain)"",
+     volume: ""objectif ≥ 5 000 diagnostics validés à V2""}
+  - {id: raw.phyto.field_reports, zone: raw, domain: phyto, available: V1.1, classification: confidentielle,
+     inputs: [scouting_reports, treatments_"
+z_f98be441_c006,bundle:datasets.yaml,général,6,509,2038,"inputs: [crop_cycles_user, operations_log], content: ""Déclarations : culture, variété, semis, opérations, irrigation manuelle"",
+     grain: ""parcelle × campagne / opération"", refresh: ""à la saisie"", retention: ""illimitée (historique parcelle)"",
+     volume: ""20 000 parcelles × 2 campagnes × 30 opé"
+z_f98be441_c007,bundle:datasets.yaml,général,7,493,1974,"grain: ""marché × produit × semaine"", refresh: ""hebdomadaire"", retention: ""illimitée"",
+     volume: ""50 marchés × 20 produits × 52 sem. = 52 k lignes/an""}
+  - {id: raw.economie.inputs_costs, zone: raw, domain: economie, available: V2, classification: interne,
+     inputs: [input_prices_survey, ene"
+z_f98be441_c008,bundle:datasets.yaml,général,8,502,2008,"grain: ""parcelle × version"", refresh: ""à la saisie"", retention: ""durée du compte + 1 an"",
+     volume: ""20 000 polygones × 2 Ko ≈ 40 Mo""}
+  - {id: raw.geo.reference, zone: raw, domain: geo, available: MVP, classification: publique,
+     inputs: [geoboundaries, copernicus_dem, worldcover, jrc_gsw,"
+z_f98be441_c009,bundle:datasets.yaml,général,9,494,1976,"inputs: [irrigation_water_quality, well_inventory], content: ""CE, pH, SAR des eaux d'irrigation ; inventaire des puits"",
+     grain: ""point d'eau × prélèvement"", refresh: ""campagne"", retention: ""illimitée"", volume: ""≈ 2 000 prélèvements/an, < 5 Mo""}
+  # --------------------------------------------"
+z_f98be441_c010,bundle:datasets.yaml,général,10,504,2016,"inputs: [reco_feedback, app_usage], content: ""Retour sur les recommandations (suivie, ignorée, note) et usage"",
+     grain: ""événement"", refresh: ""flux continu"", retention: ""2 ans"", volume: ""10 000 utilisateurs × 5 évén./j ≈ 18 M lignes/an""}
+  # ----------------------------------------------------"
+z_f98be441_c011,bundle:datasets.yaml,général,11,488,1955,"inputs: [raw.iot.telemetry, raw.iot.devices],
+     content: ""Dédoublonné, UTC, unités SI, plages physiques, drapeaux qualité, étalonnage par kit appliqué"",
+     grain: ""kit × 5 min"", refresh: ""micro-lots 5 min"", retention: ""3 ans"", volume: ""≈ raw (~1 G lignes/an à cible)""}
+  - {id: iot.telemetry_"
+z_f98be441_c012,bundle:datasets.yaml,général,12,501,2005,"- {id: meteo.grid_daily, zone: curated, domain: meteo, available: MVP, classification: publique,
+     inputs: [raw.meteo.reanalysis, raw.meteo.rain_satellite, raw.meteo.radiation],
+     content: ""Météo journalière observée par maille : Tmin/Tmax, HR, vent 2 m, Rs, pluie fusionnée, ET0 FAO-56"",
+  "
+z_f98be441_c013,bundle:datasets.yaml,général,13,483,1932,"content: ""Profil de sol par parcelle : RU (TAW), CC, PF, pH, MO, CE ; source = labo sinon grille (avec incertitude)"",
+     grain: ""parcelle"", refresh: ""à chaque analyse"", retention: ""illimitée"", volume: ""20 000 lignes""}
+  - {id: satellite.field_indices, zone: curated, domain: satellite, available:"
+z_f98be441_c014,bundle:datasets.yaml,général,14,506,2025,"grain: ""image"", refresh: ""quotidien"", retention: ""5 ans"", volume: ""≈ 30 % des photos brutes, recadrées 1 Mpx""}
+  - {id: images.espcam_series, zone: curated, domain: iot, available: V2, classification: confidentielle,
+     inputs: [raw.images.espcam], minimised: true, content: ""Séries temporelles d"
+z_f98be441_c015,bundle:datasets.yaml,général,15,509,2039,"inputs: [raw.agronomie.cycles], content: ""Cycle normalisé par parcelle : culture, variété, semis, stades déclarés, opérations"",
+     grain: ""parcelle × campagne"", refresh: ""à la saisie"", retention: ""illimitée"", volume: ""40 k cycles/an""}
+  - {id: agronomie.crop_params, zone: curated, domain: agrono"
+z_f98be441_c016,bundle:datasets.yaml,général,16,509,2037,"grain: ""culture × zone × campagne"", refresh: ""mensuel"", retention: ""illimitée"", volume: ""< 1 Mo/an""}
+  - {id: economie.farm_economics, zone: curated, domain: economie, available: V2, classification: personnelle,
+     inputs: [raw.economie.farm_accounts, raw.economie.payments],
+     content: ""Marg"
+z_f98be441_c017,bundle:datasets.yaml,général,17,505,2022,"- {id: geo.open_field_boundaries, zone: curated, domain: geo, available: V3, classification: publique,
+     inputs: [raw.geo.open_field_boundaries], content: ""Limites ouvertes harmonisées (masques d'entraînement)"",
+     grain: ""polygone"", refresh: ""ponctuel"", retention: ""illimitée"", volume: ""< 1 G"
+z_f98be441_c018,bundle:datasets.yaml,général,18,504,2018,"inputs: [raw.langue.assistant], minimised: true,
+     content: ""Questions anonymisées (PII retirées), réponses, sources citées, notes agronome (jeu d'évaluation)"",
+     grain: ""échange"", refresh: ""hebdomadaire"", retention: ""illimitée"", volume: ""≈ 5 k échanges notés/an""}
+  - {id: langue.speech_cor"
+z_f98be441_c019,bundle:datasets.yaml,général,19,507,2031,"agronomie.crop_cycles, agronomie.crop_params, geo.field_context, satellite.field_indices],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: irrigation_need},
+     content: ""État hydrique, stade, ETc prévue ; cible : target_need_mm_24h (bilan hydrique a posteriori)"",
+   "
+z_f98be441_c020,bundle:datasets.yaml,général,20,497,1989,"inputs: [images.espcam_series, images.labelled],
+     minimised: true, holdout: true, octopus: {policy: pseudonymised, name: pest_trap_images},
+     content: ""Images de pièges avec boîtes annotées ; cible : nombre d'individus par espèce"",
+     grain: ""image"", refresh: ""hebdomadaire"", retention: """
+z_f98be441_c021,bundle:datasets.yaml,général,21,507,2030,"grain: ""parcelle × campagne"", refresh: ""décadaire en saison"", retention: ""versions DVC"", volume: ""≈ 40 k lignes/an""}
+  - {id: features.sensor_anomaly, zone: features, domain: iot, available: V2, classification: confidentielle,
+     inputs: [iot.telemetry_clean, iot.device_health, iot.irrigation_ev"
+z_f98be441_c022,bundle:datasets.yaml,général,22,506,2024,"grain: ""recommandation"", refresh: ""quotidien"", retention: ""versions DVC"", volume: ""≈ 3,7 M lignes/an""}
+  - {id: features.salinity_risk, zone: features, domain: eau, available: V3, classification: confidentielle,
+     inputs: [eau.water_quality, sols.field_profile, iot.telemetry_hourly, geo.field_c"
+z_f98be441_c023,bundle:datasets.yaml,général,23,205,821,"- {id: features.agri_risk, zone: features, domain: economie, available: V3, classification: personnelle,
+     inputs: [economie.credit_outcomes, economie.farm_economics, historique.yields, meteo.seasonal_outlook, features.yield],
+     content: ""Historique de rendement, marge, paiements, exposition"
+z_53d8250e_c000,bundle:models.yaml,modélisation,0,495,1981,"# Catalogue des MODÈLES (phase 2). Confidentiel - réservé aux partenaires de travail.
+# Contrôlé par `python -m agriml.catalog check` (voir ml/catalog/README.md). Champs :
+#   use_case        IA-1 … IA-10 | TRANSVERSE (cas d'usage du doc 04)
+#   kind            nature de la variante « production » :"
+z_53d8250e_c001,bundle:models.yaml,modélisation,1,505,2022,"compromis: ""Penman-Monteith FAO-56 sur IFS + biais moyen glissant 30 j par maille""
+    metrics:
+      primary: ""MAE ET0 journalière vs station de référence (mm/j)""
+      secondary: [""biais moyen"", ""MAE par saison (sèche, hivernage)""]
+      threshold: ""MAE <= 0,6 mm/j sur les stations ANACIM ou TAHMO"
+z_53d8250e_c002,bundle:models.yaml,modélisation,2,502,2008,"training: ""Paramètres FAO-56 et ISRA ; p et Zr étalonnés par culture sur les parcelles pilotes""
+    inference: {mode: batch, latency: ""< 5 min"", frequency: ""horaire et après chaque émission"",
+                fallback: ""seuils du firmware (threshold_start_pct, threshold_stop_pct)""}
+    depends_on: [i"
+z_53d8250e_c003,bundle:models.yaml,modélisation,3,486,1946,"name: ""Besoin d'irrigation à 24 h""
+    kind: ml
+    version: V2
+    platform: [web:3, web:7, mobile, kit]
+    data:
+      mandatory: [features.irrigation_need]
+      recommended: [features.local_weather_bias]
+      optional: [features.rain_events]
+    features: [""ET0, Kc, pluie efficace"", ""humidité "
+z_53d8250e_c004,bundle:models.yaml,modélisation,4,496,1985,"competition: ""MPC stochastique sur scénarios de pluie + RL hors ligne évalué de façon contrefactuelle""
+      production: ""MPC déterministe sur 72 h (programmation linéaire, OR-Tools)""
+      compromis: ""Règles + MPC 48 h, report automatique si P(pluie >= 5 mm) >= 60 %""
+    metrics:
+      primary: ""m³"
+z_53d8250e_c005,bundle:models.yaml,modélisation,5,498,1995,"inference: {mode: batch, latency: ""< 5 min"", frequency: ""4 fois/j"", fallback: ""IFS brut, puis climatologie""}
+    challenge: ""La vérité terrain est rare : ERA5 et CHIRPS lissent les orages convectifs du Sahel""
+
+  - id: wx_local_bias
+    use_case: IA-2
+    name: ""Correction du biais local au kit""
+    "
+z_53d8250e_c006,bundle:models.yaml,modélisation,6,510,2041,"primary: ""Score de Brier P(pluie >= 5 mm) à 24 et 48 h""
+      secondary: [""diagramme de fiabilité"", ""ROC-AUC""]
+      threshold: ""BSS >= 0,1 vs climatologie""
+    training: ""Mensuel ; vérité CHIRPS, IMERG et stations""
+    inference: {mode: batch, latency: ""< 2 min"", frequency: ""4 fois/j"",
+            "
+z_53d8250e_c007,bundle:models.yaml,modélisation,7,505,2021,"optional: [features.pest_risk]
+    features: [""image recadrée 224–384 px"", ""culture déclarée"", ""stade"", ""risque régional (a priori)""]
+    candidates:
+      competition: ""Ensemble ConvNeXt, EfficientNetV2 et ViT (DINOv2 affiné), TTA, calibration""
+      production: ""EfficientNet-B0 ou MobileNetV3 affi"
+z_53d8250e_c008,bundle:models.yaml,modélisation,8,504,2018,"threshold: ""MAE <= 2 insectes ou <= 15 %""
+    training: ""Par campagne ; boîtes annotées sur 1 000 images minimum""
+    inference: {mode: batch, latency: ""< 10 s par image"", frequency: ""4 fois/j"", fallback: ""comptage manuel""}
+    pretrained: [vision_backbones]
+    challenge: ""Les détecteurs YOLO d'Ult"
+z_53d8250e_c009,bundle:models.yaml,modélisation,9,509,2037,"production: ""Règles ISRA et DPV : seuils T, HR, pluie × stade × culture""
+      compromis: ""Règles + relais des alertes DPV et FAMEWS par zone""
+    metrics:
+      primary: ""Précision des alertes (% confirmées par observation)""
+      secondary: [""rappel sur foyers signalés"", ""alertes par parcelle et p"
+z_53d8250e_c010,bundle:models.yaml,modélisation,10,494,1976,"optional: [features.pest_trap_images]
+    features: [""météo passée et prévue"", ""foyers voisins (distance, date)"", ""NDVI"", ""culture, stade"", ""degrés-jours""]
+    candidates:
+      competition: ""Modèle spatio-temporel (GNN sur graphe de parcelles) + LightGBM""
+      production: ""LightGBM calibré P(foyer"
+z_53d8250e_c011,bundle:models.yaml,modélisation,11,502,2011,"training: ""Pas d'entraînement : prompts, corpus et outils versionnés ; évaluation hebdomadaire""
+    inference: {mode: online, latency: ""p95 < 8 s en streaming"", frequency: ""à la demande"",
+                fallback: ""FAQ validées + escalade vers un conseiller""}
+    pretrained: [claude_api]
+    depends"
+z_53d8250e_c012,bundle:models.yaml,modélisation,12,506,2024,"production: ""Liste blanche CSP + règles de dose + LLM-juge sur échantillon""
+      compromis: ""Liste CSP + règles ; revue humaine des réponses phytosanitaires""
+    metrics:
+      primary: ""Réponses dangereuses non bloquées (jeu adversarial)""
+      secondary: [""faux blocages""]
+      threshold: ""0 répo"
+z_53d8250e_c013,bundle:models.yaml,modélisation,13,500,2003,"mandatory: [langue.speech_corpus]
+      recommended: [connaissances.rag_chunks]
+      optional: []
+    features: [""gabarits de messages"", ""segments enregistrés (nombres, cultures, actions)""]
+    candidates:
+      competition: ""TTS neuronal (VITS) entraîné sur un corpus consenti""
+      production: ""M"
+z_53d8250e_c014,bundle:models.yaml,modélisation,14,508,2033,"fallback: ""valeurs de laboratoire, sinon iSDAsoil ou SoilGrids""}
+    challenge: ""Les sondes NPK RS485 bon marché mesurent surtout la conductivité : rester en classes""
+
+  - id: fert_reco
+    use_case: IA-6
+    name: ""Recommandation de fumure""
+    kind: rules
+    version: V1.1
+    platform: [web:6, we"
+z_53d8250e_c015,bundle:models.yaml,modélisation,15,510,2042,"candidates:
+      competition: ""Classement appris (learning-to-rank) sur les retours + contraintes de sûreté""
+      production: ""Règles priorisées (urgence × impact × confiance), gabarits français et wolof""
+      compromis: ""Règles + pondération apprise sur le taux d'acceptation""
+    metrics:
+      "
+z_53d8250e_c016,bundle:models.yaml,modélisation,16,501,2006,"- id: ndvi_gapfill
+    use_case: IA-8
+    name: ""Reconstruction des séries NDVI sous nuages""
+    kind: statistics
+    version: V2
+    platform: [web:4, web:6]
+    data:
+      mandatory: [satellite.field_indices]
+      recommended: [satellite.s2_chips]
+      optional: []
+    features: [""NDVI, EVI, ND"
+z_53d8250e_c017,bundle:models.yaml,modélisation,17,492,1970,"fallback: ""calendrier cultural FAO + date de semis""}
+    depends_on: [ndvi_gapfill]
+    challenge: ""Les stades déclarés sont rares et approximatifs : prévoir des relevés de conseillers""
+
+  - id: yield_forecast
+    use_case: IA-8
+    name: ""Prévision de rendement p10–p90""
+    kind: ml
+    version: V3"
+z_53d8250e_c018,bundle:models.yaml,modélisation,18,500,2002,"recommended: [iot.telemetry_hourly, iot.irrigation_events]
+      optional: [agronomie.yield_potential]
+    features: [""météo journalière"", ""sol (TAW)"", ""date de semis"", ""irrigation appliquée"", ""variété""]
+    candidates:
+      competition: ""Assimilation (EnKF) du LAI et de l'humidité dans AquaCrop""
+ "
+z_53d8250e_c019,bundle:models.yaml,modélisation,19,499,1999,"name: ""Détection des limites de parcelles""
+    kind: deep_learning
+    version: V3
+    platform: [web:3, web:4, mobile]
+    data:
+      mandatory: [features.field_boundaries]
+      recommended: [geo.open_field_boundaries]
+      optional: []
+    features: [""composites S2 10 m"", ""PlanetScope 3 m (si c"
+z_53d8250e_c020,bundle:models.yaml,modélisation,20,483,1935,"training: ""Annuel ; local uniquement (données financières personnelles, jamais exportées)""
+    inference: {mode: batch, latency: ""< 1 s par dossier"", frequency: ""à la demande du partenaire"",
+                fallback: ""décision humaine de l'IMF""}
+    depends_on: [yield_forecast]
+    challenge: ""Décis"
+z_53d8250e_c021,bundle:models.yaml,modélisation,21,496,1985,"features: [""valeurs hors plage"", ""variance nulle (capteur figé)"", ""sauts"", ""pompe sans effet sur l'humidité"",
+               ""drapeaux firmware""]
+    candidates:
+      competition: ""Règles + détection statistique (CUSUM, filtre de Hampel)""
+      production: ""Règles de plage, de gel, de saut et de co"
+z_53d8250e_c022,bundle:models.yaml,modélisation,22,509,2037,"challenge: ""Tous les modèles d'irrigation héritent de l'erreur de cette sonde : à faire avant le ML.
+      La courbe est propre à chaque kit (lectures ADC sec et eau) et stockée en NVS""
+
+  - id: anomaly_ml
+    use_case: IA-10
+    name: ""Anomalies multivariées des kits""
+    kind: ml
+    version: V2
+ "
+z_53d8250e_c023,bundle:models.yaml,modélisation,23,505,2022,"training: ""Trimestriel""
+    inference: {mode: batch, latency: ""< 1 min"", frequency: ""quotidien"", fallback: ""alerte pump_fault du firmware""}
+    depends_on: [anomaly_rules]
+    challenge: ""Exige le débitmètre et la mesure de puissance (V1.1) : sans eux, modèle impossible""
+
+  # ======================="
+z_53d8250e_c024,bundle:models.yaml,modélisation,24,392,1570,"production: ""LightGBM global sur prix hebdomadaires + saisonnalité + NDVI régional""
+      compromis: ""SARIMA par couple marché-produit""
+    metrics:
+      primary: ""MAPE à 4 semaines""
+      secondary: [""gain vs saisonnalité naïve""]
+      threshold: ""MAPE <= 15 % et meilleur que la saisonnalité naïve"
+z_199128cc_c000,bundle:README.md,général,0,189,758,"# Catalogue data et IA de SmartAgri92
+
+> Document confidentiel, réservé aux partenaires de travail. Ne pas diffuser.
+
+Ce dossier est la **source de vérité** de l'inventaire des données et de la cartographie des modèles (brief IA, Data et MLOps du 27/10/2026). Trois fichiers YAML décrivent la chaîne "
+z_199128cc_c001,bundle:README.md,général,1,383,1534,"## Commandes
+
+Elles se lancent depuis `ml/`, avec `PYTHONPATH=src` si le paquet n'est pas installé.
+
+| Commande | Effet |
+|---|---|
+| `python -m agriml.catalog check` | Valide le schéma et les neuf règles. Affiche erreurs et avertissements, puis un bilan. |
+| `python -m agriml.catalog check --strict"
+z_199128cc_c002,bundle:README.md,général,2,173,694,"## Procédure de modification
+
+1. Modifier le YAML. Les identifiants ne se renomment pas sans mettre à jour toutes les références.
+2. `python -m agriml.catalog check` : corriger toutes les erreurs.
+3. `python -m agriml.catalog render` : régénérer les annexes. Ne jamais les éditer à la main.
+4. `pytes"
+z_199128cc_c003,bundle:README.md,général,3,351,1404,"### `sources.yaml`
+
+| Champ | Obligatoire | Valeurs |
+|---|---|---|
+| `id` | oui | identifiant unique, en snake_case |
+| `domain` | oui | `meteo`, `sols`, `satellite`, `drone`, `iot`, `phyto`, `agronomie`, `economie`, `geo`, `eau`, `historique`, `utilisateurs`, `langue`, `connaissances` |
+| `kind` |"
+z_199128cc_c004,bundle:README.md,général,4,397,1588,"### `datasets.yaml`
+
+| Champ | Obligatoire | Valeurs |
+|---|---|---|
+| `id` | oui | préfixé par la zone ou le domaine (`raw.iot.telemetry`, `meteo.forecast_asof`, `features.irrigation_need`) |
+| `zone` | oui | `raw` (immuable ; entrées = sources) · `curated` (entrées = raw ou curated) · `features` ("
+z_199128cc_c005,bundle:README.md,général,5,356,1426,"### `models.yaml`
+
+| Champ | Obligatoire | Valeurs |
+|---|---|---|
+| `id`, `name` | oui | identifiant unique, libellé |
+| `use_case` | oui | `IA-1` à `IA-10` (cas d'usage du doc 04) ou `TRANSVERSE` |
+| `kind` | oui | nature de la variante production : `rules`, `physical`, `statistics`, `ml`, `deep_l"
+z_199128cc_c006,bundle:README.md,général,6,512,2048,"## Les neuf règles
+
+Toutes produisent une **erreur**, sauf celles marquées *avertissement*. Le code entre parenthèses est celui affiché par `check`.
+
+1. **Références** :
+   - tout identifiant cité existe (`ref.unknown`) ;
+   - les zones s'enchaînent dans le bon sens, et un modèle ne lit jamais un je"
+z_199128cc_c007,bundle:README.md,général,7,411,1647,"arch_only`) ;
+   - un modèle pré-entraîné non commercial va dans `pretrained_research` (`licence.pretrained`) ;
+   - *avertissement* `licence.pending` : une source `contract` ou `unknown` est obligatoire ou recommandée pour au moins un modèle.
+6. **Disponibilité** :
+   - un jeu n'existe pas avant se"
+z_199128cc_c008,bundle:README.md,général,8,120,480,"## Ce que le catalogue ne garantit pas
+
+- **Les licences** : `commercial` reflète la lecture d'une page publique à la date `verified`. Ce n'est pas un avis juridique. Les sources à `verified: null` n'ont pas été relues.
+- **Les volumes et les coûts** sont des hypothèses de dimensionnement. Ils sont "
+z_ceb2ab2e_c000,bundle:sources.yaml,général,0,486,1947,"# Catalogue des SOURCES de données et des modèles pré-entraînés. Confidentiel - réservé aux partenaires de travail.
+# Référence unique, lue et contrôlée par `python -m agriml.catalog check` (voir ml/catalog/README.md).
+# Champs :
+#   kind        public_api | open_data | commercial | partner | int"
+z_ceb2ab2e_c001,bundle:sources.yaml,général,1,499,1996,"- {id: ecmwf_open_data, domain: meteo, kind: open_data, personal: none, coverage: full, verified: null,
+     name: ""ECMWF Open Data (IFS, AIFS)"", licence: ""CC BY 4.0"", commercial: open, cost: ""Gratuit"",
+     access: ""GRIB2 par HTTP et miroirs cloud"", details: ""0,25° ; 4 émissions/j ; jusqu'à 15 j"""
+z_ceb2ab2e_c002,bundle:sources.yaml,général,2,491,1966,"- {id: chirps, domain: meteo, kind: open_data, personal: none, coverage: full, verified: ""2026-11-01"",
+     evidence: ""https://www.chc.ucsb.edu/data/chirps ; https://www.chc.ucsb.edu/data/chirps3"",
+     name: ""CHIRPS v3 (pluie satellite + stations)"", licence: ""v2 domaine public ; v3 CC BY 4.0 (att"
+z_ceb2ab2e_c003,bundle:sources.yaml,général,3,504,2019,"name: ""TAHMO (stations automatiques)"", licence: ""Accord de données TAHMO"", commercial: contract,
+     cost: ""Non publié (Data Policy non lue) ; hypothèse : gratuit recherche, devis en commercial"",
+     access: ""Portail après formulaire ; API non documentée publiquement"",
+     details: ""Pluie, T, "
+z_ceb2ab2e_c004,bundle:sources.yaml,général,4,481,1927,"- {id: hwsd, domain: sols, kind: open_data, personal: none, coverage: full, verified: ""2026-11-01"",
+     evidence: ""https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/"",
+     name: ""FAO HWSD v2"",
+     licence: ""Aucune licence affichée par la FA"
+z_ceb2ab2e_c005,bundle:sources.yaml,général,5,510,2041,"access: ""Copernicus Data Space : STAC, openEO, Sentinel Hub"", details: ""10–60 m ; 13 bandes ; 5 j ; depuis 2015""}
+  - {id: sentinel1, domain: satellite, kind: open_data, personal: none, coverage: full, verified: null,
+     name: ""Sentinel-1 GRD"", licence: ""Licence Copernicus (libre)"", commercial: "
+z_ceb2ab2e_c006,bundle:sources.yaml,général,6,493,1975,"access: ""AWS af-south-1 (COG), STAC"", details: ""ARD Sentinel-2/Landsat, masque cultures, WOfS, anomalies NDVI""}
+  - {id: wapor, domain: satellite, kind: open_data, personal: none, coverage: full, verified: ""2026-11-01"",
+     evidence: ""https://www.fao.org/in-action/remote-sensing-for-water-product"
+z_ceb2ab2e_c007,bundle:sources.yaml,général,7,507,2028,"name: ""Télémétrie du kit (telemetry.v1)"", licence: ""Interne"", commercial: open, cost: ""Inclus dans le kit"",
+     access: ""MQTT, relais mobile, POST /v1/telemetry/batch"",
+     details: ""Humidité du sol, T/HR/pression de l'air, N/P/K, pompe, états capteurs, seuils ; 5 min""}
+  - {id: kit_events, dom"
+z_ceb2ab2e_c008,bundle:sources.yaml,général,8,503,2013,"- {id: kit_soil_extended, domain: iot, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: ""Sol étendu (prévu) : CE, température, 2e profondeur"", licence: ""Interne"", commercial: open,
+     cost: ""0 si la sonde 7-en-1 expose CE/T ; sinon seconde sonde"", access: ""teleme"
+z_ceb2ab2e_c009,bundle:sources.yaml,général,9,509,2038,"name: ""Journal des traitements"", licence: ""Interne"", commercial: open, cost: ""—"",
+     access: ""Saisie mobile"", details: ""Produit, matière active, dose, date, cible""}
+  - {id: dpv_alerts, domain: phyto, kind: partner, personal: none, coverage: partial, verified: null,
+     name: ""Direction de la "
+z_ceb2ab2e_c010,bundle:sources.yaml,général,10,485,1943,"- {id: plantvillage, domain: phyto, kind: open_data, personal: none, coverage: none, verified: ""2026-11-01"",
+     evidence: ""https://github.com/spMohanty/PlantVillage-Dataset ; https://data.mendeley.com/datasets/tywbtsjrjv/1"",
+     name: ""PlantVillage"",
+     licence: ""Original sans licence (citat"
+z_ceb2ab2e_c011,bundle:sources.yaml,général,11,504,2017,"name: ""Journal des opérations"", licence: ""Interne"", commercial: open, cost: ""—"", access: ""Saisie mobile"",
+     details: ""Irrigations manuelles, fumure, désherbage, récolte""}
+  - {id: fao56_tables, domain: agronomie, kind: reference, personal: none, coverage: full, verified: null,
+     name: ""FAO-"
+z_ceb2ab2e_c012,bundle:sources.yaml,général,12,491,1965,"licence: ""SARRA-Py GPLv3 ; SARRA-O CeCILL-C (à confirmer) ; SARRA-H non publié (contact CIRAD)"",
+     commercial: open, cost: ""Gratuit (paramétrage local avec l'ISRA conseillé)"", access: ""Dépôts GitHub (Python)"",
+     details: ""Bilan hydrique et rendement des céréales sahéliennes ; SARRA-Py spatia"
+z_ceb2ab2e_c013,bundle:sources.yaml,général,13,491,1967,"name: ""FAO GIEWS FPMA"", licence: ""Licence non indiquée ; couverture Sénégal non vérifiée"", commercial: unknown,
+     cost: ""Gratuit"",
+     access: ""Outil FPMA"", details: ""Prix mensuels de gros et de détail""}
+  - {id: input_prices_survey, domain: economie, kind: internal, personal: none, coverage:"
+z_ceb2ab2e_c014,bundle:sources.yaml,général,14,505,2020,"name: ""CNAAS (assurance agricole)"", licence: ""Convention CNAAS"", commercial: contract, cost: ""Sur convention"",
+     access: ""Fichiers"", details: ""Produits indiciels, sinistres, indemnisations""}
+  - {id: mfi_credit_outcomes, domain: economie, kind: partner, personal: direct, coverage: partial, veri"
+z_ceb2ab2e_c015,bundle:sources.yaml,général,15,501,2006,"evidence: ""https://esa-worldcover.org/en/data-access"",
+     name: ""ESA WorldCover"", licence: ""CC BY 4.0"", commercial: open, cost: ""Gratuit"",
+     access: ""COG (AWS, Zenodo)"", details: ""10 m ; 11 classes ; 2020 et 2021""}
+  - {id: jrc_gsw, domain: geo, kind: open_data, personal: none, coverage: ful"
+z_ceb2ab2e_c016,bundle:sources.yaml,général,16,505,2020,"- {id: dgpre_groundwater, domain: eau, kind: partner, personal: none, coverage: partial, verified: null,
+     name: ""DGPRE (nappes, piézométrie, qualité)"", licence: ""Convention DGPRE"", commercial: contract,
+     cost: ""Sur convention"", access: ""Fichiers"", details: ""Niveaux des nappes, salinité, ou"
+z_ceb2ab2e_c017,bundle:sources.yaml,général,17,498,1993,"access: ""Publications"", details: ""Recensements, prix à la consommation, conjoncture""}
+  - {id: farmer_harvests, domain: historique, kind: user_input, personal: indirect, coverage: partial, verified: null,
+     name: ""Récoltes déclarées"", licence: ""Interne"", commercial: open, cost: ""—"",
+     acces"
+z_ceb2ab2e_c018,bundle:sources.yaml,général,18,483,1934,"- {id: app_usage, domain: utilisateurs, kind: internal, personal: indirect, coverage: partial, verified: null,
+     name: ""Journal d'usage de l'application"", licence: ""Interne"", commercial: open, cost: ""—"",
+     access: ""Journaux applicatifs"", details: ""Sessions, synchronisations hors ligne, erreu"
+z_ceb2ab2e_c019,bundle:sources.yaml,général,19,506,2025,"commercial: contract, cost: ""Sur convention"", access: ""PDF, documents"", details: ""Corpus de l'assistant (RAG)""}
+  - {id: agronomist_qa, domain: connaissances, kind: internal, personal: none, coverage: full, verified: null,
+     name: ""Questions-réponses validées"", licence: ""Interne"", commercial: o"
+z_ceb2ab2e_c020,bundle:sources.yaml,général,20,245,983,"name: ""wav2vec 2.0 XLS-R (300M à 2B)"", licence: ""Apache-2.0"", commercial: open, cost: ""Gratuit"",
+     access: ""Poids publics"", details: ""436 k h, 128 langues ; fine-tuning ASR obligatoire ; seule voie commerciale""}
+  - {id: nllb_models, domain: langue, kind: pretrained, personal: none, coverage: p"
+z_688794f3_c000,bundle:crops_senegal_SCHEMA.md,cultures,0,292,1170,"# `ml/data/real/crops_senegal/` — Cultures Maraîchères du Sénégal (Calendriers, $K_c$, Occupation du Sol)
+
+- **Sources Niveau A (immédiates)** :
+  - `fao56_tables` : paramètres culturaux FAO-56 déjà codés dans `backend/app/services/agronomy.py` (`onion`, `tomato`, `cabbage`, `potato`, `carrot`, `pep"
+z_2498b645_c000,bundle:et0_SCHEMA.md,cultures,0,217,871,"# `ml/data/real/et0/` — Évapotranspiration de Référence ($ET_0$) et Réelle ($ET_a$)
+
+- **Sources Niveau A (immédiates)** :
+  - Calcul déterministe FAO-56 (`agronomy.extraterrestrial_radiation` + `agronomy.hargreaves_et0` ou Penman-Monteith complet) alimenté par les séries réelles `nasa_power` (`T2M_"
+z_7fa61d37_c000,bundle:iot_telemetry_SCHEMA.md,général,0,228,915,"# `ml/data/real/iot_telemetry/` — Séries Temporelles Réelles des Kits ESP32-S3 (`telemetry.v1`)
+
+- **Source unique** :
+  - `kit_telemetry` : extraction réelle depuis l'hypertable TimescaleDB `measurements` et la vue continue `measurements_1h` (alimentées par les boîtiers ESP32-S3 physiques via `POST"
+z_30aa8a54_c000,bundle:market_prices_SCHEMA.md,marchés,0,368,1474,"# `ml/data/real/market_prices/` — Prix Agricoles & Mercuriales du Sénégal (FCFA/kg)
+
+- **Sources Niveau A (immédiates)** :
+  - `hdx_wfp_senegal` : jeu ouvert **WFP / VAM Food Prices for Senegal** sur Humanitarian Data Exchange (`https://data.humdata.org/dataset/wfp-food-prices-for-senegal`, `wfp_foo"
+z_d6f4965b_c000,bundle:meteo_SCHEMA.md,météo,0,261,1047,"# `ml/data/real/meteo/` — Séries Météorologiques Réelles (Horaire & Quotidien)
+
+- **Sources Niveau A (immédiates)** :
+  - `nasa_power` : API REST Agroclimatologie (`https://power.larc.nasa.gov/api/temporal/daily/point`), sans clé API, licence NASA ouverte.
+  - `noaa_gfs` : GRIB2 sur AWS Open Data (`"
+z_ad6851a4_c000,bundle:rain_SCHEMA.md,pluviométrie,0,243,972,"# `ml/data/real/rain/` — Précipitations Réelles (Satellite & Réanalyse)
+
+- **Sources Niveau A (immédiates)** :
+  - `chirps` (CHIRPS v3) : `https://data.chc.ucsb.edu/products/CHIRPS-v3.0/` (COG / GeoTIFF / NetCDF, 0,05° ≈ 5,5 km, CC BY 4.0 ; remplace CHIRPS v2 qui s'arrête fin déc. 2026).
+  - `tamsat"
+z_bc3c063f_c000,bundle:sentinel2_ndvi_SCHEMA.md,télédétection,0,263,1054,"# `ml/data/real/sentinel2_ndvi/` — Séries Sentinel-2 L2A & Indices de Végétation (NDVI, EVI, NDWI, SAVI)
+
+- **Sources Niveau A (immédiates, sans authentification)** :
+  - `deafrica` (Digital Earth Africa) : catalogue STAC public `https://explorer.digitalearth.africa/stac` (collection `s2_l2a`, COG s"
+z_458930bf_c000,bundle:soil_moisture_SCHEMA.md,sol,0,240,962,"# `ml/data/real/soil_moisture/` — Humidité du Sol Réelle (Satellite, Réanalyse & Sondes)
+
+- **Sources Niveau A (immédiates, maille régionale)** :
+  - `nasa_power` : `GWETTOP` (humidité relative de surface 0–5 cm, `[0, 1]`), `GWETROOT` (zone racinaire 0–100 cm, `[0, 1]`), `GWETPROF` (profil complet),"
+z_bfd3b5d7_c000,bundle:soil_properties_SCHEMA.md,sol,0,333,1332,"# `ml/data/real/soil_properties/` — Propriétés Physico-Chimiques des Sols du Sénégal
+
+- **Sources Niveau A (immédiates)** :
+  - `isdasoil` : Cloud-Optimized GeoTIFF (COG) à **30 m** de résolution sur toute l'Afrique dans le bucket AWS S3 public `s3://isdasoil/` (`us-west-2`, `--no-sign-request`, lic"
+z_9686f950_c000,bundle:yields_SCHEMA.md,cultures,0,300,1202,"# `ml/data/real/yields/` — Rendements Agricoles Réels au Sénégal
+
+- **Sources Niveau A (immédiates, échelle nationale)** :
+  - `faostat` : base `QCL` (Crops and livestock products — Sénégal `area_code=195`, 1961–présent, licence **CC BY 4.0**), fournissant surfaces récoltées (ha), rendements (kg/ha "
+z_cea74470_c000,bundle:manifest.json,général,0,16,67,"s3_prefix: ""octopus/soil_nowcast_proxy_national/v=20261114-natl01/"""
+z_cea74470_c001,bundle:manifest.json,général,1,12,51,"git_sha: ""b022447471cb4ececfb05ebe17c6bae1d81ef722"""
+z_cea74470_c002,bundle:manifest.json,général,2,57,231,"source: {""pipeline"": ""build_national_data_lake.py"", ""mission"": ""IA-REAL-03"", ""synthetic"": false, ""target_nature"": ""PROXY modélisé (NASA GEOS), pas une mesure de capteur"", ""spatial_holdout_zones"": [""mboro"", ""potou"", ""richard_toll""]}"
+z_cea74470_c003,bundle:manifest.json,général,3,229,918,"schema: {""power_cell_id"": ""string"", ""t_min_c"": ""float"", ""t_max_c"": ""float"", ""t_mean_c"": ""float"", ""rh_mean_pct"": ""float"", ""wind_2m_ms"": ""float"", ""solar_rad_mj_m2"": ""float"", ""pressure_hpa"": ""float"", ""rain_mm"": ""float"", ""rain_chirps_mm"": ""float"", ""et0_pm_mm"": ""float"", ""rain_nasa_sum_3d_mm"": ""float"", ""r"
+z_cea74470_c004,bundle:manifest.json,général,4,18,75,"pseudonymisation: {""method"": ""HMAC-SHA256"", ""salt_id"": ""local-dev-2026-11""}"
+z_cea74470_c005,bundle:manifest.json,général,5,69,278,"files: {""README.md"": ""sha256:d608a77e1f071e51318af4582e7b26000e3ede7d81ab29f03e430bc91217c828"", ""test.parquet"": ""sha256:af1d72f63c8f4538caae3ece76eb1419bc3d40b5cb7e90d8b8489943e73cf500"", ""train.parquet"": ""sha256:5d01aded3857c7422d03271e95d4e2c0d77397bb20753e8c93edda8eefd755fb""}"
+z_b7e3bb1f_c000,bundle:README.md,général,0,329,1317,"# Jeu `soil_nowcast_proxy_national` — v=20261114-natl01
+
+Confidentiel - réservé aux partenaires de travail.
+
+- Cible : `soil_wetness_root_pct` ; groupes : `power_cell_id` ; temps : `ts`
+- Lignes (entraînement) : 258440
+- Pseudonymisation : HMAC-SHA256, sel `local-dev-2026-11`
+- Colonnes suppr"
+p_c65c4ea3_c000,projet:62_smartagri_rag_design.md,architecture_ia,0,509,2038,"# 62 — SmartAgri Knowledge : Conception Complète du RAG
+
+**Projet** : SmartAgri92 — PAS Challenge 2026 → Produit commercialisable
+**Date** : 2026-11-17
+**Auteur** : OctOpus × Équipe Agri-Moderne 5.0
+**Statut** : Conception (aucun entraînement lancé)
+
+---
+
+## Table des matières
+
+1. [Vision et objecti"
+p_c65c4ea3_c001,projet:62_smartagri_rag_design.md,architecture_ia,1,433,1732,"### 1.3 Périmètre V1
+
+- **Cultures couvertes** : oignon, tomate, pomme de terre, carotte, poivron, mangue, banane, arachide, mil, riz
+- **Domaines** : irrigation, fertilisation, protection phytosanitaire, calendrier cultural, sol, météo
+- **Régions** : Niayes (Mboro, Potou), Vallée du Fleuve (Richar"
+p_c65c4ea3_c002,projet:62_smartagri_rag_design.md,architecture_ia,2,392,1568,"#### A. Sources officielles internationales (Français)
+
+| # | Source | Organisation | Format | Disponibilité | Licence |
+|---|---|---|---|---|---|
+| 1 | **Guide FAO 56** — Crop Evapotranspiration | FAO | PDF (322 pages) | fao.org/3/X0490E | CC BY-NC-SA 3.0 IGO |
+| 2 | **FAO Irrigation & Drainage Pap"
+p_c65c4ea3_c003,projet:62_smartagri_rag_design.md,architecture_ia,3,275,1100,"#### C. Sources en langues locales
+
+| # | Source | Langue | Format | Disponibilité | Note |
+|---|---|---|---|---|---|
+| 13 | **Émissions radio ISRA/ANCAR** (transcriptions) | Wolof | Audio → texte | Partiel | Nécessite ASR Wolof |
+| 14 | **Fiches ANCAR vulgarisation** | Wolof/Pulaar | PDF scannés | "
+p_c65c4ea3_c004,projet:62_smartagri_rag_design.md,architecture_ia,4,579,2319,"### 3.1 Vue d'ensemble
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                   SmartAgri Knowledge                     │
+│                                                          │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐             │
+│  │ Corpus   │──▶│ Chunking"
+p_c65c4ea3_c005,projet:62_smartagri_rag_design.md,architecture_ia,5,465,1862,"### 3.2 Pipeline détaillé
+
+| Étape | Composant | Technologie | Justification |
+|---|---|---|---|
+| 1. Ingestion | Parseur PDF/HTML | `pymupdf` + `unstructured` | Gère les PDFs scannés (OCR via `tesseract`) |
+| 2. Nettoyage | Normalisation texte | Python pur | Supprime en-têtes/pieds, normalise encod"
+p_c65c4ea3_c006,projet:62_smartagri_rag_design.md,architecture_ia,6,311,1246,"### 4.3 Types de chunks
+
+| Type | Description | Traitement |
+|---|---|---|
+| `text` | Paragraphe narratif | Chunking standard avec overlap |
+| `table` | Tableau de données (doses, Kc, calendrier) | Chunk atomique (jamais coupé) |
+| `list` | Liste de recommandations | Chunk atomique si < 1024 tokens "
+p_c65c4ea3_c007,projet:62_smartagri_rag_design.md,architecture_ia,7,378,1515,"### 5.1 Schéma des métadonnées
+
+Chaque chunk est enrichi de métadonnées structurées pour le filtrage et la traçabilité :
+
+```json
+{
+  ""chunk_id"": ""fao56_irrigation_oignon_042"",
+  ""source"": {
+    ""document_id"": ""fao56_guide_irrigation"",
+    ""title"": ""Guide FAO 56 — Crop Evapotranspiration"",
+    ""auth"
+p_c65c4ea3_c008,projet:62_smartagri_rag_design.md,architecture_ia,8,498,1992,"### 6.1 Comparaison des candidats
+
+| Modèle | Dim. | Langues | Taille | MTEB fr | Wolof | Offline | Licence |
+|---|---|---|---|---|---|---|---|
+| **`intfloat/multilingual-e5-large`** | 1024 | 100+ | 2.2 Go | 0.524 | Partiel | ✅ | MIT |
+| **`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+p_c65c4ea3_c009,projet:62_smartagri_rag_design.md,architecture_ia,9,457,1828,"### 7.1 Comparaison
+
+| Solution | Persistance | Filtres | Taille max | Offline | Licence | Complexité |
+|---|---|---|---|---|---|---|
+| **ChromaDB** | SQLite | Métadonnées JSON | ~1M vecteurs | ✅ | Apache 2.0 | Faible |
+| FAISS | Fichier binaire | Non natif | ~100M vecteurs | ✅ | MIT | Moyenne |
+| Q"
+p_c65c4ea3_c010,projet:62_smartagri_rag_design.md,architecture_ia,10,432,1729,"### 8.1 Comparaison des candidats
+
+| Modèle | Taille | Français | Wolof | Quantif. | Licence | Contexte |
+|---|---|---|---|---|---|---|
+| **`mistralai/Mistral-7B-Instruct-v0.3`** | 7B | ★★★★★ | ★☆☆☆☆ | GPTQ/AWQ | Apache 2.0 | 32K |
+| **`croissantllm/CroissantLLMChat-v0.1`** | 1.3B | ★★★★☆ | ★☆☆☆☆ | "
+p_c65c4ea3_c011,projet:62_smartagri_rag_design.md,architecture_ia,11,459,1836,"### 9.1 Prompt système (français)
+
+```
+Tu es SmartAgri, un assistant agricole expert pour le Sénégal.
+
+RÈGLES :
+1. Réponds UNIQUEMENT à partir des documents fournis ci-dessous.
+2. Si l'information n'est pas dans les documents, dis-le clairement.
+3. Cite toujours ta source : [Document, Page/Section]."
+p_c65c4ea3_c012,projet:62_smartagri_rag_design.md,architecture_ia,12,641,2565,"### 10.1 Arborescence
+
+```
+rag/
+├── corpus/                          # Documents bruts
+│   ├── fao/
+│   │   ├── fao56_crop_evapotranspiration.pdf
+│   │   ├── fao24_irrigation_drainage.pdf
+│   │   └── fao_ipm_guide.pdf
+│   ├── isra/
+│   │   ├── fiche_oignon_niayes.pdf
+│   │   ├── fiche_tomate_senegal"
+p_c65c4ea3_c013,projet:62_smartagri_rag_design.md,architecture_ia,13,477,1910,"### 10.2 Fichier `rag_config.yaml`
+
+```yaml
+smartagri_knowledge:
+  version: ""1.0.0""
+  created: ""2026-11-17""
+  
+  corpus:
+    sources: 16
+    languages: [""fr"", ""wo""]
+    total_documents: ~50
+    
+  chunking:
+    strategy: ""semantic_sections""
+    target_tokens: 512
+    max_tokens: 1024
+    min_tokens:"
+p_c65c4ea3_c014,projet:62_smartagri_rag_design.md,architecture_ia,14,510,2041,"### 11.2 Métriques spécifiques agriculture
+
+| Métrique | Mesure | Cible | Critique ? |
+|---|---|---|---|
+| **Dose correcte** | Engrais/pesticide : dose dans la bonne plage | 100% | ⚠️ OUI (risque santé) |
+| **Culture correcte** | Recommandation pour la bonne culture | ≥ 95% | ⚠️ OUI |
+| **Source cit"
+p_c65c4ea3_c015,projet:62_smartagri_rag_design.md,architecture_ia,15,419,1677,"### 12.2 Budget compute
+
+| Ressource | Coût estimé |
+|---|---|
+| Embedding de ~50K chunks (E5-large, CPU) | ~0 $ (local) |
+| ChromaDB indexation | ~0 $ (local) |
+| Mistral-7B inférence évaluation (100 questions) | ~0.10 $ (OctOpus) |
+| Fine-tuning E5 pour wolof (futur) | ~2 $ (OctOpus) |
+| **Total V"
+p_c65c4ea3_c016,projet:62_smartagri_rag_design.md,architecture_ia,16,100,400,"### B. Licences des composants logiciels
+
+| Composant | Licence | Commercial |
+|---|---|---|
+| ChromaDB | Apache 2.0 | ✅ |
+| sentence-transformers | Apache 2.0 | ✅ |
+| intfloat/multilingual-e5-large | MIT | ✅ |
+| Mistral-7B-Instruct-v0.3 | Apache 2.0 | ✅ |
+| CroissantLLM | MIT | ✅ |
+| RAGAS | Apache"
+p_f49fc17c_c000,projet:56_real_ai_portfolio.md,modélisation,0,305,1221,"# 56_real_ai_portfolio.md
+# Portefeuille IA Complet — SmartAgri92
+## Agri-Moderne 5.0 · PAS Challenge 2026
+
+**Date** : 2026-11-16
+**Auteur** : OctOpus (Mouhamadou Diop, Moustapha Diallo, équipe Agri-Moderne 5.0)
+**Données** : 28 datasets · 30,4 M lignes · OCTOPUS-PACK-01
+**Périmètre** : Sénégal nati"
+p_f49fc17c_c001,projet:56_real_ai_portfolio.md,modélisation,1,447,1788,"## 1. Synthèse exécutive
+
+Le bundle SmartAgri92 contient **28 datasets** couvrant 7 domaines :
+météorologie (NASA POWER), pluviométrie haute résolution (CHIRPS v3),
+sols (iSDAsoil), occupation du sol (ESA WorldCover), végétation (Sentinel-2 NDVI),
+prix alimentaires (WFP) et statistiques agricoles (F"
+p_f49fc17c_c002,projet:56_real_ai_portfolio.md,modélisation,2,384,1536,"### 2.2 Point d'attention : pseudonymisation
+
+Les `power_cell_id` de `train.parquet` et `test.parquet` sont des hachés HMAC-SHA256
+(sel `local-dev-2026-11`). Les **36 colonnes sont déjà pré-assemblées** : on n'a pas besoin
+de rejoindre les tables brutes pour `soil_nowcast`. En revanche, construire `"
+p_f49fc17c_c003,projet:56_real_ai_portfolio.md,modélisation,3,380,1523,"### 🟡 Classe B — Après kits complémentaires (7 modèles)
+
+| # | Modèle | Domaine | Kit requis |
+|--:|---|---|---|
+| B1 | **wx_rain_prob (grille fine)** | Classification | Assemblage CHIRPS × grid × POWER × sols |
+| B2 | **Prévision rendement régional** | Forecasting | FAOSTAT + assemblage météo agrég"
+p_f49fc17c_c004,projet:56_real_ai_portfolio.md,modélisation,4,384,1537,"#### A1 · Soil Nowcast J+1 / J+2 / J+3
+
+| Champ | Détail |
+|---|---|
+| **ID** | `FORECAST-01` |
+| **Classe** | 🟢 A — Entraînable immédiatement |
+| **Objectif** | Prédire l'humidité racinaire du sol (%) à J+1, J+2, J+3 |
+| **Cibles** | `y_plus_1d_pct`, `y_plus_2d_pct`, `y_plus_3d_pct` |
+| **Données**"
+p_f49fc17c_c005,projet:56_real_ai_portfolio.md,modélisation,5,380,1521,"#### A2 · Soil Wetness Instantané
+
+| Champ | Détail |
+|---|---|
+| **ID** | `FORECAST-02` |
+| **Classe** | 🟢 A |
+| **Objectif** | Estimer `soil_wetness_root_pct` du jour courant à partir de la météo et des sols |
+| **Données** | `train.parquet` — cible : `soil_wetness_root_pct` (mean=46.5, σ=20.3, ra"
+p_f49fc17c_c006,projet:56_real_ai_portfolio.md,modélisation,6,475,1903,"#### B2 · Prévision Rendement Régional
+
+| Champ | Détail |
+|---|---|
+| **ID** | `FORECAST-04` |
+| **Classe** | 🟡 B |
+| **Objectif** | Prévoir le rendement (t/ha) par culture et par année |
+| **Données** | `faostat_senegal_crops_1961_2024` (956 lignes, 15 cultures × 55 ans) |
+| **Kit requis** | Agrég"
+p_f49fc17c_c007,projet:56_real_ai_portfolio.md,modélisation,7,444,1777,"#### A4 · Classification Pluie Binaire (maille POWER)
+
+| Champ | Détail |
+|---|---|
+| **ID** | `CLASSIF-01` |
+| **Classe** | 🟢 A |
+| **Objectif** | Prédire P(pluie > 1 mm demain) par maille POWER |
+| **Données** | `nasa_power_national_daily` (329 232 lignes, 76 mailles) — cible à créer : `rain_binar"
+p_f49fc17c_c008,projet:56_real_ai_portfolio.md,modélisation,8,424,1696,"#### B1 · wx_rain_prob (grille fine 0,05°)
+
+| Champ | Détail |
+|---|---|
+| **ID** | `CLASSIF-03` |
+| **Classe** | 🟡 B |
+| **Objectif** | P(pluie > seuil) à résolution 5,5 km |
+| **Données** | CHIRPS (cell_id, date) × nasa_power (power_cell_id, date) via `senegal_grid` + isdasoil + worldcover |
+| **K"
+p_f49fc17c_c009,projet:56_real_ai_portfolio.md,modélisation,9,463,1853,"#### A6 · Anomalies Pluviométriques
+
+| Champ | Détail |
+|---|---|
+| **ID** | `ANOMALY-01` |
+| **Classe** | 🟢 A |
+| **Objectif** | Détecter les événements pluviométriques extrêmes (sécheresses flash, pluies torrentielles) |
+| **Données** | CHIRPS 2015-2026, 6 945 cellules × ~4 000 jours |
+| **Feature"
+p_f49fc17c_c010,projet:56_real_ai_portfolio.md,modélisation,10,425,1703,"#### B3 · Anomalies Prix Alimentaires
+
+| Champ | Détail |
+|---|---|
+| **ID** | `ANOMALY-03` |
+| **Classe** | 🟡 B |
+| **Objectif** | Détecter les hausses anormales de prix sur les marchés sénégalais |
+| **Données** | `wfp_senegal_food_prices` (55 283 relevés, 79 marchés) |
+| **Kit requis** | (1) Resa"
+p_f49fc17c_c011,projet:56_real_ai_portfolio.md,modélisation,11,507,2028,"#### C5 · Détection Maladies Foliaires
+
+| Champ | Détail |
+|---|---|
+| **ID** | `CV-02` |
+| **Classe** | 🔴 C |
+| **Objectif** | Classifier les maladies des feuilles depuis photos terrain |
+| **Blocage** | Aucune image de plante/feuille dans le bundle. Nécessite un dataset type PlantVillage ou une co"
+p_f49fc17c_c012,projet:56_real_ai_portfolio.md,modélisation,12,496,1984,"#### B5 · RAG Alertes Agro-climatiques
+
+| Champ | Détail |
+|---|---|
+| **ID** | `RAG-02` |
+| **Classe** | 🟡 B |
+| **Objectif** | Générer des bulletins d'alerte en langage naturel à partir des anomalies détectées |
+| **Kit requis** | Pipeline `anomaly_ml` opérationnel (A6 + A7) + templates d'alertes "
+p_f49fc17c_c013,projet:56_real_ai_portfolio.md,modélisation,13,384,1537,"#### A9 · Assistant Conseil Parcellaire
+
+| Champ | Détail |
+|---|---|
+| **ID** | `ASSIST-01` |
+| **Classe** | 🟢 A |
+| **Objectif** | Chatbot qui répond aux questions d'un agriculteur sur sa zone : « Quel temps fait-il à Kaolack ? », « Quand semer l'arachide ? », « Mon sol est-il assez humide ? » |
+|"
+p_f49fc17c_c014,projet:56_real_ai_portfolio.md,modélisation,14,447,1790,"### 🥇 Projet 1 : `SmartAgri92-SoilNowcast`
+
+| Champ | Détail |
+|---|---|
+| **Modèles** | A1 (Soil Nowcast J+1/+2/+3) + A2 (instantané) |
+| **Données** | `train.parquet` → charger directement |
+| **Cible** | `y_plus_1d_pct` (puis `y_plus_2d_pct`, `y_plus_3d_pct`) |
+| **Tâche OctOpus** | Régression, G"
+p_f49fc17c_c015,projet:56_real_ai_portfolio.md,modélisation,15,462,1850,"### 4️⃣ Projet 4 : `SmartAgri92-AgriAssistant`
+
+| Champ | Détail |
+|---|---|
+| **Modèles** | A8 (RAG agronomique) + A9 (assistant parcellaire) |
+| **Données** | Tables statiques (sols, landcover, Kc FAO56, FAOSTAT) + résultats des projets 1-3 |
+| **Architecture** | App OctOpus avec `octopus.ask()` a"
+p_f49fc17c_c016,projet:56_real_ai_portfolio.md,modélisation,16,442,1769,"## 7. Risques transversaux et mitigations
+
+| Risque | Sévérité | Probabilité | Mitigation |
+|---|:---:|:---:|---|
+| **Pseudonymisation HMAC** empêche enrichissement du train/test | 🔴 Haute | Certaine | Accepter les 36 features pré-assemblées ; construire wx_rain_prob et anomaly_ml sur les données br"
+p_f49fc17c_c017,projet:56_real_ai_portfolio.md,modélisation,17,322,1291,"### Semaine 2 (consolidation)
+
+| Action | Détail |
+|---|---|
+| Assembler CHIRPS consolidé | 12 fichiers → table unique |
+| Construire vue wx_rain_prob fine (B1) | Jointures multi-niveaux |
+| Anomalies multi-variables (A7) | NASA POWER |
+| RAG alertes (B5) | Si anomaly_ml opérationnel |
+| Itérer soil"
+p_9ea3d810_c000,projet:58_plan_A1_soil_nowcast.md,modélisation,0,482,1930,"# 58 — Plan Détaillé : Projet A1 Soil Nowcast
+
+> **SmartAgri92 — Produit commercial, pas seulement un challenge**
+> 
+> Ce document décrit l'intégralité du projet A1, de l'entraînement
+> dans OctOpus jusqu'à la reproduction autonome dans SmartAgri.
+> Aucun entraînement n'est lancé par ce plan.
+
+---
+#"
+p_9ea3d810_c001,projet:58_plan_A1_soil_nowcast.md,modélisation,1,505,2022,"### 🌧️ Pluie (NASA POWER)
+
+| Colonne | Min | Max | Moyenne | Nulls | Corr. y+1d |
+|---|---|---|---|---|---|
+| `rain_mm` | 0.00 | 611.79 | 2.61 | 0 | 0.334 |
+| `rain_nasa_sum_3d_mm` | 0.00 | 717.42 | 7.83 | 0 | 0.450 |
+| `rain_nasa_sum_7d_mm` | 0.00 | 1061.06 | 18.28 | 0 | 0.547 |
+| `rain_nasa_sum_14"
+p_9ea3d810_c002,projet:58_plan_A1_soil_nowcast.md,modélisation,2,450,1802,"### 🎯 État courant (feature lag)
+
+| Colonne | Min | Max | Moyenne | Nulls | Corr. y+1d |
+|---|---|---|---|---|---|
+| `soil_wetness_root_pct` | 10.00 | 100.00 | 46.53 | 0 | feature lag |
+
+### 📊 Top 15 features par corrélation absolue avec `y_plus_1d_pct`
+
+| Rang | Feature | |r| | Signe |
+|---|---|---"
+p_9ea3d810_c003,projet:58_plan_A1_soil_nowcast.md,modélisation,3,488,1954,"### 4.1 Stratégie multi-modèles
+
+Pour un produit SmartAgri **commercialisable**, on entraîne **3 familles**
+et on conserve le meilleur par cible + un ensemble (stacking) :
+
+| # | Algorithme | Justification | Hyperparamètres clés | Export |
+|---|---|---|---|---|
+| 1 | **LightGBM** | Rapide, excellent"
+p_9ea3d810_c004,projet:58_plan_A1_soil_nowcast.md,modélisation,4,385,1542,"### 5.2 Protocole de validation
+
+```
+┌──────────────────────────────────────────────┐
+│         train.parquet (258 440 lignes)        │
+│                                               │
+│  ┌─── GroupKFold k=5 sur power_cell_id ───┐  │
+│  │                                         │  │
+│  │  Fold 1: g"
+p_9ea3d810_c005,projet:58_plan_A1_soil_nowcast.md,modélisation,5,333,1334,"# Reproductible hors OctOpus
+
+FEATURE_COLS = [
+    ""bulk_density_g_cm3"",
+    ""clay_pct"",
+    ""doy_cos"",
+    ""doy_sin"",
+    ""et0_pm_mean_7d_mm"",
+    ""et0_pm_mm"",
+    ""fc_ptf_pct"",
+    ""ph_h2o"",
+    ""pressure_hpa"",
+    ""rain_chirps_mm"",
+    ""rain_chirps_sum_14d_mm"",
+    ""rain_chirps_sum_3d_mm"",
+    ""r"
+p_9ea3d810_c006,projet:58_plan_A1_soil_nowcast.md,modélisation,6,250,1003,"### 6.2 Observations critiques
+
+- ⚠️ **4 features avec nulls** : ['rain_chirps_mm', 'rain_chirps_sum_3d_mm', 'rain_chirps_sum_7d_mm', 'rain_chirps_sum_14d_mm']
+- ✅ **32 features numériques** pures → pas d'encodage catégoriel.
+- ✅ **`power_cell_id` est un groupe**, pas une feature (jamais dans X).
+- "
+p_9ea3d810_c007,projet:58_plan_A1_soil_nowcast.md,modélisation,7,506,2027,"### 7.2 Artefacts à récupérer
+
+| # | Artefact | Format | Usage SmartAgri | Taille estimée |
+|---|---|---|---|---|
+| 1 | **Poids du modèle** | `.pkl` (pickle) | Inférence Python | ~5 Mo × 3 cibles × 3 algos |
+| 2 | **Modèle ONNX** | `.onnx` | Inférence multi-langage (C++, Java, Rust) | ~2 Mo × 3 cibl"
+p_9ea3d810_c008,projet:58_plan_A1_soil_nowcast.md,modélisation,8,487,1948,"#        ├── feature_importance.png
+#        ├── residuals.png
+#        ├── learning_curves.png
+#        └── shap_summary.png
+```
+
+### 7.4 Script d'inférence autonome SmartAgri
+
+```python
+""""""
+SmartAgri92 — Inférence Soil Nowcast autonome
+Aucune dépendance OctOpus.
+""""""
+import pickle
+import pandas as "
+p_9ea3d810_c009,projet:58_plan_A1_soil_nowcast.md,modélisation,9,492,1968,"# pipeline.yaml — SmartAgri92 Soil Nowcast
+version: '1.0'
+project: SmartAgri92-SoilNowcast
+created_in: OctOpus PAS Challenge 2026
+seed: 42
+
+data:
+  train: train.parquet
+  test: test.parquet
+  train_rows: 258440
+  test_rows: 25915
+  n_features: 30
+
+targets:
+  - y_plus_1d_pct
+  - y_plus_2d_pct
+  - y_p"
+p_9ea3d810_c010,projet:58_plan_A1_soil_nowcast.md,modélisation,10,348,1395,"### 9.1 Dépendances amont
+
+| Dépendance | Statut | Impact |
+|---|---|---|
+| `train.parquet` pré-assemblé | ✅ Disponible | Aucun assemblage nécessaire |
+| `test.parquet` holdout | ✅ Disponible | Soumission challenge |
+| NASA POWER API (production) | 🟡 Externe | Nécessaire pour inférence temps réel Sm"
+p_9ea3d810_c011,projet:58_plan_A1_soil_nowcast.md,modélisation,11,274,1099,"### Format `test.parquet` — colonnes disponibles pour la soumission
+
+```
+  power_cell_id: string
+  t_min_c: float64
+  t_max_c: float64
+  t_mean_c: float64
+  rh_mean_pct: float64
+  wind_2m_ms: float64
+  solar_rad_mj_m2: float64
+  pressure_hpa: float64
+  rain_mm: float64
+  rain_chirps_mm: float32
+  et"
+p_f39024ef_c000,projet:59_soilnowcast_training_report.md,modélisation,0,368,1472,"# 59 — SoilNowcast Training Report
+
+**Date** : 2026-11-16 12:41 UTC
+**Projet** : SmartAgri92 — PAS Challenge 2026
+**Équipe** : Agri-Moderne 5.0
+
+---
+
+## 1. Données et méthodologie
+
+- **Train** : 258,440 lignes × 36 cols
+- **Features** : 30 (météo, pluie, sol, ET0, land cover, temporel)
+- **Cibles** "
+p_f39024ef_c001,projet:59_soilnowcast_training_report.md,modélisation,1,394,1576,"## 3. Résultats consolidés
+
+| Modèle | Cible | RMSE μ | ± σ | MAE | R² | CV% | Iters |
+|---|---|---|---|---|---|---|---|
+| LightGBM | J+1 | **7.405** | 1.352 | 5.943 | 0.8375 | 18.3% | 734 |
+| LightGBM | J+2 | **7.411** | 1.413 | 5.946 | 0.8369 | 19.1% | 734 |
+| LightGBM | J+3 | **7.525** | 1.496 | "
+p_f39024ef_c002,projet:59_soilnowcast_training_report.md,modélisation,2,465,1862,"## 5. Feature Importance (top 15)
+
+| # | Feature | LGB | XGB | CB |
+|---|---|---|---|---|
+| 1 | `doy_cos` | 3832 | 0.0000 | 1.3 |
+| 2 | `doy_sin` | 3812 | 0.0200 | 12.2 |
+| 3 | `et0_pm_mean_7d_mm` | 3018 | 0.2500 | 10.5 |
+| 4 | `rain_nasa_sum_14d_mm` | 2907 | 0.0200 | 7.8 |
+| 5 | `rain_chirps_sum_14"
+p_f39024ef_c003,projet:59_soilnowcast_training_report.md,modélisation,3,374,1499,"## 7. Stabilité des folds
+
+- **LightGBM** : CV moyen = 19.1% ✅
+- **XGBoost** : CV moyen = 20.4% ⚠️
+- **CatBoost** : CV moyen = 16.4% ✅
+
+> Fold 4 systématiquement le plus difficile (zones à faible humidité moyenne).
+
+## 8. Erreurs par groupe
+
+### J+1
+- Médiane RMSE : 5.79 | IQR : [4.37, 8.70]
+- Pire "
+p_e77fadfd_c000,projet:60_soilnowcast_business_validation.md,modélisation,0,502,2008,"# 60 — SoilNowcast Business Validation
+
+**Date** : 2026-11-16 12:41 UTC
+**Produit** : SmartAgri92 SoilNowcast
+
+---
+
+## 1. Résumé exécutif
+
+SoilNowcast prédit l'humidité racinaire à J+1/+2/+3 sur 71 mailles couvrant le Sénégal.
+Le champion LightGBM atteint **R² = 0.84** à J+1 (RMSE = 7.4 pts).
+Entraî"
+p_e77fadfd_c001,projet:60_soilnowcast_business_validation.md,modélisation,1,67,268,"## 7. Coût et ROI
+
+- **Coût entraînement** : < 1 $ (sur 59,70 $ allowance)
+- **45 modèles** entraînés (3 algos × 3 cibles × 5 folds)
+- **Budget restant** : > 58 $ pour wx_rain_prob et anomaly_ml
+- **ROI** : excellent, modèle réutilisable commercialement post-challenge"
+p_5a347588_c000,projet:64_soilnowcast_productization.md,modélisation,0,489,1957,"# 64 — SoilNowcast Productization Guide
+
+> **SmartAgri92 — Actif IA transferable et commercialisable**
+> Ce document formalise le passage du prototype SoilNowcast
+> vers un actif logiciel exploitable dans le produit SmartAgri.
+
+---
+## 1. Modele retenu : LightGBM
+
+### 1.1 Comparaison finale
+
+| Criter"
+p_5a347588_c001,projet:64_soilnowcast_productization.md,modélisation,1,392,1570,"### 2.3 XGBoost (reference)
+
+```yaml
+  colsample_bytree: 0.8
+  early_stopping_rounds: 50
+  eval_metric: rmse
+  learning_rate: 0.05
+  max_depth: 8
+  min_child_weight: 50
+  n_estimators: 800
+  n_jobs: 2
+  random_state: 42
+  reg_alpha: 0.1
+  reg_lambda: 1.0
+  subsample: 0.8
+  tree_method: hist
+```
+
+---"
+p_5a347588_c002,projet:64_soilnowcast_productization.md,modélisation,2,314,1259,"### Tier 3 — Support (SHAP < 0.5)
+
+| Feature | SHAP moyen | Domaine | Role |
+|---|---|---|---|
+| `wp_ptf_pct` | 0.463 | Sol | Point de fletrissement |
+| `solar_rad_mj_m2` | 0.380 | Meteo | Radiation solaire |
+| `pressure_hpa` | 0.376 | Meteo | Pression atmospherique |
+| `share_built` | 0.370 | Occup"
+p_5a347588_c003,projet:64_soilnowcast_productization.md,modélisation,3,454,1816,"## 4. Artefacts a exporter
+
+| # | Artefact | Format | Taille | Usage |
+|---|---|---|---|---|
+| 1 | lgb_xgb_models.zip | ZIP | 55.5 Mo | 15 LGB .txt + 15 XGB .json |
+| 2 | cb_models.zip | ZIP | 3.5 Mo | 15 CatBoost .cbm |
+| 3 | config_all.json | JSON | 1.8 Ko | Hyperparametres reproductibles |
+| 4 | "
+p_5a347588_c004,projet:64_soilnowcast_productization.md,modélisation,4,211,844,"## 5. Architecture locale ml/
+
+```
+ml/
+  features/          feature_list.yaml, feature_stats.json, shap_summary.csv
+  training/          config_production.yaml, train_soilnowcast.py
+    metrics/         all_metrics.csv, group_errors.csv, oof_predictions.parquet
+    figures/         shap_summary.png,"
+p_5a347588_c005,projet:64_soilnowcast_productization.md,modélisation,5,496,1984,"# serving/predictor.py — Autonome, zero dependance OctOpus
+import lightgbm as lgb, numpy as np
+from pathlib import Path
+
+class SoilNowcastPredictor:
+    TARGETS = ['y_plus_1d_pct', 'y_plus_2d_pct', 'y_plus_3d_pct']
+    FEATURES = [""bulk_density_g_cm3"", ""clay_pct"", ""doy_cos"", ""doy_sin"", ""et0_pm_mean_"
+p_5a347588_c006,projet:64_soilnowcast_productization.md,modélisation,6,308,1233,"### Seuils d'alerte metier
+
+| Scenario | Condition | Action |
+|---|---|---|
+| Secheresse | Humidite predite < 15% J+1 | SMS + irrigation recommandee |
+| Exces eau | Humidite predite > 80% J+1 | Reporter irrigation |
+| Zone fiable | R2 groupe > 0.85 | Pilotage automatique |
+| Zone incertaine | R2 gro"
+p_5a347588_c007,projet:64_soilnowcast_productization.md,modélisation,7,540,2163,"# Usage: python retrain_soilnowcast.py --data new.parquet --version v2
+import argparse, json, lightgbm as lgb, numpy as np, pandas as pd
+from sklearn.model_selection import GroupKFold
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from pathlib import Path; from datetim"
+p_5a347588_c008,projet:64_soilnowcast_productization.md,modélisation,8,335,1340,"## 9. Fiabilite par zone (71 cellules, J+1, LightGBM)
+
+| Categorie | Condition | Cellules | % | Action |
+|---|---|---|---|---|
+| Excellent | R2 > 0.85 | 29 | 41% | Pilotage automatique |
+| Bon | 0.70-0.85 | 13 | 18% | Recommandation + validation |
+| Modere | 0.50-0.70 | 8 | 11% | Alerte uniquement |"
+p_5a347588_c009,projet:64_soilnowcast_productization.md,modélisation,9,182,729,"## 12. Resume executif
+
+| Attribut | Valeur |
+|---|---|
+| **Champion** | LightGBM (RMSE = 7.447) |
+| **R2 J+1** | 0.8375 |
+| **R2 J+2** | 0.8369 |
+| **R2 J+3** | 0.8314 |
+| **Features** | 30 retenues (3 tiers SHAP) / 3 rejetees |
+| **Modeles** | 45 (3 algos x 3 cibles x 5 folds) |
+| **Export** | LGB"
+p_18167d73_c000,projet:rapport_analyse_bundle_smartagri92.md,général,0,79,318,"# Rapport d'Analyse Complète — SmartAgri92 (`OCTOPUS-PACK-01`)
+
+**Projet** : Agri-Moderne 5.0 — PAS Challenge 2026
+**Fichiers dans le ZIP** : 81
+**Datasets chargés** : 28
+**Lignes totales** : 30,357,775
+**Objectifs** : `soil_nowcast`, `wx_rain_prob`, `anomaly_ml`
+**Aucun modèle entraîné** — analyse "
+p_18167d73_c001,projet:rapport_analyse_bundle_smartagri92.md,général,1,545,2182,"## 1. Inventaire complet des datasets
+
+| # | Fichier | Lignes | Colonnes | Mo |
+|--:|---|---:|---:|---:|
+| 1 | `esa_worldcover_national_grid_0p05.parquet` | 6,945 | 13 | 0.67 |
+| 2 | `fao56_crop_coefficients_daily.parquet` | 900 | 9 | 0.22 |
+| 3 | `fao56_et0_national_daily.parquet` | 329,232 | 7 | 3"
+p_18167d73_c002,projet:rapport_analyse_bundle_smartagri92.md,général,2,354,1419,"### Détail CHIRPS par année
+
+| Fichier | Lignes | Début | Fin | Cellules | Nulls | Doublons | Provisoires |
+|---|---:|---|---|---:|---:|---:|---:|
+| `chirps_v3_national_daily_2015.parquet` | 2,534,925 | 2015-01-01 | 2015-12-31 | 6,945 | 32850 | 0 | 0 |
+| `chirps_v3_national_daily_2016.parquet` | 2,5"
+p_18167d73_c003,projet:rapport_analyse_bundle_smartagri92.md,général,3,391,1566,"## 2. Vérification des schémas
+
+| Fichier | Shape | Nulls | Doublons | Constantes |
+|---|---|---|---:|---|
+| `esa_worldcover_national_grid_0p05.parquet` | 6945×13 | 0 | 0 | n_samples |
+| `fao56_crop_coefficients_daily.parquet` | 900×9 | 0 | 0 | - |
+| `fao56_et0_national_daily.parquet` | 329232×7 | e"
+p_18167d73_c004,projet:rapport_analyse_bundle_smartagri92.md,général,4,518,2073,"### Colonnes par dataset (hors CHIRPS)
+
+**`esa_worldcover_national_grid_0p05.parquet`** : `cell_id, lat, lon, n_samples, share_tree, share_shrub, share_grass, share_crop, share_built, share_bare, share_water, share_wetland, share_mangrove`
+
+**`fao56_crop_coefficients_daily.parquet`** : `crop_code, c"
+p_18167d73_c005,projet:rapport_analyse_bundle_smartagri92.md,général,5,465,1862,"**`test.parquet`** : `power_cell_id, t_min_c, t_max_c, t_mean_c, rh_mean_pct, wind_2m_ms, solar_rad_mj_m2, pressure_hpa, rain_mm, rain_chirps_mm, et0_pm_mm, rain_nasa_sum_3d_mm, rain_nasa_sum_7d_mm, rain_nasa_sum_14d_mm, rain_chirps_sum_3d_mm, rain_chirps_sum_7d_mm, rain_chirps_sum_14d_mm, et0_pm_me"
+p_18167d73_c006,projet:rapport_analyse_bundle_smartagri92.md,général,6,368,1472,"### 3.3 Couverture `cell_id` par dataset
+
+| Dataset | Cellules | Min | Max | Hors grille | Grille absentes |
+|---|---:|---:|---:|---:|---:|
+| `esa_worldcover_national_grid_0p05.parquet` | 6,945 | 49 | 11069 | 0 | 0 |
+| `senegal_grid_0p05.parquet` | 6,945 | 49 | 11069 | 0 | 0 |
+| `s2_ndvi_national_gr"
+p_18167d73_c007,projet:rapport_analyse_bundle_smartagri92.md,général,7,213,855,"## 4. Clés temporelles
+
+| Dataset | Col. | Début | Fin | Jours attendus | Jours réels | Trous |
+|---|---|---|---|---:|---:|---:|
+| `fao56_et0_national_daily.parquet` | `date` | 2015-01-01 | 2026-11-10 | 4,332 | 4,332 | 0 |
+| `wfp_senegal_food_prices.parquet` | `date` | 2000-01-15 | 2026-09-15 | - | "
+p_18167d73_c008,projet:rapport_analyse_bundle_smartagri92.md,général,8,512,2048,"## 5. Jointures naturelles détectées
+
+Colonnes partagées entre au moins 2 datasets :
+
+| Clé | # Datasets | Datasets |
+|---|---:|---|
+| `lat` | 9 | esa_worldcover_national_grid_0p05.parquet`, `fao56_et0_national_daily.parquet`, `power_cells_0p5x0p625.parquet`, `senegal_grid_0p05.parquet`, `wfp_senega"
+p_18167d73_c009,projet:rapport_analyse_bundle_smartagri92.md,général,9,657,2629,"_senegal_crops_1961_2024.parquet |
+| `t_min_c` | 3 | nasa_power_national_daily.parquet`, `test.parquet`, `train.parquet |
+| `t_max_c` | 3 | nasa_power_national_daily.parquet`, `test.parquet`, `train.parquet |
+| `t_mean_c` | 3 | nasa_power_national_daily.parquet`, `test.parquet`, `train.parquet |
+| `"
+p_18167d73_c010,projet:rapport_analyse_bundle_smartagri92.md,général,10,494,1979,"### Graphe de jointures principales
+
+```
+senegal_grid_0p05 ──(cell_id)──→ CHIRPS rain
+                  ──(cell_id)──→ isdasoil
+                  ──(cell_id)──→ esa_worldcover
+                  ──(cell_id)──→ s2_ndvi_monthly
+                  ──(power_cell_id)──→ power_cells_0p5x0p625
+              "
+p_18167d73_c011,projet:rapport_analyse_bundle_smartagri92.md,général,11,503,2013,"### 6.1 Détail `train.parquet` (cible `soil_nowcast`)
+
+- **Shape** : [258440, 36]
+- **Période** : `2015-01-14` → `2024-12-31`
+- **Groupes (power_cell_id)** : 71
+- **power_cell_id dtype** : `string` (HMAC)
+- **Exemples pcid** : `d7d35d5dfef1549d`, `59ceb60b8a2d8131`, `68572f99311269a0`
+- **Colonnes**"
+p_18167d73_c012,projet:rapport_analyse_bundle_smartagri92.md,général,12,349,1399,"## 6.3 Features candidates par objectif
+
+### 🎯 `soil_nowcast` — Prédiction humidité du sol (proxy NASA GEOS)
+
+**Cible** : `soil_wetness_root_pct` (+ horizons `y_plus_1d/2d/3d_pct`)
+**Grain** : (power_cell_id pseudonymisé, ts quotidien)
+**Données** : `train.parquet` (258 440 lignes, 36 colonnes pré-a"
+p_18167d73_c013,projet:rapport_analyse_bundle_smartagri92.md,général,13,252,1010,"### 🌧️ `wx_rain_prob` — Probabilité de pluie (à construire)
+
+**Cible à créer** : `rain_binary` = 1 si `rain_mm` > seuil (1 mm/jour recommandé)
+**Grain** : (cell_id 0,05° ou power_cell_id, date)
+
+| Catégorie | Features | Source | Jointure |
+|---|---|---|---|
+| Météo | t_min, t_max, t_mean, rh, wind, "
+p_18167d73_c014,projet:rapport_analyse_bundle_smartagri92.md,général,14,460,1840,"### 🔴 `anomaly_ml` — Détection d'anomalies agro-climatiques
+
+**Objectif** : identifier les cellules/dates hors distribution normale
+**Méthodes** : Isolation Forest, autoencodeur, z-scores dynamiques
+
+| Type d'anomalie | Features | Source | Signal |
+|---|---|---|---|
+| Sécheresse flash | z-score rain"
+p_18167d73_c015,projet:rapport_analyse_bundle_smartagri92.md,général,15,354,1419,"### nulls (35 occurrences)
+
+| Dataset | Détail |
+|---|---|
+| `fao56_et0_national_daily.parquet` | et0_pm_mm: 0.0% (76) |
+| `power_cells_0p5x0p625.parquet` | validation_zone: 93.4% (71) |
+| `senegal_grid_0p05.parquet` | validation_zone: 97.9% (6,801) |
+| `wfp_senegal_food_prices.parquet` | price_fcfa"
+p_18167d73_c016,projet:rapport_analyse_bundle_smartagri92.md,général,16,456,1826,"### outlier_5σ (46 occurrences)
+
+| Dataset | Détail |
+|---|---|
+| `esa_worldcover_national_grid_0p05.parquet` | share_built: 34 |
+| `esa_worldcover_national_grid_0p05.parquet` | share_bare: 66 |
+| `esa_worldcover_national_grid_0p05.parquet` | share_water: 87 |
+| `esa_worldcover_national_grid_0p05.pa"
+p_18167d73_c017,projet:rapport_analyse_bundle_smartagri92.md,général,17,495,1981,"## 8. Licences et exportabilité OctOpus
+
+Le registre `sources_registry.json` ne contient pas de clé `sources` exploitable directement.
+D'après le README du package :
+
+
+| Source | Licence | Commercial |
+|---|---|---|
+| NASA POWER | NASA Open Data (attribution) | ✅ Oui |
+| CHIRPS v3 | CC BY 4.0 (UCSB "
+p_18167d73_c018,projet:rapport_analyse_bundle_smartagri92.md,général,18,76,307,"### Phase E — Modélisation (ultérieur, hors scope actuel)
+- **soil_nowcast** : régression (LightGBM/XGBoost), GroupKFold sur power_cell_id
+- **wx_rain_prob** : classification binaire (rain > 1mm), même schéma de validation
+- **anomaly_ml** : Isolation Forest / autoencodeur, évaluation sur événements"
+p_c2444d5c_c000,projet:soilnowcast_all_metrics.csv,modélisation,0,506,2026,"model,target,fold,rmse,mae,r2,best_iter
+LightGBM,y_plus_1d_pct,0,6.442853,4.964104,0.901406,800
+XGBoost,y_plus_1d_pct,0,6.321953,4.909646,0.905072,799
+LightGBM,y_plus_1d_pct,1,7.448464,6.152362,0.809023,800
+XGBoost,y_plus_1d_pct,1,7.545686,6.250129,0.804005,798
+LightGBM,y_plus_1d_pct,2,5.912259,4.70"
+p_c2444d5c_c001,projet:soilnowcast_all_metrics.csv,modélisation,1,124,499,"CatBoost,y_plus_2d_pct,1,7.187778,5.735243,0.822155,297
+CatBoost,y_plus_2d_pct,2,6.002182,4.757458,0.901258,298
+CatBoost,y_plus_2d_pct,3,8.604338,6.818225,0.811873,46
+CatBoost,y_plus_2d_pct,4,8.728817,6.919255,0.765742,299
+CatBoost,y_plus_3d_pct,0,7.10991,5.54495,0.879924,296
+CatBoost,y_plus_3d_pct,"
+p_e7adf88c_c000,projet:soilnowcast_feature_importance_all.csv,modélisation,0,239,956,"feature,lgb_importance,xgb_importance,cb_importance
+doy_cos,3832.13,0.0,1.28
+doy_sin,3812.47,0.02,12.22
+et0_pm_mean_7d_mm,3017.73,0.25,10.51
+rain_nasa_sum_14d_mm,2906.87,0.02,7.79
+rain_chirps_sum_14d_mm,2688.13,0.0,0.15
+rh_mean_pct,2419.33,0.02,2.72
+rain_chirps_sum_7d_mm,1839.33,0.0,0.21
+rain_nasa_s"
+p_3efacf55_c000,projet:config_all.json,modélisation,0,123,492,"features: [""bulk_density_g_cm3"", ""clay_pct"", ""doy_cos"", ""doy_sin"", ""et0_pm_mean_7d_mm"", ""et0_pm_mm"", ""fc_ptf_pct"", ""ph_h2o"", ""pressure_hpa"", ""rain_chirps_mm"", ""rain_chirps_sum_14d_mm"", ""rain_chirps_sum_3d_mm"", ""rain_chirps_sum_7d_mm"", ""rain_mm"", ""rain_nasa_sum_14d_mm"", ""rain_nasa_sum_3d_mm"", ""rain_n"
+p_3efacf55_c001,projet:config_all.json,modélisation,1,15,60,"targets: [""y_plus_1d_pct"", ""y_plus_2d_pct"", ""y_plus_3d_pct""]"
+p_3efacf55_c002,projet:config_all.json,modélisation,2,60,241,"LightGBM: {""n_estimators"": 800, ""learning_rate"": 0.05, ""max_depth"": 8, ""num_leaves"": 63, ""min_child_samples"": 50, ""subsample"": 0.8, ""colsample_bytree"": 0.8, ""reg_alpha"": 0.1, ""reg_lambda"": 1.0, ""random_state"": 42, ""n_jobs"": 2, ""verbose"": -1}"
+p_3efacf55_c003,projet:config_all.json,modélisation,3,70,281,"XGBoost: {""n_estimators"": 800, ""learning_rate"": 0.05, ""max_depth"": 8, ""min_child_weight"": 50, ""subsample"": 0.8, ""colsample_bytree"": 0.8, ""reg_alpha"": 0.1, ""reg_lambda"": 1.0, ""random_state"": 42, ""n_jobs"": 2, ""tree_method"": ""hist"", ""early_stopping_rounds"": 50, ""eval_metric"": ""rmse""}"
+p_3efacf55_c004,projet:config_all.json,modélisation,4,58,234,"CatBoost: {""iterations"": 300, ""learning_rate"": 0.08, ""depth"": 7, ""l2_leaf_reg"": 3.0, ""random_seed"": 42, ""thread_count"": 2, ""verbose"": 0, ""early_stopping_rounds"": 30, ""loss_function"": ""RMSE"", ""subsample"": 0.8, ""colsample_bylevel"": 0.8}"

@@ -1,0 +1,109 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "rain",
+  "file_name": "chirps_v3_national_daily_2026.parquet",
+  "relative_path": "data/real/rain/chirps_v3_national_daily_2026.parquet",
+  "source_id": "chirps",
+  "owner": "UCSB Climate Hazards Center (CHIRPS v3.0), 0,05°",
+  "licence": "CC BY 4.0",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://data.chc.ucsb.edu/products/CHIRPS/v3.0/daily/",
+  "description": "Pluie quotidienne CHIRPS v3 2026 sur toutes les cellules 0,05° du Sénégal (final 'rnl' jusqu'au 2026-10-31, puis 'prelim sat').",
+  "fetched_at_utc": "2026-11-16T09:23:29+00:00",
+  "sha256": "f0cbd699b3bb0a82a45c3a065ff1a261508d8e464dd452f9d2292ded91f92909",
+  "size_bytes": 9864446,
+  "rows": 1895985,
+  "columns": [
+    "date",
+    "cell_id",
+    "rain_mm",
+    "is_provisional"
+  ],
+  "dtypes": {
+    "date": "datetime64[ns]",
+    "cell_id": "int32",
+    "rain_mm": "float32",
+    "is_provisional": "bool"
+  },
+  "quality": {
+    "completeness_pct": 99.676,
+    "null_cells_by_column": {
+      "rain_mm": 24570
+    },
+    "duplicate_key_rows": 0,
+    "key": [
+      "cell_id",
+      "date"
+    ],
+    "checks": {
+      "download_failures": [
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-03",
+        "2026-10-04",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09",
+        "2026-10-10",
+        "2026-10-11",
+        "2026-10-12",
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20",
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-25",
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30",
+        "2026-10-31",
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-06",
+        "2026-11-07",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-10"
+      ],
+      "rain_max_mm": 96.25277709960938,
+      "rain_negative_rows": 0
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2026-01-01 00:00:00",
+    "max": "2026-09-30 00:00:00",
+    "unique_periods": 273,
+    "expected_days": 273,
+    "missing_days": 0
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "grid",
+    "cells_present": 6945,
+    "cells_expected": 6945,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.325,
+    "lat_max": 16.675,
+    "lon_min": -17.525,
+    "lon_max": -11.325
+  }
+}

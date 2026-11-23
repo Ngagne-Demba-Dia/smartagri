@@ -1,0 +1,91 @@
+f,type,d
+esa_worldcover_national_grid_0p05.parquet,constante,n_samples=100
+esa_worldcover_national_grid_0p05.parquet,outlier_5σ,share_built: 34
+esa_worldcover_national_grid_0p05.parquet,outlier_5σ,share_bare: 66
+esa_worldcover_national_grid_0p05.parquet,outlier_5σ,share_water: 87
+esa_worldcover_national_grid_0p05.parquet,outlier_5σ,share_wetland: 67
+esa_worldcover_national_grid_0p05.parquet,outlier_5σ,share_mangrove: 78
+fao56_et0_national_daily.parquet,nulls,et0_pm_mm: 0.0% (76)
+power_cells_0p5x0p625.parquet,nulls,validation_zone: 93.4% (71)
+senegal_grid_0p05.parquet,nulls,"validation_zone: 97.9% (6,801)"
+wfp_senegal_food_prices.parquet,nulls,price_fcfa_kg: 0.4% (195)
+wfp_senegal_food_prices.parquet,constante,price_flag=actual
+wfp_senegal_food_prices.parquet,constante,price_type=retail
+wfp_senegal_food_prices.parquet,constante,currency=XOF
+wfp_senegal_food_prices.parquet,constante,source_id=hdx_wfp_senegal
+wfp_senegal_food_prices.parquet,outlier_5σ,market_id: 269
+wfp_senegal_food_prices.parquet,outlier_5σ,price_fcfa_raw: 128
+wfp_senegal_food_prices.parquet,outlier_5σ,price_usd: 127
+wfp_senegal_food_prices.parquet,outlier_5σ,price_fcfa_kg: 169
+wfp_senegal_markets.parquet,constante,source_id=hdx_wfp_senegal
+nasa_power_national_daily.parquet,nulls,solar_rad_mj_m2: 0.0% (76)
+nasa_power_national_daily.parquet,outlier_5σ,wind_2m_ms: 6
+nasa_power_national_daily.parquet,outlier_5σ,solar_rad_mj_m2: 11
+nasa_power_national_daily.parquet,outlier_5σ,"rain_mm: 1,492"
+s2_ndvi_national_grid_monthly_2025.parquet,outlier_5σ,ndvi_std: 19
+s2_ndvi_national_grid_monthly_2025.parquet,outlier_5σ,n_valid_px: 48
+isdasoil_national_grid_0p05.parquet,nulls,sand_pct: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,clay_pct: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,silt_pct: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,ph_h2o: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,soc_g_kg: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,n_total_g_kg: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,p_mg_kg: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,k_mg_kg: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,cec_cmol_kg: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,bulk_density_g_cm3: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,fc_ptf_pct: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,wp_ptf_pct: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,awc_ptf_mm_per_m: 0.3% (48)
+isdasoil_national_grid_0p05.parquet,nulls,"sg_sand_pct_5_15cm: 50.2% (6,967)"
+isdasoil_national_grid_0p05.parquet,nulls,"sg_clay_pct_5_15cm: 50.2% (6,967)"
+isdasoil_national_grid_0p05.parquet,outlier_5σ,clay_pct: 7
+isdasoil_national_grid_0p05.parquet,outlier_5σ,silt_pct: 6
+isdasoil_national_grid_0p05.parquet,outlier_5σ,ph_h2o: 6
+isdasoil_national_grid_0p05.parquet,outlier_5σ,soc_g_kg: 4
+isdasoil_national_grid_0p05.parquet,outlier_5σ,n_total_g_kg: 4
+isdasoil_national_grid_0p05.parquet,outlier_5σ,p_mg_kg: 4
+isdasoil_national_grid_0p05.parquet,outlier_5σ,k_mg_kg: 4
+isdasoil_national_grid_0p05.parquet,outlier_5σ,cec_cmol_kg: 4
+isdasoil_national_grid_0p05.parquet,outlier_5σ,fc_ptf_pct: 4
+isdasoil_national_grid_0p05.parquet,outlier_5σ,wp_ptf_pct: 8
+faostat_senegal_crops_1961_2024.parquet,constante,season=annual
+faostat_senegal_crops_1961_2024.parquet,constante,scale=national
+faostat_senegal_crops_1961_2024.parquet,constante,source_id=faostat
+test.parquet,outlier_5σ,rain_mm: 74
+test.parquet,outlier_5σ,rain_chirps_mm: 171
+test.parquet,outlier_5σ,rain_nasa_sum_3d_mm: 135
+test.parquet,outlier_5σ,rain_nasa_sum_7d_mm: 238
+test.parquet,outlier_5σ,rain_nasa_sum_14d_mm: 228
+test.parquet,outlier_5σ,rain_chirps_sum_3d_mm: 107
+test.parquet,outlier_5σ,rain_chirps_sum_7d_mm: 79
+test.parquet,outlier_5σ,rain_chirps_sum_14d_mm: 56
+test.parquet,outlier_5σ,soc_g_kg: 365
+test.parquet,outlier_5σ,share_built: 365
+train.parquet,nulls,"rain_chirps_mm: 3.4% (8,662)"
+train.parquet,nulls,"rain_chirps_sum_3d_mm: 3.6% (9,230)"
+train.parquet,nulls,"rain_chirps_sum_7d_mm: 4.0% (10,366)"
+train.parquet,nulls,"rain_chirps_sum_14d_mm: 4.8% (12,354)"
+train.parquet,outlier_5σ,wind_2m_ms: 13
+train.parquet,outlier_5σ,solar_rad_mj_m2: 4
+train.parquet,outlier_5σ,"rain_mm: 1,652"
+train.parquet,outlier_5σ,"rain_chirps_mm: 1,986"
+train.parquet,outlier_5σ,"rain_nasa_sum_3d_mm: 1,674"
+train.parquet,outlier_5σ,"rain_nasa_sum_7d_mm: 1,445"
+train.parquet,outlier_5σ,"rain_nasa_sum_14d_mm: 1,176"
+train.parquet,outlier_5σ,"rain_chirps_sum_3d_mm: 1,281"
+train.parquet,outlier_5σ,rain_chirps_sum_7d_mm: 755
+train.parquet,outlier_5σ,rain_chirps_sum_14d_mm: 534
+train.parquet,outlier_5σ,"soc_g_kg: 3,640"
+train.parquet,outlier_5σ,"share_built: 3,640"
+chirps_v3_national_daily_2015.parquet,nulls,"32,850 valeurs"
+chirps_v3_national_daily_2017.parquet,nulls,"32,850 valeurs"
+chirps_v3_national_daily_2018.parquet,nulls,"32,850 valeurs"
+chirps_v3_national_daily_2019.parquet,nulls,"32,850 valeurs"
+chirps_v3_national_daily_2020.parquet,nulls,"32,940 valeurs"
+chirps_v3_national_daily_2021.parquet,nulls,"32,850 valeurs"
+chirps_v3_national_daily_2022.parquet,nulls,"30,150 valeurs"
+chirps_v3_national_daily_2023.parquet,nulls,"30,060 valeurs"
+chirps_v3_national_daily_2024.parquet,nulls,"27,450 valeurs"
+chirps_v3_national_daily_2025.parquet,nulls,"32,850 valeurs"
+chirps_v3_national_daily_2026.parquet,nulls,"24,570 valeurs"

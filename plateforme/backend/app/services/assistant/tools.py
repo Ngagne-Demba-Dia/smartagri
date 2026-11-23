@@ -19,6 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
+from app.core.constants import ALERT_ACKERS
 from app.core.errors import AppError
 from app.db.models import Alert, Device
 from app.services import access, agronomy, alerting, farms, measurements, weather
@@ -35,7 +36,8 @@ MAX_REASON_CHARS = 500
 OPEN_ALERTS_CAP = 20
 VISIT_DEBOUNCE = timedelta(hours=24)
 HISTORY_KEYS = ("ts", "n_points", "soil_moisture_pct_avg", "soil_moisture_pct_min", "air_temp_c_max",
-                "air_temp_c_min", "air_humidity_pct_avg", "pump_on_ratio")
+                "air_temp_c_min", "air_humidity_pct_avg", "pressure_hpa_avg", "n_mgkg_avg", "p_mgkg_avg",
+                "k_mgkg_avg", "pump_on_ratio")
 
 
 @dataclass(frozen=True)
@@ -45,6 +47,7 @@ class ToolContext:
     principal: access.Principal
     now: datetime
     weather_provider: weather.WeatherProvider
+    smartagri_ai_client: Any = None
 
 
 @dataclass(frozen=True)
@@ -142,9 +145,30 @@ def crop_profile(_ctx: ToolContext, args: Mapping[str, Any]) -> dict[str, Any]:
     return {**asdict(profile), "season_days": profile.season_days}
 
 
-def knowledge_search(_ctx: ToolContext, args: Mapping[str, Any]) -> dict[str, Any]:
-    hits = default_index().search(_text(args, "query", MAX_QUERY_CHARS))
-    return {"results": [hit.as_dict() for hit in hits],
+def knowledge_search(ctx: ToolContext, args: Mapping[str, Any]) -> dict[str, Any]:
+    query = _text(args, "query", MAX_QUERY_CHARS)
+    hits = default_index().search(query)
+    results = [hit.as_dict() for hit in hits]
+    ai_client = ctx.smartagri_ai_client
+    if ai_client is None and ctx.settings.smartagri_ai_url:
+        from app.services.inference.local_ai import SmartAgriAIClient
+
+        ai_client = SmartAgriAIClient(
+            ctx.settings.smartagri_ai_url,
+            timeout_s=ctx.settings.smartagri_ai_timeout_s,
+            api_key=ctx.settings.smartagri_ai_api_key,
+        )
+    if ai_client is not None:
+        ai_res = ai_client.search_knowledge(query, top_k=3)
+        if ai_res and not ai_res.get("abstained"):
+            for item in ai_res.get("values", {}).get("results", []):
+                results.append({
+                    "source": item.get("doc_source", "smartagri-ai"),
+                    "domain": item.get("domain", ""),
+                    "score": item.get("score", 0.0),
+                    "excerpt": item.get("text_preview", ""),
+                })
+    return {"results": results,
             "note": "Fiches en cours de validation par l'ISRA, l'ANCAR et la DPV."}
 
 
@@ -158,6 +182,7 @@ def open_alerts(ctx: ToolContext, _args: Mapping[str, Any]) -> dict[str, Any]:
 
 def advisor_visit(ctx: ToolContext, args: Mapping[str, Any]) -> dict[str, Any]:
     field = access.get_field_for(ctx.session, ctx.principal, _text(args, "field_id"))
+    access.require_role(ctx.principal, field.organization_id, ALERT_ACKERS)
     reason = _text(args, "reason", MAX_REASON_CHARS)
     urgency = _choice(args, "urgency", URGENCIES)
     existing = ctx.session.scalars(

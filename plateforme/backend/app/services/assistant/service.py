@@ -188,16 +188,72 @@ def _provenance(result: LoopResult, ctx: ToolContext) -> dict[str, Any]:
                       source="agriml", fallback_step=1 if result.fallback_used else 0, computed_at=ctx.now)
 
 
+def _local_ai_reply(ctx: ToolContext, message: str, locale: str) -> LoopResult | None:
+    """Repli local vers `smartagri-ai` (RAG + Orchestrateur) si aucune clé Anthropic n'est configurée."""
+    if not ctx.settings.smartagri_ai_url:
+        return None
+    from app.services.inference.local_ai import SmartAgriAIClient
+
+    cli = SmartAgriAIClient(ctx.settings.smartagri_ai_url, timeout_s=ctx.settings.smartagri_ai_timeout_s)
+    query = message
+    if locale == "wo":
+        wo = cli.interpret_wolof(message)
+        if wo and wo.get("normalized_fr"):
+            query = str(wo["normalized_fr"])
+
+    orch = cli.ask_orchestrator(query)
+    rag = cli.search_knowledge(query, top_k=3)
+    parts: list[str] = []
+    tools: list[str] = []
+
+    hits = []
+    if rag and not rag.get("abstained"):
+        hits = rag.get("values", {}).get("results", [])[:1]
+    # Les extraits agronomiques (réponse lisible) passent en premier, avec leur source.
+    for hit in hits:
+        source = str(hit.get("doc_source", "RAG")).removeprefix("guide:").removesuffix(".md")
+        parts.append(f"{hit.get('text_preview', '')}\n(Source : {source})")
+    if hits:
+        tools.append("smartagri_rag")
+    # La synthèse de l'orchestrateur n'est ajoutée que si elle repose sur des données (pas d'abstention).
+    answer = str(orch.get("answer", "")) if orch else ""
+    if answer and not orch.get("abstentions") and not answer.startswith("Source RAG"):
+        parts.append(f"Données de la parcelle : {answer}")
+        tools.append("smartagri_orchestrator")
+
+    if not parts:
+        return None
+    return LoopResult(
+        reply="\n\n".join(parts),
+        stop_reason="end_turn",
+        model="smartagri-ai-local",
+        tools_used=tuple(tools),
+        fallback_used=True,
+    )
+
+
 def chat(gateway: AssistantGateway | None, ctx: ToolContext, request: ChatRequest,
          default_locale: str = "fr") -> dict[str, Any]:
     """Point d'entrée de POST /v1/assistant/chat (l'appelant valide la transaction)."""
-    if gateway is None:
-        raise assistant_unavailable()
     message = request.message.strip()
     if not message or len(message) > MAX_MESSAGE_CHARS:
         raise AppError("MESSAGE_INVALID", f"Message vide ou trop long ({MAX_MESSAGE_CHARS} caractères max).", 400)
     request = replace(request, message=message)
     locale = request.locale if request.locale in LOCALES else default_locale
+
+    if gateway is None:
+        local_result = _local_ai_reply(ctx, message, locale)
+        if local_result is None:
+            raise assistant_unavailable()
+        conversation = load_conversation(ctx.session, ctx.principal, request, locale, ctx.now)
+        _persist(ctx.session, conversation, request, local_result, ctx.now)
+        return {"conversation_id": str(conversation.id), "reply": local_result.reply,
+                "stop_reason": local_result.stop_reason, "tools_used": list(local_result.tools_used),
+                "truncated": False, "limit_reached": False, "model": local_result.model,
+                "fallback_used": True, "refusal_category": None,
+                "language_quality_notice": LANGUAGE_QUALITY_NOTICE.get(locale),
+                "provenance": _provenance(local_result, ctx)}
+
     conversation = load_conversation(ctx.session, ctx.principal, request, locale, ctx.now)
     messages = history(ctx.session, conversation.id) + [{"role": "user", "content": message}]
     system = system_blocks(ctx.now, locale, list(ctx.principal.roles_by_org.values()))

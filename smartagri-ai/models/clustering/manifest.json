@@ -1,0 +1,38 @@
+{
+  "execution_id": "py_3982816ab03e41b18317e7d3a784ed57",
+  "title": "A6 + A7 + A9 (KMeans only, no tiny clusters)",
+  "source": "derived",
+  "synthetic": false,
+  "goal": "attaque ce des classes A faisables et qu'il yai suffisament de donnée pour ça? si oui fais le tout ses 6 modeles",
+  "seed": 42,
+  "assumptions": [],
+  "created_at": 1794858942.995851,
+  "inputs": [
+    {
+      "file_id": "pf_8cffb44cb1be493c9a5fd829",
+      "sha256": "134d1a2e216a4b0a39311b09e2ef6c753c367ab06f6ba5ae222a10fe4d3e6d2d"
+    }
+  ],
+  "code_sha256": "8a47a9aab2774ad2294365710b862c0f13030e97c7c625c0df29a966697c5413",
+  "validation": "Program completed, assertions passed; not independently scientifically validated",
+  "outputs": [
+    {
+      "name": "remaining_models_all_metrics.csv",
+      "description": "A6+A7+A9 all metrics",
+      "bytes": 1739,
+      "sha256": "59d08ba387bb207100866caa1188eb5bb245353d6d752ce59dd4780c88cec5c3"
+    },
+    {
+      "name": "market_clustering_results.csv",
+      "description": "KMeans clustering results",
+      "bytes": 168,
+      "sha256": "b01d1c91b1469befe5f25673f2416e2df113a1f25ee94916463037799c9d267f"
+    },
+    {
+      "name": "market_cluster_assignments.csv",
+      "description": "Market cluster assignments",
+      "bytes": 762,
+      "sha256": "4766e553fab455b1139ea89304fbfac7d98258f636b144ecb328729db890e1ab"
+    }
+  ]
+}

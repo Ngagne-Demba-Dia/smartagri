@@ -1,0 +1,76 @@
+{
+  "mission": "IA-REAL-03",
+  "scope": "national",
+  "domain": "et0",
+  "file_name": "fao56_et0_national_daily.parquet",
+  "relative_path": "data/real/et0/fao56_et0_national_daily.parquet",
+  "source_id": "nasa_power+fao56",
+  "owner": "NASA POWER + FAO Irrigation and Drainage Paper 56",
+  "licence": "NASA Open Data + méthode FAO-56 publique",
+  "commercial_use": "open",
+  "synthetic_data": false,
+  "source_url": "https://power.larc.nasa.gov/api/temporal/daily/point?community=AG",
+  "description": "ET0 FAO-56 calculée (Ra éq. 21, Hargreaves éq. 52, Penman-Monteith éq. 6) depuis NASA POWER, sans imputation : et0_pm_mm reste vide quand le rayonnement ou le vent manque.",
+  "fetched_at_utc": "2026-11-14T19:58:47+00:00",
+  "sha256": "d40abcc581c12f247d5c5335360e58ebd782a1a5de4906fdd83554bfbd990c41",
+  "size_bytes": 4012173,
+  "rows": 329232,
+  "columns": [
+    "power_cell_id",
+    "lat",
+    "lon",
+    "date",
+    "ra_mj_m2",
+    "et0_hargreaves_mm",
+    "et0_pm_mm"
+  ],
+  "dtypes": {
+    "power_cell_id": "str",
+    "lat": "float64",
+    "lon": "float64",
+    "date": "datetime64[us]",
+    "ra_mj_m2": "float64",
+    "et0_hargreaves_mm": "float64",
+    "et0_pm_mm": "float64"
+  },
+  "quality": {
+    "completeness_pct": 99.997,
+    "null_cells_by_column": {
+      "et0_pm_mm": 76
+    },
+    "duplicate_key_rows": 0,
+    "key": [
+      "power_cell_id",
+      "date"
+    ],
+    "checks": {
+      "et0_pm_range_mm": [
+        0.5072409695342269,
+        15.802051257436956
+      ],
+      "et0_pm_median_mm": 5.83070939716678,
+      "pm_vs_hargreaves_corr": 0.8058
+    }
+  },
+  "temporal_coverage": {
+    "column": "date",
+    "min": "2015-01-01 00:00:00",
+    "max": "2026-11-10 00:00:00",
+    "unique_periods": 4332,
+    "expected_days": 4332,
+    "missing_days": 0
+  },
+  "geographic_coverage": {
+    "country": "SN",
+    "cell_kind": "power",
+    "cells_present": 76,
+    "cells_expected": 76,
+    "coverage_pct": 100.0,
+    "regions_covered": 14,
+    "regions_total": 14,
+    "lat_min": 12.5,
+    "lat_max": 16.5,
+    "lon_min": -17.5,
+    "lon_max": -11.25
+  }
+}
